@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numerische Methoden · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="index.html">← Übersicht</a>
+    <h1>Numerische Methoden</h1>
+    <p class="sub">NM · SCM</p>
+
+        <a class="back" href="04-numerik-uebungen.html" style="color: var(--accent-2); margin-bottom: 1rem; display: inline-block;">→ Übungen</a>
+    <ul class="toc">
+      <li><a href="#ueberblick">Überblick</a></li>
+      <li><a href="#fehler">1 · Fließkomma &amp; Fehler</a>
+        <ul class="sub-toc">
+          <li><a href="#float">1.1 Maschinenzahlen</a></li>
+          <li><a href="#fehlerarten">1.2 Fehlerarten</a></li>
+          <li><a href="#ausloeschung">1.3 Auslöschung</a></li>
+          <li><a href="#kondition">1.4 Konditionszahl</a></li>
+          <li><a href="#stabilitaet">1.5 Stabilität</a></li>
+        </ul>
+      </li>
+      <li><a href="#lgs">2 · Lineare Gleichungssysteme</a>
+        <ul class="sub-toc">
+          <li><a href="#lgs-direkt">2.1 Direkte Verfahren</a></li>
+          <li><a href="#lgs-iter">2.2 Iterativ stationär</a></li>
+          <li><a href="#lgs-krylov">2.3 Krylov / CG</a></li>
+        </ul>
+      </li>
+      <li><a href="#nullstellen">3 · Nichtlineare Gleichungen</a>
+        <ul class="sub-toc">
+          <li><a href="#bisektion">3.1 Bisektion</a></li>
+          <li><a href="#newton">3.2 Newton</a></li>
+          <li><a href="#sekante">3.3 Sekante</a></li>
+          <li><a href="#fixpunkt">3.4 Fixpunkt</a></li>
+        </ul>
+      </li>
+      <li><a href="#interpolation">4 · Interpolation</a></li>
+      <li><a href="#diff">5 · Numerische Differentiation</a></li>
+      <li><a href="#quadratur">6 · Quadratur</a></li>
+      <li><a href="#odes">7 · Gewöhnliche DGL</a></li>
+      <li><a href="#eig-num">8 · EW numerisch</a></li>
+      <li><a href="#cheatsheet">9 · Cheatsheet</a></li>
+      <li><a href="#drillplan">10 · Drillplan</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Fächer</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik.html">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren.html">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik.html" class="current">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2.html">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Numerische Methoden</h1>
+      <p class="tagline">Fehler · LGS · Nullstellen · Interpolation · Quadratur · ODEs</p>
+      <p class="meta"><span>Moodle: Abschnitt 2–5</span><span>Online-Vorlesung</span></p>
+    </header>
+
+    <div class="callout callout-info" style="margin-bottom: 2rem;">
+      <div class="callout-title">Übungen</div>
+      <p>Alle Klausur-Übungsaufgaben mit ausführlichen Lösungen findest du in der Begleitseite:
+      <a href="04-numerik-uebungen.html"><strong>Übungen — Numerische Methoden</strong></a>.</p>
+    </div>
+
+    <section id="ueberblick">
+      <h2>Überblick</h2>
+      <p>Numerik = Mathematik im endlichen Rechner. Drei zentrale Fragen jeder Methode:</p>
+      <ol>
+        <li><strong>Konvergiert</strong> das Verfahren, und wie schnell (linear / superlinear / quadratisch)?</li>
+        <li>Wie groß ist der <strong>Diskretisierungsfehler</strong> (in Abhängigkeit von Schrittweite/Stützstellenzahl)?</li>
+        <li>Ist das Verfahren <strong>stabil</strong> — verstärkt es Rundungsfehler?</li>
+      </ol>
+      <div class="callout callout-tip">
+        <div class="callout-title">Klausur-Brennpunkte</div>
+        <ul>
+          <li>Konditionszahl-Argument zu einem konkreten Problem.</li>
+          <li>Newton mit 3 Iterationen + Aussage zur Konvergenzordnung.</li>
+          <li>Trapez vs. Simpson: ein Integral und experimentell Ordnung zeigen.</li>
+          <li>Euler explizit vs. implizit auf steifer ODE: warum implizit?</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== 1 FEHLER ===================== -->
+    <section id="fehler">
+      <h2>1 · Fließkomma &amp; Fehler</h2>
+
+      <div id="float">
+        <h3>1.1 Maschinenzahlen (IEEE-754)</h3>
+        <p>Eine double precision Gleitkommazahl: $\pm 1.m \cdot 2^e$ mit 52 Mantissen-Bits, 11 Exponenten-Bits.</p>
+        <ul>
+          <li><strong>Maschinenepsilon:</strong> $\epsilon_{\text{mach}} = 2^{-52} \approx 2.22 \cdot 10^{-16}$ — kleinstes $\epsilon$ mit $1 + \epsilon \ne 1$ in der Maschine.</li>
+          <li><strong>Spezialwerte:</strong> $\pm 0, \pm\infty$, NaN (z.B. $0/0$).</li>
+          <li><strong>Denormalwerte</strong> für sehr kleine Zahlen — verlieren Mantissenpräzision.</li>
+        </ul>
+      </div>
+
+      <div id="fehlerarten">
+        <h3>1.2 Fehlerarten</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Typ</th><th>Ursache</th><th>Beispiel</th></tr></thead>
+          <tbody>
+            <tr><td>Datenfehler</td><td>ungenaue Eingabe</td><td>Messung mit ±1% Toleranz</td></tr>
+            <tr><td>Modellfehler</td><td>vereinfachte Physik</td><td>Reibung vernachlässigt</td></tr>
+            <tr><td>Diskretisierungsfehler</td><td>Verfahren approximiert</td><td>Trapezregel statt exaktes ∫</td></tr>
+            <tr><td>Rundungsfehler</td><td>endliche Fließkomma-Präzision</td><td>$0.1 + 0.2 \ne 0.3$ in double</td></tr>
+            <tr><td>Abbruchfehler</td><td>Iteration zu früh beendet</td><td>Newton bei Schritt 5 abbrechen</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>Absolut vs. Relativ</h4>
+        <ul>
+          <li>Absoluter Fehler: $|\tilde x - x|$.</li>
+          <li>Relativer Fehler: $|\tilde x - x| / |x|$ (für $x \ne 0$).</li>
+        </ul>
+      </div>
+
+      <div id="ausloeschung">
+        <h3>1.3 Auslöschung</h3>
+        <p>Subtraktion fast gleicher Zahlen vernichtet signifikante Stellen.</p>
+        <div class="example">
+          <span class="example-label">Klassiker</span>
+          <p>$1 - \cos(x)$ für $x \to 0$: $\cos(0.0001) \approx 1 - 5 \cdot 10^{-9}$. In double: $1 - 0.999999995 = 5 \cdot 10^{-9}$, aber nur wenige signifikante Stellen.</p>
+          <p>Umformung: $1 - \cos x = 2 \sin^2(x/2)$. Berechne stattdessen $\sin(x/2)$ → kein Auslöschungs-Verlust.</p>
+        </div>
+        <p>Weitere typische Tricks:</p>
+        <ul>
+          <li>$\sqrt{a + h} - \sqrt a = \dfrac{h}{\sqrt{a+h} + \sqrt a}$ (Konjugierte erweitern).</li>
+          <li>$e^x - 1$ für kleines $x$: <code>expm1(x)</code> (bibliothek) oder Taylor $x + x^2/2 + \dots$.</li>
+        </ul>
+      </div>
+
+      <div id="kondition">
+        <h3>1.4 Konditionszahl</h3>
+        <p>Misst, wie empfindlich der Output auf Eingangsfehler reagiert.</p>
+        <p>Für skalare Funktion $f$ und $x \ne 0, f(x) \ne 0$:</p>
+        $$ \kappa_{\text{rel}}(f, x) = \left|\frac{x f'(x)}{f(x)}\right| $$
+        <p>Für Matrix $A$ regulär:</p>
+        $$ \kappa(A) = \|A\| \cdot \|A^{-1}\|, \quad \kappa_2(A) = \frac{\sigma_1}{\sigma_n} $$
+        <ul>
+          <li>$\kappa \approx 1$: gut konditioniert.</li>
+          <li>$\kappa \approx 10^{16}$: bei double praktisch keine signifikante Stelle mehr verlässlich.</li>
+        </ul>
+      </div>
+
+      <div id="stabilitaet">
+        <h3>1.5 Stabilität</h3>
+        <p>Ein <em>Problem</em> hat eine Konditionszahl. Ein <em>Verfahren</em> ist stabil, wenn es keine zusätzliche Fehlerverstärkung jenseits der natürlichen Kondition einfügt.</p>
+        <p>Beispiel instabilen Verfahrens: Gauß ohne Pivotsuche bei kleinem Diagonalelement — gut konditioniertes LGS, aber das Verfahren versagt.</p>
+      </div>
+
+      <div class="prompt">Gib mir 3 mathematische Ausdrücke (z.B. $1 - \cos x$, $e^x - 1$, $\sqrt{x^2 + 1} - x$). Ich identifiziere, wann sie Auslöschung produzieren, und gebe eine umgeformte numerisch stabile Variante an. Du prüfst die Identität (sind beide Ausdrücke wirklich äquivalent?) und das Auslöschungsverhalten.</div>
+    </section>
+
+    <!-- ===================== 2 LGS ===================== -->
+    <section id="lgs">
+      <h2>2 · Lineare Gleichungssysteme</h2>
+
+      <div id="lgs-direkt">
+        <h3>2.1 Direkte Verfahren</h3>
+        <ul>
+          <li><strong>Gauß mit Spaltenpivot:</strong> $PA = LU$, dann $Ly = Pb, Ux = y$. Aufwand $\frac{2}{3} n^3$.</li>
+          <li><strong>Cholesky:</strong> für SPD-Matrizen, halber Aufwand.</li>
+          <li><strong>QR:</strong> für überbestimmte LGS / Least Squares.</li>
+        </ul>
+      </div>
+
+      <div id="lgs-iter">
+        <h3>2.2 Iterativ — stationäre Verfahren</h3>
+        <p>Splitting $A = M - N$. Iteration: $x_{k+1} = M^{-1}(N x_k + b)$. Konvergenz ⟺ Spektralradius $\rho(M^{-1} N) < 1$.</p>
+
+        <h4>Jacobi-Verfahren</h4>
+        <p>$M = D$ (Diagonalteil von $A$), $N = D - A$.</p>
+        $$ x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j \ne i} a_{ij} x_j^{(k)}\right) $$
+        <p>Alle Komponenten parallel berechenbar.</p>
+
+        <h4>Gauß-Seidel</h4>
+        <p>Verwendet bereits aktualisierte Komponenten innerhalb derselben Iteration:</p>
+        $$ x_i^{(k+1)} = \frac{1}{a_{ii}}\left(b_i - \sum_{j<i} a_{ij} x_j^{(k+1)} - \sum_{j>i} a_{ij} x_j^{(k)}\right) $$
+        <p>Konvergiert meist schneller als Jacobi.</p>
+
+        <h4>SOR (Successive Over-Relaxation)</h4>
+        $$ x_i^{(k+1)} = (1 - \omega) x_i^{(k)} + \omega \cdot x_i^{\text{GS}, (k+1)} $$
+        <p>Relaxationsparameter $\omega \in (0, 2)$. Optimum für 2D-Poisson: $\omega^* = 2 / (1 + \sin(\pi h))$.</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Diagonaldominanz</div>
+          <p>Hinreichend für Konvergenz von Jacobi und Gauß-Seidel: $A$ strikt diagonaldominant, d.h. $|a_{ii}| > \sum_{j \ne i} |a_{ij}|$ für alle $i$.</p>
+        </div>
+      </div>
+
+      <div id="lgs-krylov">
+        <h3>2.3 Krylov-Verfahren</h3>
+        <p>Suchen iterativ in Unterräumen $\mathcal{K}_k = \text{span}\{r_0, Ar_0, A^2 r_0, \dots, A^{k-1} r_0\}$.</p>
+
+        <h4>Conjugate Gradient (CG) für SPD</h4>
+        <pre><code>r₀ = b - Ax₀;  p₀ = r₀
+for k = 0, 1, 2, ...:
+    α_k = (r_k^T r_k) / (p_k^T A p_k)
+    x_{k+1} = x_k + α_k p_k
+    r_{k+1} = r_k - α_k A p_k
+    if ||r_{k+1}|| < tol: break
+    β_k = (r_{k+1}^T r_{k+1}) / (r_k^T r_k)
+    p_{k+1} = r_{k+1} + β_k p_k</code></pre>
+        <p>Konvergiert in höchstens $n$ Schritten exakt. In der Praxis durch <strong>Vorkonditionierung</strong> oft wesentlich schneller.</p>
+
+        <h4>GMRES für allgemeine quadratische Matrizen</h4>
+        <p>Minimiert $\|b - Ax_k\|$ über $\mathcal{K}_k$. Speicher wächst mit Iteration — Restart-Variante (GMRES(m)) für lange Läufe.</p>
+      </div>
+
+      <h3>Stop-Kriterien</h3>
+      <ul>
+        <li>$\|x^{(k+1)} - x^{(k)}\| < \tau$ — Inkrement; problematisch, falls Konvergenz sehr langsam.</li>
+        <li>$\|r^{(k)}\| = \|A x^{(k)} - b\| < \tau \cdot \|b\|$ — Residuum, relativ. <strong>Bevorzugt</strong>, denn unabhängig von Konvergenzrate.</li>
+      </ul>
+
+      <div class="prompt">Löse das LGS $\begin{pmatrix} 10 & 2 & 1 \\ 1 & 5 & 1 \\ 2 & 3 & 10 \end{pmatrix} x = \begin{pmatrix} 7 \\ -8 \\ 6 \end{pmatrix}$ mit Jacobi und Gauß-Seidel je 3 Iterationen, Start $x_0 = 0$. Prüfe vorher Diagonaldominanz. Du kontrollierst Konvergenz und Schritte; ich rechne.</div>
+    </section>
+
+    <!-- ===================== 3 NULLSTELLEN ===================== -->
+    <section id="nullstellen">
+      <h2>3 · Nichtlineare Gleichungen (Nullstellen)</h2>
+
+      <div id="bisektion">
+        <h3>3.1 Bisektion</h3>
+        <p>Voraussetzung: $f$ stetig, $f(a) \cdot f(b) < 0$ (Vorzeichenwechsel).</p>
+        <ol>
+          <li>$m = (a+b)/2$.</li>
+          <li>Wenn $f(a) \cdot f(m) < 0$: setze $b = m$, sonst $a = m$.</li>
+          <li>Wiederhole, bis $b - a < \tau$.</li>
+        </ol>
+        <p><strong>Konvergenzordnung 1</strong> (linear). Halbierung pro Schritt: ca. 3.3 Iterationen pro Dezimalstelle.</p>
+        <p>Garantiert konvergent, sehr robust.</p>
+      </div>
+
+      <div id="newton">
+        <h3>3.2 Newton-Verfahren</h3>
+        $$ x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)} $$
+        <p>Geometrisch: Tangentenschnittpunkt mit der $x$-Achse.</p>
+        <ul>
+          <li>Lokal <strong>quadratisch</strong> konvergent ($|e_{k+1}| \approx c |e_k|^2$).</li>
+          <li>Braucht $f'$.</li>
+          <li>Konvergiert nicht zwingend — kann oszillieren oder gegen falsche Nullstelle laufen.</li>
+        </ul>
+
+        <h4>Mehrdimensionales Newton</h4>
+        $$ x_{k+1} = x_k - J_F(x_k)^{-1} F(x_k) $$
+        <p>Pro Schritt: ein lineares Gleichungssystem $J_F(x_k) \Delta x = -F(x_k)$ lösen.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel — $\sqrt 2$</span>
+          <p>Suche Nullstelle von $f(x) = x^2 - 2$. $f'(x) = 2x$. Iteration: $x_{k+1} = (x_k + 2/x_k)/2$ (Heron-Verfahren).</p>
+          <ul>
+            <li>$x_0 = 1$</li>
+            <li>$x_1 = 1.5$</li>
+            <li>$x_2 = 1.41\overline{6}$</li>
+            <li>$x_3 = 1.41421568627\dots$</li>
+            <li>$x_4 = 1.41421356237\dots$ (exakt $\sqrt 2$ auf 11 Stellen)</li>
+          </ul>
+          <p>Verdoppelung der korrekten Stellen pro Schritt — quadratische Konvergenz sichtbar.</p>
+        </div>
+      </div>
+
+      <div id="sekante">
+        <h3>3.3 Sekanten-Verfahren</h3>
+        $$ x_{k+1} = x_k - f(x_k) \cdot \frac{x_k - x_{k-1}}{f(x_k) - f(x_{k-1})} $$
+        <p>Wie Newton, aber $f'$ wird durch finite Differenz approximiert. Kein $f'$ nötig.</p>
+        <p>Konvergenzordnung $p = (1 + \sqrt 5)/2 \approx 1.618$ — superlinear, aber langsamer als Newton.</p>
+      </div>
+
+      <div id="fixpunkt">
+        <h3>3.4 Fixpunkt-Iteration</h3>
+        <p>$x = g(x)$. Iteration: $x_{k+1} = g(x_k)$.</p>
+        <div class="thm">
+          <span class="thm-label">Banachscher Fixpunktsatz</span>
+          <p>Ist $g$ eine Kontraktion auf $[a, b]$ (d.h. $|g(x) - g(y)| \le L |x - y|$ mit $L < 1$, alternativ $|g'(x)| \le L < 1$), so konvergiert die Iteration von jedem Startwert gegen den eindeutigen Fixpunkt mit Rate $L$.</p>
+        </div>
+        <p>Konvergenzrate ≈ $|g'(x^*)|$. Quadratische Konvergenz, falls $g'(x^*) = 0$ (z.B. Newton ist Fixpunkt-Iteration mit dieser Eigenschaft).</p>
+      </div>
+
+      <div class="prompt">Finde Nullstelle von $f(x) = x e^x - 1$ (Lambert-W-Bezug). Vergleiche Bisektion (Start $[0, 1]$, 5 Iter) und Newton (Start $0.5$, 4 Iter). Tabelle mit Iterierten + Fehler zum wahren Wert $\approx 0.5671$. Erkläre, wo Newton "Beschleunigung" zeigt.</div>
+    </section>
+
+    <!-- ===================== 4 INTERPOLATION ===================== -->
+    <section id="interpolation">
+      <h2>4 · Interpolation</h2>
+
+      <h3>4.1 Polynom-Interpolation</h3>
+      <div class="thm">
+        <span class="thm-label">Satz</span>
+        <p>Zu $n+1$ paarweise verschiedenen Stützstellen $(x_0, y_0), \dots, (x_n, y_n)$ existiert genau ein Polynom $p \in \mathbb{R}[x]$ vom Grad $\le n$ mit $p(x_i) = y_i$.</p>
+      </div>
+
+      <h4>Lagrange-Form</h4>
+      $$ L_i(x) = \prod_{j \ne i} \frac{x - x_j}{x_i - x_j}, \quad p(x) = \sum_{i=0}^n y_i L_i(x) $$
+      <p>$L_i(x_j) = \delta_{ij}$ (Kronecker). Direkte Konstruktion ohne Lösen eines LGS.</p>
+
+      <h4>Newton-Form mit dividierten Differenzen</h4>
+      $$ p(x) = f[x_0] + f[x_0, x_1] (x - x_0) + f[x_0, x_1, x_2] (x - x_0)(x - x_1) + \dots $$
+      <p>Rekursion:</p>
+      $$ f[x_i] = y_i,\quad f[x_i, \dots, x_{i+k}] = \frac{f[x_{i+1}, \dots, x_{i+k}] - f[x_i, \dots, x_{i+k-1}]}{x_{i+k} - x_i} $$
+      <p>Vorteil gegenüber Lagrange: Hinzufügen weiterer Stützstellen ist günstig (kein Neuaufbau).</p>
+
+      <div class="example">
+        <span class="example-label">Beispiel</span>
+        <p>Stützstellen $(0, 1), (1, 2), (2, 5)$.</p>
+        <p>Dividierte Differenzen: $f[0] = 1$, $f[1] = 2$, $f[2] = 5$. $f[0,1] = 1$, $f[1,2] = 3$. $f[0,1,2] = (3 - 1)/2 = 1$.</p>
+        <p>$p(x) = 1 + 1 \cdot x + 1 \cdot x(x-1) = 1 + x + x^2 - x = x^2 + 1$.</p>
+      </div>
+
+      <h3>4.2 Runge-Phänomen</h3>
+      <p>Bei <em>äquidistanten</em> Stützstellen wächst der Interpolationsfehler in der Mitte und an den Rändern stark mit dem Grad. Klassisches Beispiel: $f(x) = 1/(1 + 25 x^2)$ auf $[-1, 1]$.</p>
+      <p>Abhilfen:</p>
+      <ul>
+        <li><strong>Tschebyscheff-Knoten:</strong> $x_k = \cos((2k+1)\pi/(2n+2))$ auf $[-1,1]$ (auf andere Intervalle abbilden). Verteilt Knoten dichter an den Rändern.</li>
+        <li><strong>Splines</strong> niedrigeren Grades statt eines globalen Polynoms.</li>
+      </ul>
+
+      <h3>4.3 Splines</h3>
+      <p>Stückweise Polynome auf den Teilintervallen $[x_i, x_{i+1}]$, an den inneren Knoten differenzierbar verklebt.</p>
+      <ul>
+        <li><strong>Linear Spline:</strong> Geradenstücke, $C^0$.</li>
+        <li><strong>Kubischer Spline:</strong> Polynome 3. Grades, $C^2$ — Standard.
+          <ul>
+            <li>Natürliche RB: $s''(x_0) = s''(x_n) = 0$.</li>
+            <li>Clamped: $s'$ an den Rändern vorgegeben.</li>
+            <li>Periodisch: $s, s', s''$ stimmen an den Rändern überein.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="prompt">Interpoliere $(0, 1), (1, 3), (2, 2), (3, 5)$ in Lagrange- und Newton-Form. Beide müssen das gleiche Polynom liefern. Vergleiche, welche Form für dich rechenwirtschaftlicher war.</div>
+    </section>
+
+    <!-- ===================== 5 DIFF ===================== -->
+    <section id="diff">
+      <h2>5 · Numerische Differentiation</h2>
+
+      <h3>5.1 Differenzenquotienten</h3>
+      <ul>
+        <li><strong>Vorwärts:</strong> $f'(x) \approx \dfrac{f(x+h) - f(x)}{h}$, Fehler $O(h)$.</li>
+        <li><strong>Rückwärts:</strong> $f'(x) \approx \dfrac{f(x) - f(x-h)}{h}$, Fehler $O(h)$.</li>
+        <li><strong>Zentral:</strong> $f'(x) \approx \dfrac{f(x+h) - f(x-h)}{2h}$, Fehler $O(h^2)$.</li>
+        <li><strong>2. Ableitung:</strong> $f''(x) \approx \dfrac{f(x+h) - 2 f(x) + f(x-h)}{h^2}$, Fehler $O(h^2)$.</li>
+      </ul>
+
+      <h3>5.2 Optimales $h$ — Trade-Off</h3>
+      <p>Diskretisierungsfehler $\sim C \cdot h^p$, Rundungsfehler $\sim \epsilon_{\text{mach}} / h$. Optimum bei minimaler Summe:</p>
+      <ul>
+        <li>Vorwärts ($p=1$): $h^* \sim \sqrt{\epsilon} \approx 10^{-8}$.</li>
+        <li>Zentral ($p=2$): $h^* \sim \sqrt[3]{\epsilon} \approx 10^{-5}$.</li>
+      </ul>
+      <p>Daher: <em>zentral</em> ist nicht nur ordnungs-, sondern auch praktisch besser.</p>
+
+      <h3>5.3 Richardson-Extrapolation</h3>
+      <p>Berechne $D(h)$ und $D(h/2)$. Da der führende Fehlerterm bekannt ist (z.B. $h^2$), eliminiere ihn:</p>
+      $$ D_{\text{verbessert}} = D(h/2) + \frac{D(h/2) - D(h)}{3} \quad \text{(bei } O(h^2)\text{-Verfahren)}. $$
+      <p>Ordnung steigt um 2.</p>
+    </section>
+
+    <!-- ===================== 6 QUADRATUR ===================== -->
+    <section id="quadratur">
+      <h2>6 · Numerische Quadratur</h2>
+
+      <h3>6.1 Newton-Cotes-Formeln</h3>
+      <p>Idee: Polynom durch die Stützpunkte legen, exakt integrieren.</p>
+
+      <h4>Trapezregel</h4>
+      $$ \int_a^b f(x) dx \approx \frac{b-a}{2}(f(a) + f(b)) $$
+      <p>Fehler: $-\dfrac{(b-a)^3}{12} f''(\xi)$ für ein $\xi \in [a,b]$. Exakt für lineare $f$.</p>
+
+      <h4>Simpson-Regel</h4>
+      $$ \int_a^b f(x) dx \approx \frac{b-a}{6}\left(f(a) + 4 f\!\left(\frac{a+b}{2}\right) + f(b)\right) $$
+      <p>Fehler: $-\dfrac{(b-a)^5}{2880} f^{(4)}(\xi)$. Exakt für Polynome bis Grad 3 (warum 3? Heuristik: gerade Anzahl plus Symmetrie).</p>
+
+      <h4>Zusammengesetzte Regeln</h4>
+      <p>Intervall in $n$ gleichgroße Teile $[x_i, x_{i+1}]$ teilen, jeweils Trapez/Simpson, addieren.</p>
+      $$ T_n = \frac{h}{2}\left(f(a) + 2\sum_{i=1}^{n-1} f(x_i) + f(b)\right),\; h = (b-a)/n $$
+      $$ S_n = \frac{h}{3}\left(f(a) + 4 \sum_{i \text{ ungerade}} f(x_i) + 2 \sum_{i \text{ gerade}} f(x_i) + f(b)\right) $$
+      <p>Trapez: Fehler $O(h^2)$. Simpson: $O(h^4)$.</p>
+
+      <h3>6.2 Gauss-Quadratur</h3>
+      <p>$\int_{-1}^{1} f(x) dx \approx \sum_{i=1}^n w_i f(x_i)$ mit $x_i$ = Nullstellen des $n$-ten Legendre-Polynoms, $w_i$ entsprechend gewählt. Exakt für Polynome bis Grad $2n - 1$ (höchstmöglich für $n$ Stützstellen).</p>
+      <p>Auf $[a, b]$: Variablensubstitution $x = (b-a)/2 \cdot t + (a+b)/2$.</p>
+
+      <h3>6.3 Adaptive Quadratur</h3>
+      <p>Schätze lokalen Fehler via Vergleich Simpson(h) vs. Simpson(h/2). Verfeinere automatisch, wo der Fehler groß ist.</p>
+
+      <div class="example">
+        <span class="example-label">Beispiel — $\int_0^1 e^x dx$</span>
+        <p>Exakt: $e - 1 \approx 1.71828$.</p>
+        <ul>
+          <li>Trapez ($n=1$): $0.5(1 + e) = 1.85914$, Fehler $\approx 0.14$.</li>
+          <li>Simpson ($n=2$): $\frac{1}{6}(1 + 4 e^{0.5} + e) = 1.71886$, Fehler $\approx 0.0006$.</li>
+          <li>Trapez ($n=4$): $\approx 1.72722$, Fehler $\approx 0.009$.</li>
+          <li>Simpson ($n=4$): $\approx 1.71831$, Fehler $\approx 0.00003$.</li>
+        </ul>
+        <p>Halbierung von $h$ → Trapezfehler 1/4, Simpsonfehler 1/16. ✓ Ordnungsverifikation.</p>
+      </div>
+
+      <div class="prompt">Berechne $\int_0^{\pi} \sin x \,dx = 2$ numerisch mit Trapez ($n = 2, 4, 8$) und Simpson ($n = 2, 4, 8$). Erstelle Tabelle: $n$, Wert, abs. Fehler, Quotient zum vorigen Fehler. Erwartet Faktor 4 (Trapez) und 16 (Simpson). Ich rechne, du kontrollierst.</div>
+    </section>
+
+    <!-- ===================== 7 ODEs ===================== -->
+    <section id="odes">
+      <h2>7 · Anfangswertprobleme (ODEs)</h2>
+      <p>Form: $y'(t) = f(t, y),\; y(t_0) = y_0$.</p>
+
+      <h3>7.1 Explizites Euler-Verfahren</h3>
+      $$ y_{n+1} = y_n + h \cdot f(t_n, y_n) $$
+      <p>Ordnung 1. Sehr einfach, aber bei steifen Problemen instabil — Schrittweite muss extrem klein sein.</p>
+
+      <h4>Stabilität (lineares Modellproblem)</h4>
+      <p>$y' = \lambda y$ mit $\Re(\lambda) < 0$: exakte Lösung klingt ab.</p>
+      <p>Explizites Euler: $y_{n+1} = (1 + h\lambda) y_n$. Stabil ⟺ $|1 + h\lambda| \le 1$.</p>
+      <p>Für reelles $\lambda < 0$: $h \le -2/\lambda$. Bei sehr negativem $\lambda$ (steif) muss $h$ winzig sein.</p>
+
+      <h3>7.2 Implizites Euler</h3>
+      $$ y_{n+1} = y_n + h \cdot f(t_{n+1}, y_{n+1}) $$
+      <p>Pro Schritt: nichtlineare Gleichung in $y_{n+1}$ lösen (Newton).</p>
+      <p><strong>A-stabil:</strong> stabil für jedes $h > 0$ bei $\Re(\lambda) < 0$. Perfekt für steife Systeme.</p>
+
+      <h3>7.3 Heun / verbessertes Euler (Trapezregel)</h3>
+      <p>Prädiktor-Korrektor:</p>
+      $$ \tilde y = y_n + h f(t_n, y_n) $$
+      $$ y_{n+1} = y_n + \frac{h}{2}\bigl(f(t_n, y_n) + f(t_{n+1}, \tilde y)\bigr) $$
+      <p>Ordnung 2.</p>
+
+      <h3>7.4 Runge-Kutta 4 (RK4)</h3>
+      $$ k_1 = f(t_n, y_n) $$
+      $$ k_2 = f(t_n + h/2,\; y_n + (h/2) k_1) $$
+      $$ k_3 = f(t_n + h/2,\; y_n + (h/2) k_2) $$
+      $$ k_4 = f(t_n + h,\;   y_n + h k_3) $$
+      $$ y_{n+1} = y_n + \frac{h}{6}(k_1 + 2 k_2 + 2 k_3 + k_4) $$
+      <p>Ordnung 4. Standard für nicht-steife Probleme. 4 Funktionsauswertungen pro Schritt.</p>
+
+      <h3>7.5 Adaptive Schrittweite</h3>
+      <p>Dormand-Prince (RK4(5) eingebettet): liefert eine Ordnung-4- und eine Ordnung-5-Schätzung pro Schritt. Differenz schätzt den lokalen Fehler → $h$ anpassen.</p>
+
+      <h3>7.6 Steife Probleme</h3>
+      <p>Charakterisiert durch große Spannweite $\max|\lambda_i| / \min|\lambda_i|$ der Eigenwerte der Jacobi-Matrix. Explizite Verfahren erfordern dann winzige $h$ → implizite Verfahren (Trapez, BDF) nutzen.</p>
+
+      <div class="example">
+        <span class="example-label">Beispiel — $y' = -2 y, y(0) = 1$</span>
+        <p>Exakt: $y(t) = e^{-2t}$. $h = 0.1$.</p>
+        <ul>
+          <li>Explizit Euler: $y_1 = 1 + 0.1 \cdot (-2) \cdot 1 = 0.8$. Exakt: $e^{-0.2} \approx 0.8187$. Fehler $0.019$.</li>
+          <li>Heun: $\tilde y = 0.8$, $y_1 = 1 + 0.05(-2 + (-2 \cdot 0.8)) = 0.82$. Fehler $0.001$.</li>
+          <li>RK4: $k_1 = -2$, $k_2 = -2 \cdot 0.9 = -1.8$, $k_3 = -2 \cdot 0.91 = -1.82$, $k_4 = -2 \cdot 0.818 = -1.636$. $y_1 = 1 + (0.1/6)(-2 - 3.6 - 3.64 - 1.636) = 1 - 0.1813 = 0.8187$. Fehler $< 10^{-4}$.</li>
+        </ul>
+      </div>
+
+      <div class="prompt">Löse $y' = y - t^2 + 1, y(0) = 0.5$ auf $[0, 1]$ mit $h = 0.25$. Verwende Euler explizit + RK4. Vergleiche mit exakter Lösung $y(t) = (t+1)^2 - 0.5 e^t$. Erstelle Tabelle: $t, y_\text{Euler}, y_\text{RK4}, y_\text{exakt}$, Fehler. Du prüfst die RK4-Stufen.</div>
+    </section>
+
+    <!-- ===================== 8 EW NUMERISCH ===================== -->
+    <section id="eig-num">
+      <h2>8 · Eigenwerte numerisch</h2>
+
+      <h3>8.1 Potenzmethode</h3>
+      <p>Konvergiert gegen Eigenvektor zum betragsgrößten EW (sofern eindeutig):</p>
+      $$ x_{k+1} = \frac{A x_k}{\|A x_k\|},\quad \lambda_1 \approx \frac{x_k^\top A x_k}{x_k^\top x_k}\;\text{(Rayleigh-Quotient)} $$
+      <p>Konvergenzrate $|\lambda_2 / \lambda_1|$.</p>
+
+      <h3>8.2 Inverse Iteration mit Shift</h3>
+      $$ (A - \mu I) x_{k+1} = x_k,\quad x_{k+1} \text{ normieren} $$
+      <p>Konvergiert gegen Eigenvektor zu dem EW, der am nächsten an $\mu$ liegt. Sehr schnell bei guter $\mu$-Schätzung.</p>
+      <p>Pro Schritt: LGS lösen — LU-Zerlegung von $(A - \mu I)$ einmal vorab spart Aufwand.</p>
+
+      <h3>8.3 QR-Iteration</h3>
+      <p>Standardalgorithmus für alle EW:</p>
+      <pre><code>A_0 = A
+for k = 0, 1, 2, ...:
+    A_k = Q_k R_k     # QR-Zerlegung
+    A_{k+1} = R_k Q_k</code></pre>
+      <p>$A_k$ konvergiert gegen Schur-Form (obere Dreiecksmatrix, EW auf Diagonale). Mit Shifts und Hessenberg-Reduktion superlinear pro Eigenwert.</p>
+
+      <h3>8.4 Krylov: Lanczos / Arnoldi</h3>
+      <p>Für sehr große, dünn besetzte Matrizen. Approximiert nur einige (extremale) EW iterativ.</p>
+    </section>
+
+    <!-- ===================== 10 CHEATSHEET ===================== -->
+    <section id="cheatsheet" class="cheatsheet">
+      <h2>9 · Cheatsheet</h2>
+      <pre><code>FLOAT
+  ε_mach (double) ≈ 2.22 · 10⁻¹⁶
+  Auslöschung: a-b mit a≈b vermeiden (umformen, Konjugierte)
+
+KONDITION & STABIL
+  κ_rel(f, x) = |x f'(x) / f(x)|
+  κ(A)        = ||A|| · ||A⁻¹||  = σ₁/σ_n (in 2-Norm)
+  Stabilität ≠ Kondition. Bsp: Gauß ohne Pivot
+
+LGS DIREKT
+  LU mit Pivot:   PA = LU,  2n³/3
+  Cholesky:       n³/3
+  QR:             stabil für Least Squares
+
+LGS ITERATIV
+  Konv. ⇔ ρ(M⁻¹N) &lt; 1
+  Diagonaldom. genügt für Jacobi/GS
+  CG (SPD): in höchstens n Schritten exakt
+  Stop: ||r||/||b|| &lt; τ  (bevorzugt vor Inkrement)
+
+NULLSTELLEN
+  Bisektion: linear, garantiert
+  Newton:    quadr., x ← x - f/f'
+  Sekante:   superlin. (1.618)
+  Fixpunkt:  |g'(x*)| &lt; 1 nötig
+
+INTERPOL
+  Lagrange:   L_i(x) = Π (x - x_j)/(x_i - x_j)
+  Newton:     mit dividierten Differenzen, erweiterbar
+  Runge:      Tschebyscheff-Knoten oder Splines
+  Spline:     kubisch C², natürlich vs. clamped
+
+NUM DIFF
+  Vorw./Rück.:  O(h)
+  Zentral:      O(h²)    f''-Approx: O(h²) ebenfalls
+  h*_zentral ≈ ∛ε ≈ 10⁻⁵
+  Richardson: D(h/2) + (D(h/2) - D(h))/3   bei O(h²)
+
+QUADRATUR
+  Trapez:    Fehler -(b-a)³/12 · f''   → O(h²) zusammenges.
+  Simpson:   Fehler -(b-a)⁵/2880 · f⁽⁴⁾ → O(h⁴) zusammenges.
+  Gauss(n):  exakt für Grad ≤ 2n-1
+
+ODE
+  Euler exp:   ord 1.   stabil ⇔ |1 + hλ| ≤ 1
+  Euler imp:   ord 1.   A-stabil (jedes h)
+  Heun:        ord 2
+  RK4:         ord 4, 4 f-Auswertungen / Schritt
+  steif:       implizit nötig (BDF, Trapez)
+
+EW NUMERISCH
+  Potenz: λ₁ betragsgrößter.  Rayleigh: x'Ax / x'x
+  Inv.Iter. mit Shift: → EW nahe μ
+  QR-Iter: → Schur-Form, alle EW</code></pre>
+    </section>
+
+    <!-- ===================== 11 DRILLPLAN ===================== -->
+    <section id="drillplan">
+      <h2>10 · Drillplan</h2>
+      <ol>
+        <li><strong>Tag 1 — Fehler &amp; LGS:</strong> 3 Auslöschungs-Aufgaben umformen. Jacobi/GS auf einem 3x3-LGS.</li>
+        <li><strong>Tag 2 — Nullstellen &amp; Interpolation:</strong> Newton mit 4 Iterationen + Ordnungsbeweis. Lagrange + Newton-Polynom rechnen.</li>
+        <li><strong>Tag 3 — Quadratur &amp; ODE:</strong> Trapez/Simpson-Konvergenz an einem konkreten Integral. RK4 ein Schritt + Stabilität für $y' = -100y$.</li>
+      </ol>
+
+      <div class="prompt">Du bist mein Numerik-Coach. Drillen wir in 4 Sessions:
+Session 1 — Fehleranalyse: 3 Aufgaben Auslöschung + κ-Schätzung.
+Session 2 — Nullstellen: Newton mit 5 Iterationen, Sekante 5 Iter., Bisektion 5 Iter., Konvergenzraten empirisch vergleichen.
+Session 3 — Quadratur: Trapez vs. Simpson auf $\int_0^1 \frac{1}{1+x^2} dx = \pi/4$. Ordnungsverhalten zeigen.
+Session 4 — ODE: Euler explizit/implizit + RK4 auf $y' = -10y$, $h = 0.05$ und $h = 0.3$ — wann explodiert was?
+Pro Session korrigierst du hart und legst Wert auf Ordnungsargumente.</div>
+    </section>
+
+    <footer>
+      Lernzettel · Numerische Methoden · WDS125 NM (SCM)
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

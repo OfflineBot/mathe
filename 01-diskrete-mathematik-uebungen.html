@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übungen — Diskrete Mathematik · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="01-diskrete-mathematik.html">← Theorie</a>
+    <h1>Übungen DM</h1>
+    <p class="sub">Diskrete Mathematik · RADM</p>
+
+    <ul class="toc">
+      <li><a href="#logik">1 · Aussagenlogik</a></li>
+      <li><a href="#mengen">2 · Mengen, Relationen, Abb.</a></li>
+      <li><a href="#boolesche">3 · Boolesche Algebra</a></li>
+      <li><a href="#graphen">4 · Graphen</a></li>
+      <li><a href="#kombinatorik">5 · Kombinatorik</a></li>
+      <li><a href="#klausur">6 · Klausur-Simulation</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Übungen</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik-uebungen.html" class="current">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren-uebungen.html">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra-uebungen.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik-uebungen.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2-uebungen.html">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Übungen — Diskrete Mathematik</h1>
+      <p class="tagline">22 Klausuraufgaben mit ausführlicher Lösung · gruppiert nach Theorie-Kapiteln</p>
+      <p class="meta">
+        <span>Theorie: <a href="01-diskrete-mathematik.html">01-diskrete-mathematik.html</a></span>
+        <span>Pro Aufgabe: erst selbst rechnen, dann Lösung aufklappen</span>
+      </p>
+    </header>
+
+    <!-- =============== 1 LOGIK =============== -->
+    <section id="logik">
+      <h2>1 · Aussagenlogik</h2>
+      <p>→ Theorie: <a href="01-diskrete-mathematik.html#logik">Aussagenlogik (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.1 — Wahrheitstabelle + DNF</summary>
+        <p>Bestimme die Wahrheitstabelle von $f(A,B,C) = (A \Rightarrow B) \wedge (B \vee \neg C)$ und gib die DNF an.</p>
+        <p><strong>Lösung:</strong> 8 Zeilen, Ergebnis 1 in den Zeilen $(0,0,0), (0,1,0), (0,1,1), (1,1,0), (1,1,1)$.</p>
+        <p>DNF: $(\neg A \wedge \neg B \wedge \neg C) \vee (\neg A \wedge B \wedge \neg C) \vee (\neg A \wedge B \wedge C) \vee (A \wedge B \wedge \neg C) \vee (A \wedge B \wedge C)$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.2 — Quantor-Negation</summary>
+        <p>Negiere und sprachlich übersetzen: "Für jede natürliche Zahl $n$ existiert eine Primzahl $p > n$."</p>
+        <p><strong>Lösung:</strong> $\neg (\forall n \in \mathbb{N} \, \exists p : (p \text{ prim} \wedge p > n)) \equiv \exists n \in \mathbb{N} : \forall p : (\neg(p \text{ prim}) \vee p \le n)$.</p>
+        <p>Sprachlich: "Es gibt eine natürliche Zahl $n$, sodass keine Primzahl $> n$ existiert" — d.h. "die Primzahlen sind endlich". (Das ist falsch, Euklid.)</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.3 — Tautologie nachweisen</summary>
+        <p>Zeige per Wahrheitstabelle, dass $\bigl((A \Rightarrow B) \wedge (B \Rightarrow C)\bigr) \Rightarrow (A \Rightarrow C)$ eine Tautologie ist (Transitivität der Implikation).</p>
+        <p><strong>Lösung:</strong> 8 Zeilen. Strategie: nur die Zeilen prüfen, wo die Voraussetzung $(A\Rightarrow B) \wedge (B \Rightarrow C)$ wahr ist; dort muss $A \Rightarrow C$ ebenfalls wahr sein.</p>
+        <p>$(A \Rightarrow B) \wedge (B \Rightarrow C) = 1$ in den Zeilen: $(A,B,C) \in \{(0,0,0),(0,0,1),(0,1,1),(1,1,1)\}$. In all diesen ist $A \Rightarrow C = 1$ ✓. Damit ist die Gesamt-Implikation in allen 8 Zeilen wahr.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.4 — De Morgan + Distributiv</summary>
+        <p>Vereinfache $\neg((A \vee B) \wedge \neg(A \wedge C))$ so weit wie möglich.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\neg((A \vee B) \wedge \neg(A \wedge C)) \stackrel{\text{DeM}}{=} \neg(A \vee B) \vee (A \wedge C) = (\neg A \wedge \neg B) \vee (A \wedge C)$. Das ist die kürzeste DNF.</p>
+      </details>
+    </section>
+
+    <!-- =============== 2 MENGEN =============== -->
+    <section id="mengen">
+      <h2>2 · Mengen, Relationen, Abbildungen</h2>
+      <p>→ Theorie: <a href="01-diskrete-mathematik.html#mengen">Mengen, Relationen, Abbildungen (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.1 — Mengenidentität beweisen</summary>
+        <p>Beweise: $A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$x \in A \setminus (B \cup C) \Leftrightarrow x \in A \wedge \neg(x \in B \vee x \in C) \Leftrightarrow x \in A \wedge (x \notin B \wedge x \notin C) \Leftrightarrow (x \in A \wedge x \notin B) \wedge (x \in A \wedge x \notin C) \Leftrightarrow x \in (A \setminus B) \cap (A \setminus C)$. ✓</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.2 — Inklusion-Exklusion</summary>
+        <p>In einer Umfrage unter 100 Personen mögen 60 Schokolade, 50 Vanille, 35 Erdbeer, 25 Schoko+Vanille, 15 Schoko+Erdbeer, 10 Vanille+Erdbeer, 5 alle drei. Wie viele mögen mindestens eines? Wie viele mögen keines?</p>
+        <p><strong>Lösung:</strong> $|S \cup V \cup E| = 60 + 50 + 35 - 25 - 15 - 10 + 5 = 100$.</p>
+        <p>Mindestens eines: $100$. Keines: $100 - 100 = 0$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.3 — Relation klassifizieren</summary>
+        <p>Sei $R$ auf $\mathbb{Z}$: $a R b :\Leftrightarrow a^2 = b^2$. Welche Eigenschaften (refl, sym, antisym, trans) gelten? Ist $R$ Äquivalenzrelation?</p>
+        <p><strong>Lösung:</strong></p>
+        <ul>
+          <li>refl: $a^2 = a^2$ ✓</li>
+          <li>sym: $a^2 = b^2 \Rightarrow b^2 = a^2$ ✓</li>
+          <li>antisym: $1^2 = (-1)^2$ und $(-1)^2 = 1^2$, aber $1 \ne -1$. ✗</li>
+          <li>trans: $a^2 = b^2$ und $b^2 = c^2$ ⟹ $a^2 = c^2$ ✓</li>
+        </ul>
+        <p>Äquivalenzrelation (refl + sym + trans). Klassen: $[a] = \{a, -a\}$. Quotientenmenge: $\{[0], [1], [2], [3], \dots\} \cong \mathbb{Z}_{\ge 0}$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.4 — Eigenschaften von $f(x) = x^2$ auf $\mathbb{Z}$</summary>
+        <p>$f: \mathbb{Z} \to \mathbb{Z}, f(x) = x^2$. Injektiv? Surjektiv?</p>
+        <p><strong>Lösung:</strong> Nicht injektiv ($f(1) = f(-1) = 1$). Nicht surjektiv (z.B. $-1$ wird nicht getroffen, auch $2$ nicht). Bei eingeschränktem Definitionsbereich $\mathbb{Z}_{\ge 0}$ injektiv, bei eingeschränkter Zielmenge $\{0, 1, 4, 9, \dots\}$ surjektiv.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.5 — Funktion klassifizieren</summary>
+        <p>Sei $f: \mathbb{R} \to \mathbb{R}, f(x) = x^3 - x$. Injektiv? Surjektiv? Bijektiv?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Surjektiv: $f$ ist stetig, $f(-\infty) = -\infty, f(+\infty) = +\infty$, Zwischenwertsatz ⟹ jeder Wert wird erreicht ✓.</p>
+        <p>Injektiv: $f(0) = 0, f(1) = 0, f(-1) = 0$ — drei Argumente mit gleichem Bild ✗.</p>
+        <p>Nicht bijektiv. Auf $[1, \infty)$ wäre $f$ strikt monoton wachsend (denn $f'(x) = 3x^2 - 1 > 0$ für $|x| > 1/\sqrt 3$), also dort injektiv.</p>
+      </details>
+    </section>
+
+    <!-- =============== 3 BOOLESCHE =============== -->
+    <section id="boolesche">
+      <h2>3 · Boolesche Algebra &amp; KV-Diagramme</h2>
+      <p>→ Theorie: <a href="01-diskrete-mathematik.html#boolesche">Boolesche Algebra (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 3.1 — KV-Minimierung 4 Variablen</summary>
+        <p>$f(a,b,c,d) = 1$ in den Zeilen mit Dezimaldarstellung $\{0, 2, 5, 7, 8, 10, 13, 15\}$. Minimiere via KV.</p>
+        <p><strong>Lösung:</strong> Indices als $abcd$ binär — paarweise unterscheiden sie sich genau im Bit $b$ und $d$. Eine Analyse zeigt: $f = 1$ genau dann wenn $b = d$, also $f = (b \wedge d) \vee (\neg b \wedge \neg d) = b \Leftrightarrow d$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 3.2 — KV-Minimierung "alle ungerade"</summary>
+        <p>$f(a,b,c,d) = 1$ in Zeilen $\{1, 3, 5, 7, 9, 11, 13, 15\}$ (Dezimalindex). Minimiere.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Beobachtung: alle Indices sind ungerade, d.h. das niederwertigste Bit $d = 1$.</p>
+        <p>Also $f = d$. Das ist eine simple aber typische Klausur-Falle: KV zeigt vollständige $d=1$-Spalte als großer 8er-Block. Minimale Form: $f = d$.</p>
+      </details>
+    </section>
+
+    <!-- =============== 4 GRAPHEN =============== -->
+    <section id="graphen">
+      <h2>4 · Graphentheorie</h2>
+      <p>→ Theorie: <a href="01-diskrete-mathematik.html#graphen">Graphentheorie (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.1 — Eulerkreis K_5</summary>
+        <p>Hat der Graph $K_5$ (vollständig auf 5 Knoten) einen Eulerkreis?</p>
+        <p><strong>Lösung:</strong> Jeder Knoten hat Grad 4 (gerade), und $K_5$ ist zusammenhängend. → Ja, Eulerkreis existiert.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.2 — Eulerkreis/Eulerpfad-Test</summary>
+        <p>Graph: Knoten $\{1,2,3,4,5,6\}$, Kanten $\{12, 13, 14, 23, 25, 34, 35, 36, 45, 46, 56\}$. Hat er Eulerkreis? Eulerpfad?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Grade: $\deg(1) = 3, \deg(2) = 3, \deg(3) = 5, \deg(4) = 4, \deg(5) = 4, \deg(6) = 3$.</p>
+        <p>Ungerade Grade: 1, 2, 3, 6 — vier ungerade Knoten.</p>
+        <p>Eulerkreis: braucht alle Grade gerade ⟹ ✗.</p>
+        <p>Eulerpfad: braucht genau zwei ungerade Knoten ⟹ ✗ (hier vier).</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.3 — Kruskal MST klein</summary>
+        <p>Graph: $A-B$ (1), $A-C$ (5), $B-C$ (3), $B-D$ (4), $C-D$ (2). Finde MST mit Kruskal.</p>
+        <p><strong>Lösung:</strong> Sortiert: $AB(1), CD(2), BC(3), BD(4), AC(5)$. Nimm $AB, CD$ (verschiedene Komponenten), dann $BC$ (verbindet $\{A,B\}$ mit $\{C,D\}$). Stop bei 3 Kanten (= $|V|-1$). MST-Gewicht: $1+2+3 = 6$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.4 — Kruskal MST groß</summary>
+        <p>Kanten (Gewicht): AB(7), AC(8), BC(3), BD(6), CD(4), CE(5), DE(2). Bestimme MST.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Sortiert: DE(2), BC(3), CD(4), CE(5), BD(6), AB(7), AC(8).</p>
+        <ol>
+          <li>DE(2): nimm. {A}, {B}, {C}, {D,E}.</li>
+          <li>BC(3): nimm. {A}, {B,C}, {D,E}.</li>
+          <li>CD(4): nimm (verbindet beide Komponenten). {A}, {B,C,D,E}.</li>
+          <li>CE(5): Kreis. Skip.</li>
+          <li>BD(6): Kreis. Skip.</li>
+          <li>AB(7): nimm. {A,B,C,D,E}. STOP.</li>
+        </ol>
+        <p>MST: $\{DE, BC, CD, AB\}$, Gewichtssumme $2+3+4+7 = 16$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.5 — Dijkstra Schritt-für-Schritt</summary>
+        <p>Gewichteter Graph: Knoten $\{1, 2, 3, 4, 5\}$. Kanten (ungerichtet): 1-2(7), 1-3(9), 1-5(14), 2-3(10), 2-4(15), 3-4(11), 3-5(2), 4-5(9). Kürzeste Distanz von 1 zu 4.</p>
+        <p><strong>Lösung:</strong></p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Iter</th><th>besucht</th><th>$d[1]$</th><th>$d[2]$</th><th>$d[3]$</th><th>$d[4]$</th><th>$d[5]$</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>{}</td><td>0</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td></tr>
+            <tr><td>1: visit 1</td><td>{1}</td><td>0</td><td>7</td><td>9</td><td>∞</td><td>14</td></tr>
+            <tr><td>2: visit 2 (min=7)</td><td>{1,2}</td><td>0</td><td>7</td><td>9</td><td>22</td><td>14</td></tr>
+            <tr><td>3: visit 3 (min=9)</td><td>{1,2,3}</td><td>0</td><td>7</td><td>9</td><td>20</td><td>11</td></tr>
+            <tr><td>4: visit 5 (min=11)</td><td>{1,2,3,5}</td><td>0</td><td>7</td><td>9</td><td>20</td><td>11</td></tr>
+            <tr><td>5: visit 4</td><td>fertig</td><td>0</td><td>7</td><td>9</td><td>20</td><td>11</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Kürzester Pfad $1 \to 4$: Länge 20 via $1 \to 3 \to 4$ (9+11=20) oder $1 \to 3 \to 5 \to 4$ (9+2+9=20).</p>
+      </details>
+    </section>
+
+    <!-- =============== 5 KOMBINATORIK =============== -->
+    <section id="kombinatorik">
+      <h2>5 · Kombinatorik</h2>
+      <p>→ Theorie: <a href="01-diskrete-mathematik.html#kombinatorik">Kombinatorik (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.1 — Anagramme von MISSISSIPPI</summary>
+        <p>Wie viele Anagramme hat das Wort "MISSISSIPPI"?</p>
+        <p><strong>Lösung:</strong> 11 Buchstaben: M (1), I (4), S (4), P (2). Anzahl = $\dfrac{11!}{1! \cdot 4! \cdot 4! \cdot 2!} = \dfrac{39\,916\,800}{1152} = 34\,650$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.2 — Permutationen mit Klassen</summary>
+        <p>Wie viele verschiedene 8-Buchstaben-Wörter lassen sich aus "BANANEN" + ein zusätzliches "B" bilden? (Also Buchstaben: B,B,A,N,A,N,E,N.)</p>
+        <p><strong>Lösung:</strong> 8 Buchstaben: B×2, A×2, N×3, E×1.</p>
+        <p>$\dfrac{8!}{2! \cdot 2! \cdot 3! \cdot 1!} = \dfrac{40\,320}{4 \cdot 6} = \dfrac{40\,320}{24} = 1680$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.3 — Modellwahl Geheimcodes</summary>
+        <p>Wie viele 4-stellige Geheimcodes gibt es, wenn jede Ziffer 0–9 verwendet werden darf und Wiederholungen erlaubt sind?</p>
+        <p><strong>Lösung:</strong> Geordnet mit Wiederholung: $10^4 = 10\,000$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.4 — Komitee mit/ohne Vorsitzendem</summary>
+        <p>Wie viele Möglichkeiten gibt es, aus 20 Studierenden ein Komitee aus 5 zu wählen? Und wie viele, wenn das Komitee einen Vorsitzenden hat (geordnete Rolle)?</p>
+        <p><strong>Lösung:</strong></p>
+        <ul>
+          <li>Komitee ungeordnet: $\binom{20}{5} = \dfrac{20!}{5! \cdot 15!} = 15\,504$.</li>
+          <li>Mit Vorsitzendem: $20 \cdot \binom{19}{4} = 20 \cdot 3\,876 = 77\,520$. (Oder: $\binom{20}{5} \cdot 5 = 77\,520$.)</li>
+        </ul>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.5 — Binomischer Lehrsatz Koeffizient</summary>
+        <p>Bestimme den Koeffizienten von $x^4$ in $(2x - 3)^7$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$(2x - 3)^7 = \sum_{k=0}^7 \binom{7}{k} (2x)^k (-3)^{7-k}$.</p>
+        <p>Term mit $x^4$: $k = 4$. Koeffizient: $\binom{7}{4} \cdot 2^4 \cdot (-3)^3 = 35 \cdot 16 \cdot (-27) = -15\,120$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.6 — Schubfachprinzip teilerfremd</summary>
+        <p>Zeige: unter 51 ausgewählten Zahlen aus $\{1, 2, \dots, 100\}$ gibt es zwei, die teilerfremd sind.</p>
+        <p><strong>Lösung:</strong> Schiebe Zahlen in 50 Schubfächer $\{1,2\}, \{3,4\}, \dots, \{99,100\}$. Zwei Zahlen im gleichen Fach sind aufeinanderfolgende natürliche Zahlen — die sind immer teilerfremd ($\gcd(n, n+1) = 1$).</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.7 — Schubfachprinzip mod 5</summary>
+        <p>Zeige: unter beliebigen 6 ganzen Zahlen gibt es immer zwei, deren Differenz durch 5 teilbar ist.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Es gibt nur 5 Restklassen modulo 5: $\{0, 1, 2, 3, 4\}$. Bei 6 Zahlen müssen nach dem Schubfachprinzip mindestens 2 Zahlen in derselben Restklasse liegen. Ihre Differenz ist dann durch 5 teilbar. ✓</p>
+      </details>
+    </section>
+
+    <!-- =============== 6 KLAUSUR-SIMULATION =============== -->
+    <section id="klausur">
+      <h2>6 · Klausur-Simulation mit Claude Code</h2>
+      <p>Wenn du die obigen 22 Aufgaben kannst, ist die Klausur Routine. Nutze diesen Prompt für eine Trockenübung:</p>
+
+      <div class="prompt">Du bist mein DM-Prüfer für die DHBW WDS125. Stelle mir eine 90-Minuten-Klausur mit 7 Aufgaben gemischt:
+1. Logik (Wahrheitstabelle + Quantor-Negation) — 10 P
+2. Mengen (Inklusion-Exklusion + Identität beweisen) — 10 P
+3. Relation klassifizieren (refl/sym/antisym/trans/Äquivalenz) — 10 P
+4. KV-Diagramm 4 Vars minimieren — 10 P
+5. Dijkstra auf 6-Knoten-Graph mit Tabelle — 10 P
+6. Permutation mit Klassen — 5 P
+7. Beweis per Schubfach — 5 P
+
+Stelle zuerst NUR die Aufgaben. Ich rechne. Du benotest am Ende hart (Punkteabzug für formale Schludrigkeit, fehlende Begründungen). Note 1.0–5.0 + Top-3-Schwachpunkte.</div>
+
+      <div class="prompt">Drillsession: nimm Aufgaben 1.1, 2.3, 4.5 aus dieser Übungsseite. Stelle sie mir mit kleinen Variationen erneut (andere Zahlen / andere Graphenstruktur). Ich rechne, du korrigierst hart.</div>
+    </section>
+
+    <footer>
+      Übungen · Diskrete Mathematik · WDS125 RADM (ZAM) ·
+      <a href="01-diskrete-mathematik.html">zurück zur Theorie</a>
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

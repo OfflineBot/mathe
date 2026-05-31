@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimierungsverfahren · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="index.html">← Übersicht</a>
+    <h1>Optimierungsverfahren</h1>
+    <p class="sub">OV · ZAM</p>
+
+        <a class="back" href="02-optimierungsverfahren-uebungen.html" style="color: var(--accent-2); margin-bottom: 1rem; display: inline-block;">→ Übungen</a>
+    <ul class="toc">
+      <li><a href="#ueberblick">Überblick</a></li>
+      <li><a href="#grundlagen">1 · Grundlagen</a>
+        <ul class="sub-toc">
+          <li><a href="#problemstellung">1.1 Problemstellung</a></li>
+          <li><a href="#klassifikation">1.2 Klassifikation</a></li>
+          <li><a href="#konvexitaet">1.3 Konvexität</a></li>
+          <li><a href="#optimalitaet">1.4 Optimalitätsbedingungen</a></li>
+        </ul>
+      </li>
+      <li><a href="#lp">2 · Lineare Optimierung</a>
+        <ul class="sub-toc">
+          <li><a href="#lp-standard">2.1 Standardform</a></li>
+          <li><a href="#lp-geometrie">2.2 Geometrie</a></li>
+          <li><a href="#simplex">2.3 Simplex</a></li>
+          <li><a href="#dualitaet">2.4 Dualität</a></li>
+        </ul>
+      </li>
+      <li><a href="#nlp">3 · Nichtlineare Optimierung</a>
+        <ul class="sub-toc">
+          <li><a href="#nlp-1d">3.1 Eindimensional</a></li>
+          <li><a href="#gd">3.2 Gradientenabstieg</a></li>
+          <li><a href="#newton-nlp">3.3 Newton / Quasi-Newton</a></li>
+          <li><a href="#kkt">3.4 Lagrange & KKT</a></li>
+          <li><a href="#penalty">3.5 Strafverfahren</a></li>
+        </ul>
+      </li>
+      <li><a href="#gradfrei">4 · Gradientenfreie Verfahren</a></li>
+      <li><a href="#meta">5 · Metaheuristiken</a>
+        <ul class="sub-toc">
+          <li><a href="#sa">5.1 Simulated Annealing</a></li>
+          <li><a href="#ga">5.2 Genetische Algorithmen</a></li>
+          <li><a href="#pso">5.3 PSO</a></li>
+          <li><a href="#aco">5.4 ACO</a></li>
+        </ul>
+      </li>
+      <li><a href="#mehrziel">6 · Mehrzieloptimierung</a></li>
+      <li><a href="#wann">7 · Wann nutze ich was?</a></li>
+      <li><a href="#cheatsheet">8 · Cheatsheet</a></li>
+      <li><a href="#drillplan">9 · Drillplan</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Fächer</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik.html">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren.html" class="current">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2.html">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Optimierungsverfahren</h1>
+      <p class="tagline">LP & Simplex · KKT · Newton · gradientenfrei · Metaheuristiken · Mehrziel</p>
+      <p class="meta"><span>Moodle: OV-01 bis OV-07</span><span>Übungsklausur inkl. Lösung</span></p>
+    </header>
+
+    <div class="callout callout-info" style="margin-bottom: 2rem;">
+      <div class="callout-title">Übungen</div>
+      <p>Alle Klausur-Übungsaufgaben mit ausführlichen Lösungen findest du in der Begleitseite:
+      <a href="02-optimierungsverfahren-uebungen.html"><strong>Übungen — Optimierungsverfahren</strong></a>.</p>
+    </div>
+
+    <section id="ueberblick">
+      <h2>Überblick</h2>
+      <p>Du suchst $x^* \in X$, das eine Zielfunktion $f$ minimiert oder maximiert — eventuell unter Nebenbedingungen. Die Verfahren unterscheiden sich nach: Linearität, Stetigkeit, Differenzierbarkeit, Konvexität, Zahl der Ziele, ob diskret oder kontinuierlich.</p>
+      <div class="callout callout-tip">
+        <div class="callout-title">Was die Klausur prüft</div>
+        <ul>
+          <li>LP grafisch in 2D + Simplex-Tableau für ein kleines LP.</li>
+          <li>KKT-Bedingungen in einem 2D-NLP mit einer Ungleichungs-NB.</li>
+          <li>Konvexitäts-Begriffe und Schluss "lokal = global".</li>
+          <li>Eine Metaheuristik beschreiben (Pseudocode, Stop-Kriterium, Parameter).</li>
+          <li>Pareto-Dominanz auf einer Tabelle und Skalarisierungs-Limitation bei nicht-konvexer Front.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== 1 GRUNDLAGEN ===================== -->
+    <section id="grundlagen">
+      <h2>1 · Grundlagen</h2>
+
+      <div id="problemstellung">
+        <h3>1.1 Allgemeines Optimierungsproblem</h3>
+        <div class="def">
+          <span class="def-label">Standardform</span>
+          $$ \min_{x \in X} f(x) \quad \text{u.d.N.} \quad g_i(x) \le 0,\; i = 1, \dots, m,\quad h_j(x) = 0,\; j = 1, \dots, p $$
+          <ul>
+            <li>$f: \mathbb{R}^n \to \mathbb{R}$ — Zielfunktion</li>
+            <li>$g_i$ — Ungleichungsnebenbedingungen</li>
+            <li>$h_j$ — Gleichungsnebenbedingungen</li>
+            <li><strong>Zulässige Menge:</strong> $\mathcal{F} = \{x \in X : g_i(x) \le 0, h_j(x) = 0\}$.</li>
+          </ul>
+        </div>
+        <p>Maximierung lässt sich immer auf Minimierung reduzieren: $\max f \equiv \min (-f)$ mit demselben Optimalpunkt $x^*$. Vorzeichen am Funktionswert nicht vergessen!</p>
+      </div>
+
+      <div id="klassifikation">
+        <h3>1.2 Klassifikation</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kategorie</th><th>Eigenschaft</th><th>Beispiel-Verfahren</th></tr></thead>
+          <tbody>
+            <tr><td>LP</td><td>$f, g, h$ alle linear</td><td>Simplex, Inneres Punkt</td></tr>
+            <tr><td>QP</td><td>$f$ quadratisch, $g/h$ linear</td><td>Aktive-Mengen-Methode</td></tr>
+            <tr><td>NLP</td><td>mind. eine Funktion nichtlinear</td><td>SQP, Newton</td></tr>
+            <tr><td>Konvex</td><td>$f$ konvex auf konv. $\mathcal F$</td><td>jedes lokale = global</td></tr>
+            <tr><td>Glatt</td><td>$f \in C^1$ (mindestens)</td><td>Gradientenmethoden</td></tr>
+            <tr><td>Nichtglatt</td><td>Knicke, Subgradient</td><td>Subgradient-Verfahren</td></tr>
+            <tr><td>Diskret / MIP</td><td>$X \subseteq \mathbb{Z}^n$</td><td>Branch &amp; Bound, Heuristik</td></tr>
+            <tr><td>Stochastisch</td><td>Zufalls-Inputs</td><td>SAA, Stoch. Gradient</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div id="konvexitaet">
+        <h3>1.3 Konvexität</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>Eine Menge $C \subseteq \mathbb{R}^n$ ist <strong>konvex</strong>, wenn $\forall x, y \in C,\, \lambda \in [0,1]: \lambda x + (1-\lambda) y \in C$. Anschaulich: Verbindungsstrecke jedes Paares bleibt in $C$.</p>
+          <p>Eine Funktion $f: C \to \mathbb{R}$ auf konvexem $C$ ist <strong>konvex</strong>, wenn
+            $$ f(\lambda x + (1-\lambda) y) \le \lambda f(x) + (1-\lambda) f(y). $$
+          Strikt konvex bei "$<$" für $x \ne y$, $\lambda \in (0,1)$.</p>
+        </div>
+
+        <div class="thm">
+          <span class="thm-label">Hauptsatz</span>
+          <p>Für ein <em>konvexes</em> Optimierungsproblem ($f$ konvex, $\mathcal{F}$ konvex) gilt: <strong>jedes lokale Minimum ist auch globales Minimum</strong>. Bei strikt konvexem $f$ ist das Minimum eindeutig.</p>
+        </div>
+
+        <h4>Kriterien für Konvexität</h4>
+        <ul>
+          <li>$f \in C^2$: $f$ konvex ⟺ Hessematrix $\nabla^2 f(x) \succeq 0$ (positiv semidefinit) für alle $x$. Strikt konvex bei $\succ 0$.</li>
+          <li>Summe konvexer Funktionen ist konvex.</li>
+          <li>Max endlich vieler konvexer Funktionen ist konvex.</li>
+          <li>$f$ konvex, $g$ affin → $f \circ g$ konvex.</li>
+        </ul>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$f(x, y) = x^2 + 4 y^2$. Hesse $= \begin{pmatrix} 2 & 0 \\ 0 & 8 \end{pmatrix}$ positiv definit → strikt konvex.</p>
+          <p>$f(x) = x^3$ auf $\mathbb{R}$: $f''(x) = 6x$, kein einheitliches Vorzeichen → nicht konvex global. Auf $[0, \infty)$ konvex.</p>
+        </div>
+      </div>
+
+      <div id="optimalitaet">
+        <h3>1.4 Optimalitätsbedingungen (unbeschränkt)</h3>
+        <div class="thm">
+          <span class="thm-label">Notwendig 1. Ordnung</span>
+          <p>Bei differenzierbarem $f$ und lokalem Minimum $x^*$ gilt $\nabla f(x^*) = 0$. Solche Punkte heißen <em>stationär</em>.</p>
+        </div>
+        <div class="thm">
+          <span class="thm-label">Hinreichend 2. Ordnung</span>
+          <p>Gilt $\nabla f(x^*) = 0$ und $\nabla^2 f(x^*) \succ 0$, so ist $x^*$ ein striktes lokales Minimum.</p>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-title">Bei konvexem $f$</div>
+          <p>$\nabla f(x^*) = 0$ ⟹ $x^*$ ist <em>globales</em> Minimum (notwendige Bedingung wird hinreichend).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 2 LP ===================== -->
+    <section id="lp">
+      <h2>2 · Lineare Optimierung (LP)</h2>
+
+      <div id="lp-standard">
+        <h3>2.1 Standardform</h3>
+        $$ \min c^\top x \quad \text{u.d.N.} \quad A x = b,\; x \ge 0 $$
+        <p>Jedes LP kann in Standardform gebracht werden:</p>
+        <ul>
+          <li>$\max c^\top x \to \min -c^\top x$.</li>
+          <li>$a^\top x \le \beta \to a^\top x + s = \beta,\; s \ge 0$ (Schlupfvariable).</li>
+          <li>$a^\top x \ge \beta \to a^\top x - s = \beta,\; s \ge 0$ (Überschussvariable).</li>
+          <li>Freie Variable $x$: schreibe $x = x^+ - x^-$ mit $x^\pm \ge 0$.</li>
+        </ul>
+      </div>
+
+      <div id="lp-geometrie">
+        <h3>2.2 Geometrie</h3>
+        <p>$\mathcal{F} = \{x \ge 0 : Ax = b\}$ ist ein <strong>Polyeder</strong> (Schnitt von Halbräumen).</p>
+        <div class="thm">
+          <span class="thm-label">Fundamentalsatz der LP</span>
+          <p>Wenn ein LP eine endliche Optimallösung besitzt, dann existiert eine optimale Ecke (Basislösung) des Polyeders. Beweisidee: Höhenlinien der linearen Zielfunktion sind Hyperebenen — sie berühren ein konvexes Polyeder maximal/minimal in einer Ecke.</p>
+        </div>
+      </div>
+
+      <div id="simplex">
+        <h3>2.3 Simplex-Verfahren</h3>
+        <p>Idee: starte in einer zulässigen Ecke, wandere zu benachbarten Ecken mit besserem (kleinerem) Zielwert.</p>
+        <h4>Tableau-Schema</h4>
+        <pre><code>             x_1  x_2 ... x_n  s_1 ... s_m  | RHS
+  Basis 1     a    a   ...      0   ...      |  b_1
+  Basis 2     a    a   ...      0   ...      |  b_2
+  ...
+  Z (Kosten)  c    c   ...      0   ...      |  0</code></pre>
+        <h4>Iterationsschritte</h4>
+        <ol>
+          <li><strong>Optimalitäts-Test:</strong> Sind alle reduzierten Kosten $\bar c_j \ge 0$? → Optimum erreicht.</li>
+          <li><strong>Pivot-Spalte:</strong> wähle $j$ mit $\bar c_j < 0$ (negativster zuerst = klassische Dantzig-Regel).</li>
+          <li><strong>Pivot-Zeile via Min-Ratio-Test:</strong> wähle Zeile $i$ mit minimalem $b_i / a_{ij}$ unter $a_{ij} > 0$. Wenn keine $a_{ij} > 0$: das LP ist <em>unbeschränkt</em>.</li>
+          <li><strong>Pivotelement:</strong> $a_{ij}$. Zeile $i$ teilen, andere Zeilen reduzieren.</li>
+        </ol>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Degeneration & Bland-Regel</div>
+          <p>Wenn beim Min-Ratio mehrere Zeilen denselben Wert haben, kann es zu Zyklen kommen. <strong>Bland-Regel</strong>: stets kleinster Index bei Tie-Break (Eintritt und Austritt) — garantiert Terminierung.</p>
+        </div>
+
+        <h4>Komplexität</h4>
+        <p>Worst case exponentiell (Klee-Minty-Würfel), aber in der Praxis hervorragend ($O(m)$ Iterationen typisch). Inneres-Punkte-Verfahren laufen polynomial — werden bei sehr großen LPs eingesetzt.</p>
+      </div>
+
+      <div id="dualitaet">
+        <h3>2.4 Dualität</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>Zu jedem LP existiert ein <strong>duales LP</strong>. Bei primalem
+            $$ \min c^\top x,\; A x \ge b,\; x \ge 0 $$
+            ist das Dualproblem
+            $$ \max b^\top y,\; A^\top y \le c,\; y \ge 0. $$
+          </p>
+        </div>
+
+        <h4>Konstruktionsregeln (primal → dual)</h4>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Primal (min)</th><th>Dual (max)</th></tr></thead>
+          <tbody>
+            <tr><td>$n$ Variablen</td><td>$n$ Nebenbedingungen</td></tr>
+            <tr><td>$m$ Nebenbedingungen</td><td>$m$ Variablen</td></tr>
+            <tr><td>$x_j \ge 0$</td><td>$j$-te Dual-NB als $\le$</td></tr>
+            <tr><td>$x_j$ frei</td><td>$j$-te Dual-NB als $=$</td></tr>
+            <tr><td>$i$-te NB $\ge$</td><td>$y_i \ge 0$</td></tr>
+            <tr><td>$i$-te NB $=$</td><td>$y_i$ frei</td></tr>
+            <tr><td>Zielkoeffizient $c_j$</td><td>$j$-te Dual-RHS</td></tr>
+            <tr><td>RHS $b_i$</td><td>$i$-ter Dual-Zielkoeffizient</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="thm">
+          <span class="thm-label">Dualitätssätze</span>
+          <ul>
+            <li><strong>Schwache Dualität:</strong> Für jede primal-zulässige $x$ und dual-zulässige $y$: $b^\top y \le c^\top x$.</li>
+            <li><strong>Starke Dualität:</strong> Hat das primale Problem ein endliches Optimum, so auch das Duale, und die Werte sind gleich.</li>
+            <li><strong>Komplementärer Schlupf:</strong> Bei Optimum gelten $x_j^* (c_j - A_{\cdot j}^\top y^*) = 0$ und $y_i^* (A_{i \cdot} x^* - b_i) = 0$ — d.h. straffe NB ↔ aktive Dualvariable.</li>
+          </ul>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Vollständiges Beispiel</span>
+          <p>Primal: $\max 3x_1 + 2x_2$ u.d.N. $x_1 + x_2 \le 4,\; x_1 + 3 x_2 \le 6,\; x_1, x_2 \ge 0$.</p>
+          <p>Grafisch: Ecken $(0,0), (4,0), (3,1), (0,2)$. Zielwerte $0, 12, 11, 4$ → Maximum bei $(4,0)$ mit Wert $12$.</p>
+          <p>Dual: $\min 4 y_1 + 6 y_2$ u.d.N. $y_1 + y_2 \ge 3,\; y_1 + 3 y_2 \ge 2,\; y \ge 0$. Optimum: $y_1^* = 3, y_2^* = 0$ mit Wert $12$. ✓</p>
+          <p><strong>Komplementärer Schlupf prüfen</strong> (alle vier Bedingungen):</p>
+          <ul>
+            <li>$x_1^* = 4 > 0$ ⟹ Dual-NB 1 straff: $y_1 + y_2 = 3 + 0 = 3$ ✓ (=$c_1 = 3$).</li>
+            <li>$x_2^* = 0$, also darf Dual-NB 2 locker sein: $y_1 + 3 y_2 = 3 + 0 = 3 \ge 2$ ✓ (Schlupf $1$, kein Widerspruch).</li>
+            <li>Primal-NB 1 straff ($x_1 + x_2 = 4 + 0 = 4$) ⟹ $y_1^* > 0$ erlaubt — und $y_1^* = 3 > 0$ ✓.</li>
+            <li>Primal-NB 2 locker ($x_1 + 3 x_2 = 4 \le 6$, Schlupf $2$) ⟹ $y_2^* = 0$ erzwungen ✓.</li>
+          </ul>
+        </div>
+      </div>
+
+
+      <div class="prompt">Stelle mir ein LP mit 2 Variablen und 3 NB. Ich löse grafisch (Ecken-Aufzählung), dann via Simplex-Tableau. Du kontrollierst <em>beide</em> Wege und zeigst mir, ob Ecken-Reihenfolge im Simplex mit dem geometrischen Pfad übereinstimmt.</div>
+
+      <div class="prompt">Schreibe ein LP. Ich stelle das duale Programm sauber auf (mit Regeln $\ge$ → $y \ge 0$ etc.) und prüfe komplementären Schlupf am angegebenen Optimum. Du fängst typische Vorzeichen- und Richtungsfehler ab.</div>
+    </section>
+
+    <!-- ===================== 3 NLP ===================== -->
+    <section id="nlp">
+      <h2>3 · Nichtlineare Optimierung</h2>
+
+      <div id="nlp-1d">
+        <h3>3.1 Eindimensionale Verfahren</h3>
+        <ul>
+          <li><strong>Bisektion auf $f'$:</strong> verlange $f'(a) \cdot f'(b) < 0$, halbiere Intervall. Lineare Konvergenz.</li>
+          <li><strong>Newton auf $f'$:</strong> $x_{k+1} = x_k - f'(x_k)/f''(x_k)$. Quadratische Konvergenz lokal; divergiert bei schlechtem Start oder $f''$-Vorzeichenproblem.</li>
+          <li><strong>Goldener-Schnitt:</strong> Intervall $[a, b]$, setze $x_1 = a + (1-\rho)(b-a)$, $x_2 = a + \rho(b-a)$ mit $\rho = (\sqrt 5 - 1)/2 \approx 0.618$. Falls $f(x_1) < f(x_2)$, neues Intervall $[a, x_2]$; sonst $[x_1, b]$. Robust, braucht kein $f'$.</li>
+        </ul>
+      </div>
+
+      <div id="gd">
+        <h3>3.2 Gradientenabstieg</h3>
+        $$ x_{k+1} = x_k - \alpha_k \nabla f(x_k) $$
+        <p>Steigt entgegen der Richtung des steilsten Anstiegs. Schrittweite $\alpha_k$ via:</p>
+        <ul>
+          <li><strong>Exakte Linesearch:</strong> $\alpha_k = \arg\min_\alpha f(x_k - \alpha \nabla f(x_k))$. Teuer.</li>
+          <li><strong>Armijo-Bedingung:</strong> $f(x_k - \alpha \nabla f) \le f(x_k) - c_1 \alpha \|\nabla f\|^2$ mit $c_1 \in (0, 1/2)$. Praktisch: starte mit $\alpha = 1$, halbiere, bis Bedingung erfüllt.</li>
+          <li><strong>Wolfe-Bedingung:</strong> Armijo + Krümmungsbedingung — Standard in BFGS-Implementierungen.</li>
+        </ul>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Konditionszahl-Probleme</div>
+          <p>Bei stark gestrecktem Niveau-Landscape ($\kappa(\nabla^2 f) \gg 1$) zickzackt der GD entlang der schmalen Richtung. Konvergenzrate $((\kappa - 1)/(\kappa + 1))^2$ — bei $\kappa = 100$ langsam.</p>
+          <p>Abhilfe: Preconditioning, Momentum (Nesterov), Newton.</p>
+        </div>
+      </div>
+
+      <div id="newton-nlp">
+        <h3>3.3 Newton-Verfahren & Quasi-Newton</h3>
+        <p><strong>Newton:</strong></p>
+        $$ x_{k+1} = x_k - \bigl[\nabla^2 f(x_k)\bigr]^{-1} \nabla f(x_k). $$
+        <p>Quadratische Konvergenz lokal, schnellster Standard-Solver.</p>
+        <p>Probleme:</p>
+        <ul>
+          <li>Hesse muss positiv definit sein, sonst entsteht keine Abstiegsrichtung.</li>
+          <li>Hesse-Berechnung + Linearsystem $O(n^3)$ pro Schritt.</li>
+        </ul>
+        <p>Modifikationen:</p>
+        <ul>
+          <li><strong>Gedämpftes Newton:</strong> mit Linesearch $\alpha_k$ stattvoll Schritt $1$.</li>
+          <li><strong>Levenberg-Marquardt:</strong> $(\nabla^2 f + \lambda I)^{-1}$ — Hybride aus Newton und Gradientenabstieg.</li>
+          <li><strong>Quasi-Newton (BFGS):</strong> approximiert $H^{-1}$ iterativ aus Gradientendifferenzen ohne zweite Ableitungen. Konvergiert superlinear, Standard für mittelgroße glatte Probleme.</li>
+        </ul>
+      </div>
+
+      <div id="kkt">
+        <h3>3.4 Beschränkte Optimierung: Lagrange &amp; KKT</h3>
+
+        <div class="def">
+          <span class="def-label">Lagrange-Funktion</span>
+          $$ L(x, \lambda, \mu) = f(x) + \sum_{i=1}^m \lambda_i g_i(x) + \sum_{j=1}^p \mu_j h_j(x), $$
+          <p>mit $\lambda_i \ge 0$ (Multiplikatoren der Ungleichungs-NB) und $\mu_j$ beliebig (Gleichungs-NB).</p>
+        </div>
+
+        <div class="thm">
+          <span class="thm-label">KKT-Bedingungen</span>
+          <p>Bei regulärem Punkt $x^*$ (z.B. wenn die Gradienten der aktiven NB linear unabhängig sind) gelten folgende Bedingungen notwendig:</p>
+          <ol>
+            <li><strong>Stationarität:</strong> $\nabla_x L(x^*, \lambda^*, \mu^*) = 0$ — d.h. $\nabla f(x^*) + \sum \lambda_i^* \nabla g_i(x^*) + \sum \mu_j^* \nabla h_j(x^*) = 0$.</li>
+            <li><strong>Primal-Zulässigkeit:</strong> $g_i(x^*) \le 0,\; h_j(x^*) = 0$.</li>
+            <li><strong>Dual-Zulässigkeit:</strong> $\lambda_i^* \ge 0$.</li>
+            <li><strong>Komplementärer Schlupf:</strong> $\lambda_i^* \cdot g_i(x^*) = 0$ — entweder NB straff ($g_i = 0$) oder Multiplikator $0$.</li>
+          </ol>
+          <p>Bei <em>konvexen</em> Problemen sind KKT-Bedingungen auch <strong>hinreichend</strong>.</p>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Lesart Komplementärer Schlupf</div>
+          <p>Eine inaktive NB (straff = false, $g_i < 0$) liefert "freien Raum" — der Multiplikator ist null, die NB ist nicht binding. Eine aktive NB ($g_i = 0$) kann einen positiven Multiplikator haben; dieser misst, wie viel das Optimum sich verbessert, wenn die NB gelockert wird.</p>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Vollständiges KKT-Beispiel</span>
+          <p>$\min x^2 + y^2$ u.d.N. $x + y \ge 1$, $x, y \ge 0$.</p>
+          <p>Umform: $g_1 = 1 - x - y \le 0$, $g_2 = -x \le 0$, $g_3 = -y \le 0$.</p>
+          <p>$L = x^2 + y^2 + \lambda_1 (1 - x - y) + \lambda_2 (-x) + \lambda_3 (-y)$.</p>
+          <p>Stationarität:</p>
+          <ul>
+            <li>$\partial_x L = 2x - \lambda_1 - \lambda_2 = 0$</li>
+            <li>$\partial_y L = 2y - \lambda_1 - \lambda_3 = 0$</li>
+          </ul>
+          <p>Fallunterscheidung: angenommen, das Minimum ist im inneren Quadranten ($x, y > 0$), dann $\lambda_2 = \lambda_3 = 0$. Aus $2x = \lambda_1 = 2y$ folgt $x = y$. Aktive NB $g_1$: $x + y = 1 \Rightarrow x = y = 1/2$, $\lambda_1 = 1$.</p>
+          <p>Check: $f^* = 1/4 + 1/4 = 1/2$. Komplementärer Schlupf: $\lambda_2 \cdot (-1/2) = 0$ ✓, $\lambda_3 \cdot (-1/2) = 0$ ✓, $\lambda_1 \cdot 0 = 0$ ✓.</p>
+        </div>
+      </div>
+
+      <div id="penalty">
+        <h3>3.5 Strafverfahren</h3>
+        <p>Strategie: Nebenbedingungen werden in die Zielfunktion als Bestrafungsterm aufgenommen, dann unbeschränktes Problem lösen.</p>
+
+        <h4>Quadratische Penalty</h4>
+        $$ P(x, \rho) = f(x) + \rho \sum_j h_j(x)^2 + \rho \sum_i \max(0, g_i(x))^2 $$
+        <p>$\rho \to \infty$, jedes mal äußere Iteration starten mit vorigem Optimum. Konditionierung wird schlechter mit wachsendem $\rho$.</p>
+
+        <h4>Barriere (Inneres-Punkte-Verfahren)</h4>
+        $$ B(x, \mu) = f(x) - \mu \sum_i \log(-g_i(x)) $$
+        <p>$\mu \to 0$. Trajektorie verläuft innerhalb der zulässigen Menge. Standardansatz bei großen LPs und konvexen Problemen.</p>
+      </div>
+
+      <div class="prompt">Stelle mir ein 2D-NLP mit einer Ungleichungs-NB. Ich:
+(1) zeichne den zulässigen Bereich,
+(2) prüfe, ob das unrestringierte Optimum drin liegt,
+(3) falls nicht, setze KKT auf und löse mit Fallunterscheidung (welche NB aktiv).
+Du fängst Vorzeichenfehler beim Multiplikator ab und mahnst, wenn ich Komplementären Schlupf vergesse.</div>
+
+      <div class="prompt">Vergleiche Gradientenabstieg vs. Newton auf $f(x, y) = x^2 + 100 y^2$. Wo liegt das Optimum? Wieso konvergiert GD langsam? Lass mich 3 GD-Schritte und 1 Newton-Schritt per Hand ausrechnen (Start $(1, 1)$, $\alpha = 0.01$). Du fängst Rechenfehler.</div>
+    </section>
+
+    <!-- ===================== 4 GRADFREI ===================== -->
+    <section id="gradfrei">
+      <h2>4 · Gradientenfreie Verfahren (OV-05)</h2>
+      <p>Verwendet nur Funktionswerte. Wann nötig:</p>
+      <ul>
+        <li>$f$ nicht differenzierbar oder Gradient teuer/instabil.</li>
+        <li>$f$ verrauscht (Simulationen).</li>
+        <li>$f$ Black-Box (z.B. ML-Hyperparameter).</li>
+      </ul>
+
+      <h3>4.1 Nelder-Mead (Downhill-Simplex)</h3>
+      <p>Verwalte $n+1$ Punkte = Simplex. Sortiere nach $f$-Werten: bester, $\dots$, schlechtester. Operationen:</p>
+      <ul>
+        <li><strong>Spiegelung:</strong> spiegele schlechtesten am Schwerpunkt der anderen.</li>
+        <li><strong>Expansion:</strong> wenn die Spiegelung besser als alle ist, geh noch weiter.</li>
+        <li><strong>Kontraktion:</strong> wenn die Spiegelung schlecht, ziehe in Richtung Zentrum.</li>
+        <li><strong>Schrumpfung:</strong> wenn alles fehlschlägt, schrumpfe Simplex zum besten Punkt.</li>
+      </ul>
+      <p>Robust, aber langsam und nicht garantiert konvergent (auch für glatte Funktionen). Praktisch gut bis $n \approx 10$.</p>
+
+      <h3>4.2 Koordinatenabstieg</h3>
+      <p>Optimiere zyklisch einen Parameter, andere fest. Einfach, aber langsam und schlecht bei nicht-separablem $f$.</p>
+
+      <h3>4.3 Hooke-Jeeves / Pattern Search</h3>
+      <p>Probiere kleine Schritte in Achsenrichtungen. Bei Verbesserung: vergrößere Schrittweite + Pattern Move in die "gefundene" Richtung. Sonst halbiere.</p>
+
+      <div class="prompt">Führe Nelder-Mead per Hand auf $f(x,y) = (x-2)^2 + (y-1)^2$ aus, Start-Simplex $(0,0), (1,0), (0,1)$. Wir machen 4 Iterationen. Ich entscheide jeweils, welche Operation (Spiegelung/Expansion/Kontraktion/Schrumpfung) als nächstes nötig ist. Du korrigierst Geometrie und Reihenfolge.</div>
+    </section>
+
+    <!-- ===================== 5 METAHEURISTIKEN ===================== -->
+    <section id="meta">
+      <h2>5 · Metaheuristiken (OV-06)</h2>
+      <p>Stochastische, globale Suchverfahren — keine Optimalitätsgarantie, aber gut bei nicht-konvexen und kombinatorischen Problemen.</p>
+
+      <div id="sa">
+        <h3>5.1 Simulated Annealing</h3>
+        <p>Idee: akzeptiere auch Verschlechterungen mit fallender Wahrscheinlichkeit → entkomme lokalen Optima.</p>
+        <pre><code>SA(f, x₀, T₀, T_min, α):
+  x = x₀; best = x; T = T₀
+  while T > T_min:
+    for i = 1..L:                        # Innere Schleife
+      x' = random_neighbor(x)
+      Δ  = f(x') - f(x)
+      if Δ < 0 or random() < exp(-Δ/T):  # Metropolis-Kriterium
+        x = x'
+        if f(x) < f(best): best = x
+    T = α * T                            # 0 < α < 1, z.B. 0.95
+  return best</code></pre>
+        <p>Theorie: bei <em>logarithmisch</em> langsamem Cooling ($T_k = c / \log(k+1)$) konvergiert SA mit Wahrscheinlichkeit $1$ zum globalen Optimum — praktisch viel zu langsam. Geometrisches Cooling ($T_{k+1} = \alpha T_k$, $\alpha \approx 0.9$–$0.99$) ist die Praxisvariante.</p>
+      </div>
+
+      <div id="ga">
+        <h3>5.2 Genetische Algorithmen / Evolutionsstrategien</h3>
+        <p>Population $P$ von $\mu$ Individuen. Jede Generation:</p>
+        <ol>
+          <li><strong>Selektion:</strong> wähle Eltern. Methoden: Fitness-proportional (Roulette), Turnier, Rang.</li>
+          <li><strong>Crossover:</strong> kombiniere 2 Eltern → 1–2 Kinder. One-Point, Uniform, BLX-α (kontinuierlich).</li>
+          <li><strong>Mutation:</strong> kleine zufällige Änderung. Gauss-Rauschen für reelle Werte, Bit-Flip für Binärrepräsentation.</li>
+          <li><strong>Ersetzung:</strong> $(\mu, \lambda)$: Eltern werden komplett ersetzt; $(\mu + \lambda)$: Eltern + Kinder konkurrieren. <strong>Elitismus</strong>: das beste Individuum überlebt immer.</li>
+        </ol>
+        <p>Tuning: Populationsgröße, Crossover-Rate, Mutationsrate sind die kritischen Parameter.</p>
+        <p><strong>CMA-ES</strong> = Covariance-Matrix-Adaptation-ES — Stand der Technik für reellwertige Blackbox-Optimierung. Lernt Kovarianzmatrix der Mutationsverteilung adaptiv.</p>
+      </div>
+
+      <div id="pso">
+        <h3>5.3 Particle Swarm Optimization (PSO)</h3>
+        <p>Schwarm von Partikeln $(x_i, v_i)$. Update:</p>
+        $$ v_i \leftarrow w \cdot v_i + c_1 r_1 (p_i - x_i) + c_2 r_2 (g - x_i) $$
+        $$ x_i \leftarrow x_i + v_i $$
+        <ul>
+          <li>$p_i$ = persönliches Best des $i$-ten Partikels.</li>
+          <li>$g$ = globales Best des Schwarms.</li>
+          <li>$w$ = Inertia (Trägheit), $c_1$ kognitiv (zum persönlichen Best), $c_2$ sozial (zum globalen Best).</li>
+          <li>$r_1, r_2 \sim \text{Uniform}[0, 1]$.</li>
+        </ul>
+        <p>Typische Parameter: $w \in [0.4, 0.9]$ (oft linear fallend), $c_1 = c_2 \approx 2$.</p>
+      </div>
+
+      <div id="aco">
+        <h3>5.4 Ameisenalgorithmus (Ant Colony Optimization)</h3>
+        <p>Für kombinatorische Probleme wie TSP. Pheromonspur $\tau_{ij}$ wird auf guten Lösungswegen verstärkt, verdunstet sonst. Wahl-Wahrscheinlichkeit:</p>
+        $$ p_{ij} \propto \tau_{ij}^\alpha \cdot \eta_{ij}^\beta $$
+        <p>mit $\eta_{ij}$ = Heuristik (z.B. $1/d_{ij}$), $\alpha, \beta$ Gewichtungen.</p>
+      </div>
+
+      <h4>Wann welche Heuristik?</h4>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Problemtyp</th><th>Bevorzugt</th><th>Warum</th></tr></thead>
+        <tbody>
+          <tr><td>Diskret, Kombinatorisch (Routing, Scheduling)</td><td>GA, SA, ACO</td><td>Strukturierte Nachbarschaften & Repräsentation</td></tr>
+          <tr><td>Kontinuierlich, Black-Box</td><td>CMA-ES, PSO</td><td>Kovarianz / Geschwindigkeit als adaptive Schrittweite</td></tr>
+          <tr><td>Wenige teure Auswertungen</td><td>Bayes'sche Optimierung</td><td>Surrogat-Modell auf wenigen Samples</td></tr>
+          <tr><td>Globales Suchen mit gut konvexen Tälern</td><td>Multi-Start Newton/BFGS</td><td>Lokal schnell, von vielen Starts</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="prompt">Führe Simulated Annealing per Hand für 6 Iterationen aus auf $f(x) = x^2 - 4x + 5$, Nachbarschaft $\pm 0.5$, Start $x_0 = 5$, $T_0 = 2$, geometrisches Cooling $\alpha = 0.7$. Würfle für mich (oder gib mir konkrete Zufallswerte), ich entscheide Akzeptanz. Du prüfst, ob ich das Metropolis-Kriterium richtig anwende.</div>
+
+      <div class="prompt">Vergleiche PSO und GA: was sind die zentralen Stellgrößen, und welches Verfahren würdest du für (a) TSP mit 50 Städten, (b) Tuning der Lernrate eines neuronalen Netzes wählen? Begründe in 5 Sätzen pro Fall.</div>
+    </section>
+
+    <!-- ===================== 6 MEHRZIEL ===================== -->
+    <section id="mehrziel">
+      <h2>6 · Mehrzieloptimierung (OV-07)</h2>
+
+      <div class="def">
+        <span class="def-label">Problem</span>
+        $$ \min_{x \in \mathcal{F}} \bigl(f_1(x), f_2(x), \dots, f_k(x)\bigr) $$
+        <p>Es gibt keine totale Ordnung — Lösungen werden partiell geordnet via Dominanz.</p>
+      </div>
+
+      <h3>6.1 Pareto-Dominanz</h3>
+      <p>$x$ <strong>dominiert</strong> $y$ ($x \prec y$):
+        $$ \forall i: f_i(x) \le f_i(y) \quad \wedge \quad \exists j: f_j(x) < f_j(y) $$
+      </p>
+      <ul>
+        <li><strong>Pareto-optimal:</strong> nicht dominiert.</li>
+        <li><strong>Pareto-Menge:</strong> alle Pareto-optimalen $x$.</li>
+        <li><strong>Pareto-Front:</strong> deren Bild $(f_1, \dots, f_k)$ im Zielraum.</li>
+      </ul>
+
+      <h3>6.2 Methoden</h3>
+
+      <h4>Gewichtete Summe (Skalarisierung)</h4>
+      $$ \min \sum_{i=1}^k w_i f_i(x), \quad w_i \ge 0,\; \sum w_i = 1 $$
+      <p>Findet eine Pareto-Lösung pro Gewichtskombination — durch Variation von $w$ approximiert man die Front.</p>
+      <div class="callout callout-warn">
+        <div class="callout-title">Limitierung bei nicht-konvexen Fronten</div>
+        <p>Bei nicht-konvexen Pareto-Fronten kann die gewichtete Summe <em>bestimmte Pareto-Punkte gar nicht erreichen</em>, egal welche Gewichte. Die zugehörige Tangentialebene berührt die Front nur an "ausstehenden" konvexen Teilen.</p>
+        <p>Abhilfe: $\epsilon$-Constraint oder Multi-Objektiv-EA.</p>
+      </div>
+
+      <h4>$\epsilon$-Constraint</h4>
+      $$ \min f_1(x) \quad \text{u.d.N.} \quad f_j(x) \le \epsilon_j,\; j \ne 1 $$
+      <p>Eines der Ziele wird minimiert, alle anderen werden zu Konstraints. Variiert man $\epsilon_j$, durchläuft man die ganze Pareto-Front — auch nicht-konvexe Teile.</p>
+
+      <h4>Multi-Objektiv Evolutionsalgorithmen</h4>
+      <ul>
+        <li><strong>NSGA-II</strong> (non-dominated sorting GA-II): sortiere Population in Pareto-Fronten. Innerhalb einer Front: Crowding-Distance für Diversität.</li>
+        <li><strong>SPEA2:</strong> ähnlich, mit Stärke-basierter Selektion.</li>
+        <li><strong>MOEA/D:</strong> zerlege Mehrzielproblem in skalare Subprobleme.</li>
+      </ul>
+
+      <h3>6.3 Qualitätsindikatoren</h3>
+      <ul>
+        <li><strong>Hypervolumen (HV):</strong> Volumen, das die approximierte Front gegen einen Referenzpunkt dominiert. Höher = besser. Einziger Indikator, der streng Pareto-konform ist.</li>
+        <li><strong>IGD (Inverted Generational Distance):</strong> mittlerer Abstand wahrer Pareto-Punkte zur approximierten Front. Niedriger = besser. Braucht wahre Front als Referenz.</li>
+        <li><strong>Spread:</strong> Maß für Verteilung der Lösungen.</li>
+      </ul>
+
+      <div class="prompt">Konstruiere ein 2-Ziel-Problem mit 8 Lösungen in einer Tabelle $(f_1, f_2)$. Ich bestimme Pareto-Menge + dominierte Punkte. Mark in deinem Plot, welche Punkte schwach (nicht streng) dominiert werden — das übersehe ich oft.</div>
+
+      <div class="prompt">Erkläre an einem konkreten 2-Ziel-Beispiel mit nicht-konvexer Front, warum die gewichtete Summe einen Teil der Front nicht findet. Zeichne schematisch + nenne, welche $\epsilon$-Werte den fehlenden Teil erreichen würden.</div>
+    </section>
+
+    <!-- ===================== 7 WANN NUTZE ICH WAS ===================== -->
+    <section id="wann">
+      <h2>7 · Wann nutze ich was? — Entscheidungs-Guide</h2>
+      <p>Die wichtigste Klausur-Übungs-Frage: gegeben ein Problem — <em>welches Verfahren wähle ich?</em> Dieser Guide führt dich durch die Entscheidungen.</p>
+
+      <h3>7.1 Schritt 1 — Problemtyp identifizieren</h3>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Wenn das Problem ist …</th><th>Klasse</th><th>Verfahren</th></tr></thead>
+        <tbody>
+          <tr><td>$f$ linear, alle NB linear, $x \in \mathbb{R}^n$</td><td>LP</td><td>Simplex / Inneres-Punkte</td></tr>
+          <tr><td>$f$ quadratisch konvex, NB linear</td><td>QP</td><td>Aktive-Mengen-Methode, Inneres-Punkte</td></tr>
+          <tr><td>$f$ oder NB nichtlinear, glatt</td><td>NLP (glatt)</td><td>SQP, Innere-Punkte, Gradient/Newton, BFGS</td></tr>
+          <tr><td>$f$ konvex, NB konvex, glatt</td><td>Konvexe Opt.</td><td>jedes lokale Verfahren findet globales Optimum</td></tr>
+          <tr><td>$f$ nicht-glatt (Knicke, $|x|$, max)</td><td>Nichtglatt</td><td>Subgradient, Proximal-Gradient</td></tr>
+          <tr><td>$x \in \mathbb{Z}^n$ oder gemischt</td><td>(M)IP</td><td>Branch &amp; Bound, Cutting Planes, Heuristik</td></tr>
+          <tr><td>$f$ Blackbox / verrauscht / nicht diff.</td><td>Derivative-Free</td><td>Nelder-Mead, Pattern Search, CMA-ES</td></tr>
+          <tr><td>Nicht-konvex, viele lokale Optima</td><td>Globale Opt.</td><td>Multi-Start, SA, GA, PSO, Bayes-Opt.</td></tr>
+          <tr><td>Mehrere Zielfunktionen</td><td>Multi-Objektiv</td><td>gewichtete Summe, $\epsilon$-Constraint, NSGA-II</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>7.2 Schritt 2 — Restriktionen behandeln</h3>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Restriktionen</th><th>Empfehlung</th></tr></thead>
+        <tbody>
+          <tr><td>keine</td><td>Direkt Newton / BFGS / GD anwenden</td></tr>
+          <tr><td>nur Box-Constraints ($l \le x \le u$)</td><td>Projektion auf Box, L-BFGS-B</td></tr>
+          <tr><td>nur Gleichungs-NB</td><td>Lagrange-Multiplikatoren, Eliminierung</td></tr>
+          <tr><td>Ungleichungs-NB</td><td>KKT, Innere-Punkte, Strafverfahren</td></tr>
+          <tr><td>schwer auswertbare NB</td><td>Penalty (quadratische Strafe für Verletzungen)</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>7.3 Schritt 3 — Verfügbare Information</h3>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Was hast du?</th><th>Wähle</th></tr></thead>
+        <tbody>
+          <tr><td>$f, \nabla f, \nabla^2 f$ verfügbar &amp; billig</td><td>Newton — quadratische Konvergenz</td></tr>
+          <tr><td>$f, \nabla f$ verfügbar, $\nabla^2 f$ teuer/instabil</td><td>BFGS / L-BFGS — superlinear, kein Hesse-Aufbau</td></tr>
+          <tr><td>$f, \nabla f$, sehr großes $n$</td><td>Konjugierte Gradienten (CG für quadr., NCG sonst)</td></tr>
+          <tr><td>nur $f$ verfügbar (Blackbox)</td><td>Nelder-Mead (klein), CMA-ES (mittel), Bayes-Opt. (teure Eval.)</td></tr>
+          <tr><td>$f$ verrauscht</td><td>Stoch. Gradient (SGD/Adam), Pattern Search, Bayes-Opt.</td></tr>
+          <tr><td>Diskreter Raum + Nachbarschaft definiert</td><td>SA, Tabu-Search, lokale Suche</td></tr>
+          <tr><td>Population-basierte Exploration</td><td>GA, PSO, DE</td></tr>
+          <tr><td>Kombinatorisch (TSP, Scheduling)</td><td>ACO, Tabu, GA mit Problem-spez. Operatoren</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>7.4 Schritt 4 — Konvexität entscheidet "lokal vs. global"</h3>
+      <div class="callout callout-info">
+        <div class="callout-title">Konvex?</div>
+        <ul>
+          <li><strong>$f$ konvex auf konvexer $\mathcal F$:</strong> Lokale Verfahren reichen (Newton, BFGS). Jedes gefundene lokale Opt. ist global.</li>
+          <li><strong>$f$ konvex, $\mathcal F$ nicht konvex (z.B. ganzzahlige NB):</strong> globale Optimierung weiterhin nötig (Branch &amp; Bound).</li>
+          <li><strong>$f$ nicht konvex:</strong> Multi-Start mit Newton/BFGS, oder Metaheuristik. Garantie nur stochastisch.</li>
+        </ul>
+      </div>
+
+      <h3>7.5 Schritt 5 — Skala &amp; Praxis</h3>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Größenordnung</th><th>Praxistipp</th></tr></thead>
+        <tbody>
+          <tr><td>$n &lt; 100$</td><td>Dense Newton problemlos. SLSQP, IPOPT, fmincon.</td></tr>
+          <tr><td>$n &lt; 10\,000$</td><td>BFGS, Sparse-Hessenberg, CG mit Vorkonditionierung</td></tr>
+          <tr><td>$n &gt; 10^5$ (z.B. Deep Learning)</td><td>L-BFGS, SGD/Adam, problem-spezifische Strukturausnutzung</td></tr>
+          <tr><td>$n &gt; 10$ (kontinuierlich, blackbox)</td><td>CMA-ES &gt; Nelder-Mead</td></tr>
+          <tr><td>Wenige (10–100) Auswertungen leistbar</td><td>Bayes-Optimierung mit GP-Surrogat</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>7.6 Mehrzieloptimierung — Entscheidung</h3>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Situation</th><th>Methode</th></tr></thead>
+        <tbody>
+          <tr><td>Konvexe Pareto-Front, einzelne Lösung gesucht</td><td>Gewichtete Summe</td></tr>
+          <tr><td>Nicht-konvexe Front, gleichmäßige Approximation</td><td>$\epsilon$-Constraint</td></tr>
+          <tr><td>Komplette Pareto-Front approximieren</td><td>NSGA-II / MOEA/D</td></tr>
+          <tr><td>Klar dominantes Hauptziel</td><td>$\epsilon$-Constraint mit Hauptziel</td></tr>
+          <tr><td>Entscheider hat Präferenzen</td><td>Goal Programming, Interaktive Methoden</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>7.7 Zusammenfassende Entscheidungs-Checkliste</h3>
+      <ol>
+        <li><strong>Ist alles linear?</strong> → LP/Simplex. Fertig.</li>
+        <li><strong>Diskret?</strong> → Branch &amp; Bound (klein), Heuristik (groß).</li>
+        <li><strong>Konvex?</strong>
+          <ul>
+            <li>Ableitungen verfügbar → Newton/BFGS.</li>
+            <li>Nur Funktionswerte → Nelder-Mead.</li>
+          </ul>
+        </li>
+        <li><strong>Nicht-konvex?</strong>
+          <ul>
+            <li>Glatt + lokale Suche reicht? → Multi-Start Newton/BFGS.</li>
+            <li>Globales Optimum wichtig? → SA / GA / PSO / CMA-ES.</li>
+          </ul>
+        </li>
+        <li><strong>Restriktionen?</strong>
+          <ul>
+            <li>Nur Box → Projektions-Gradient.</li>
+            <li>Gleichungs-NB → Lagrange.</li>
+            <li>Ungleichungs-NB → KKT mit SQP / Inneres-Punkte.</li>
+          </ul>
+        </li>
+        <li><strong>Mehrere Ziele?</strong> → Gewichtete Summe (konvex) oder $\epsilon$-Constraint (sonst).</li>
+      </ol>
+
+      <h3>7.8 Häufige Klausur-Falle: "Welches Verfahren?"</h3>
+      <div class="callout callout-warn">
+        <div class="callout-title">Vorgehen in der Klausur</div>
+        <ol>
+          <li>Linearität prüfen: kommen nur lineare Terme vor? → LP.</li>
+          <li>NB-Typ identifizieren: $\le, \ge, =$, Vorzeichen-Constraints.</li>
+          <li>Anzahl Variablen + Differenzierbarkeit nennen.</li>
+          <li><em>Argument schreiben</em>, warum dieses Verfahren passt (Differenzierbarkeit, Konvexität, NB-Art).</li>
+          <li>Erst dann rechnen.</li>
+        </ol>
+      </div>
+
+      <div class="prompt">Du gibst mir 6 Optimierungsprobleme — gemischt: LP, QP, NLP konvex, NLP nicht-konvex, Blackbox, Mehrziel. Ich identifiziere pro Aufgabe: (a) Problemtyp, (b) passendes Verfahren, (c) Begründung in 2-3 Sätzen. Du korrigierst und zeigst, wenn ich ein passendes Verfahren übersehen habe.</div>
+    </section>
+
+    <!-- ===================== 9 CHEATSHEET ===================== -->
+    <section id="cheatsheet" class="cheatsheet">
+      <h2>8 · Cheatsheet</h2>
+      <pre><code>STRUKTUR
+  min f(x)  u.d.N.  g(x) ≤ 0,  h(x) = 0
+  konvex: f konvex auf konv. F  ⇒  jedes lokale = global
+  Hesse ⪰ 0 ⇔ konvex (für C² f)
+
+LP STANDARD
+  min c'x,  Ax = b,  x ≥ 0
+  Optimum in Ecke (Fundamentalsatz)
+  Simplex: Pivotspalte über reduzierte Kosten < 0
+           Pivotzeile via Min-Ratio b_i / a_ij  (a_ij > 0)
+           Bland-Regel gegen Zyklen
+
+DUALITÄT
+  primal min ↔ dual max
+  Primal-NB Σ ↔ Dual-Variable y_i ≥ 0
+  Primal-Var x_j ≥ 0 ↔ Dual-NB ≤
+  starkes D.: Werte gleich am Optimum
+  komplem. Schlupf: x_j (c - A^T y)_j = 0,  y_i (Ax - b)_i = 0
+
+NLP UNBESCHRÄNKT
+  notw.:    ∇f(x*) = 0
+  hinr.:    ∇f(x*) = 0  ∧  ∇²f(x*) ≻ 0
+  GD:       x ← x - α∇f.   Armijo: f(x-α∇f) ≤ f - c₁ α ||∇f||²
+  Newton:   x ← x - H⁻¹ ∇f.  quadr. lokal
+  BFGS:     H⁻¹ aus Updates der Differenzen.  superlinear
+
+NLP BESCHRÄNKT (KKT)
+  L = f + Σ λ_i g_i + Σ μ_j h_j
+  (1) ∇_x L = 0
+  (2) g ≤ 0,  h = 0
+  (3) λ ≥ 0
+  (4) λ_i g_i = 0     (komplementärer Schlupf)
+  konvex ⇒ KKT auch hinreichend
+
+METAHEURISTIKEN
+  SA:    accept worse with prob exp(-Δ/T).  T_{k+1} = αT_k
+  GA:    Selektion → Crossover → Mutation → Ersetzung
+         (μ, λ) vs (μ + λ) Schemata
+  PSO:   v ← wv + c₁ r₁ (p_i - x) + c₂ r₂ (g - x)
+  CMA-ES: adaptive Kovarianzmatrix — state of the art
+
+MEHRZIEL
+  Pareto x ≺ y ⇔ ∀i f_i(x) ≤ f_i(y) ∧ ∃j ...&lt;...
+  gewichtete Summe: konvexe Front voll erreichbar, nicht-konvex unvollständig
+  ε-Constraint: kann beide Fronten
+  Qualität: Hypervolumen (höher=besser), IGD (niedriger=besser)</code></pre>
+    </section>
+
+    <!-- ===================== 10 DRILLPLAN ===================== -->
+    <section id="drillplan">
+      <h2>9 · Drillplan</h2>
+      <ol>
+        <li><strong>Tag 1 — LP &amp; Dualität:</strong> 3 grafische LP, 2 Simplex-Tableaus (3 Pivots), 2 Dualisierungen mit komplementärem Schlupf.</li>
+        <li><strong>Tag 2 — NLP &amp; KKT:</strong> Konvexitäts-Beweise, 3 KKT-Aufgaben (eine mit 2 NBs).</li>
+        <li><strong>Tag 3 — Metaheuristiken &amp; Mehrziel:</strong> SA und PSO konzeptionell beschreiben, Pareto-Front in 3 Tabellen bestimmen.</li>
+      </ol>
+
+      <div class="prompt">Du simulierst eine OV-Klausur (60 Min, 5 Aufgaben, 60 Punkte gesamt).
+Punkteverteilung:
+  Aufgabe 1 — LP grafisch + Simplex (15)
+  Aufgabe 2 — Dualität + komplementärer Schlupf (10)
+  Aufgabe 3 — KKT in 2D-NLP mit Ungleichung (20)
+  Aufgabe 4 — Metaheuristik beschreiben (Pseudocode + Stop-Kriterium) (10)
+  Aufgabe 5 — Pareto-Dominanz + Skalarisierungs-Limitation (5)
+Ich rechne. Du korrigierst wie ein Prof, gibst Punkte, am Ende Note (1.0–5.0) + Top-3-Lücken.</div>
+    </section>
+
+    <footer>
+      Lernzettel · Optimierungsverfahren · WDS125 OV (ZAM)
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

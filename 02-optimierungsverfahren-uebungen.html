@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übungen — Optimierungsverfahren · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="02-optimierungsverfahren.html">← Theorie</a>
+    <h1>Übungen OV</h1>
+    <p class="sub">Optimierungsverfahren</p>
+
+    <ul class="toc">
+      <li><a href="#lp">1 · LP &amp; Simplex &amp; Dualität</a></li>
+      <li><a href="#nlp">2 · Nichtlineare Opt. (KKT, Gradient, Newton)</a></li>
+      <li><a href="#meta">3 · Metaheuristiken</a></li>
+      <li><a href="#mehrziel">4 · Mehrziel &amp; Verfahrenswahl</a></li>
+      <li><a href="#klausur">5 · Klausur-Simulation</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Übungen</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik-uebungen.html">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren-uebungen.html" class="current">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra-uebungen.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik-uebungen.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2-uebungen.html">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Übungen — Optimierungsverfahren</h1>
+      <p class="tagline">16 Klausuraufgaben · Lineare/Nichtlineare Optimierung · Metaheuristiken · Mehrziel</p>
+      <p class="meta">
+        <span>Theorie: <a href="02-optimierungsverfahren.html">02-optimierungsverfahren.html</a></span>
+      </p>
+    </header>
+
+    <!-- =============== 1 LP =============== -->
+    <section id="lp">
+      <h2>1 · Lineare Optimierung, Simplex, Dualität</h2>
+      <p>→ Theorie: <a href="02-optimierungsverfahren.html#lp">Lineare Optimierung (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.1 — LP grafisch klein</summary>
+        <p>$\max 5 x_1 + 4 x_2$ u.d.N. $6 x_1 + 4 x_2 \le 24$, $x_1 + 2 x_2 \le 6$, $x_1, x_2 \ge 0$.</p>
+        <p><strong>Lösung:</strong> Ecken: $(0,0)$ Z=0, $(4,0)$ Z=20, $(3,1.5)$ Z=21, $(0,3)$ Z=12. Optimum bei $(3, 1.5)$ mit $f = 21$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.2 — LP grafisch + Ecken-Liste</summary>
+        <p>$\max\; 4 x_1 + 3 x_2$ u.d.N. $2 x_1 + x_2 \le 10$, $x_1 + 2 x_2 \le 8$, $x_1, x_2 \ge 0$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Zulässige Ecken: $(0,0)$ $f=0$; $(5,0)$ $f=20$; $(0,4)$ $f=12$; Schnitt der beiden Restriktionen → $x_1 = 4, x_2 = 2$, $f = 22$.</p>
+        <p><strong>Optimum: $(4, 2)$ mit Wert $22$.</strong></p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.3 — Simplex-Tableau (1 Pivot)</summary>
+        <p>Stelle das Start-Tableau für $\max 3x_1 + 5 x_2$ u.d.N. $x_1 \le 4$, $2 x_2 \le 12$, $3 x_1 + 2 x_2 \le 18$, $x \ge 0$ auf und führe den ersten Pivot durch.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Schlupfvariablen $s_1, s_2, s_3$. Initiale Basis: $\{s_1, s_2, s_3\}$ mit Werten $(4, 12, 18)$. Zielzeile: $-3, -5, 0, 0, 0 \mid 0$.</p>
+        <p>Pivotspalte: kleinster (negativster) Wert in Zielzeile $\to x_2$ (Wert $-5$).</p>
+        <p>Min-Ratio: $s_2$-Zeile: $12 / 2 = 6$; $s_3$-Zeile: $18 / 2 = 9$. Pivot: Zeile $s_2$ × Spalte $x_2$.</p>
+        <p>Zeile $s_2$ durch 2: $0, 1, 0, 1/2, 0 \mid 6$. Übrige Zeilen reduzieren. Nach Iteration: $x_2 = 6$, neue Zielzeile mit $-3$ in $x_1$-Spalte — noch nicht optimal.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.4 — Dualität konstruieren</summary>
+        <p>Gegeben primal: $\min 2 x_1 + 3 x_2 + 4 x_3$ u.d.N. $x_1 + 2 x_2 + x_3 \ge 3$, $2 x_1 + x_2 + 3 x_3 \ge 5$, $x \ge 0$. Stelle Dualproblem auf.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Primal in Standardform $\min c^\top x, Ax \ge b, x \ge 0$ mit $c = (2,3,4)^\top$, $b = (3,5)^\top$, $A = \begin{pmatrix} 1 & 2 & 1 \\ 2 & 1 & 3 \end{pmatrix}$.</p>
+        <p>Dual: $\max b^\top y, A^\top y \le c, y \ge 0$:</p>
+        <p>$\max 3 y_1 + 5 y_2$ u.d.N. $y_1 + 2 y_2 \le 2$, $2 y_1 + y_2 \le 3$, $y_1 + 3 y_2 \le 4$, $y \ge 0$.</p>
+      </details>
+    </section>
+
+    <!-- =============== 2 NLP =============== -->
+    <section id="nlp">
+      <h2>2 · Nichtlineare Optimierung (KKT, Gradient, Newton)</h2>
+      <p>→ Theorie: <a href="02-optimierungsverfahren.html#nlp">NLP (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.1 — Konvexität nachweisen</summary>
+        <p>Ist $f(x, y) = x^2 + 4 x y + 5 y^2 + 2 x - y$ konvex?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Hesse: $H = \begin{pmatrix} 2 & 4 \\ 4 & 10 \end{pmatrix}$.</p>
+        <p>Hauptminoren: $H_{11} = 2 > 0$. $\det H = 20 - 16 = 4 > 0$. Beide $> 0$ ⟹ $H$ positiv definit ⟹ $f$ strikt konvex auf ganz $\mathbb{R}^2$. ✓</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.2 — Globales Minimum von obigem</summary>
+        <p>Bestimme das globale Minimum von $f(x, y) = x^2 + 4 x y + 5 y^2 + 2 x - y$ (konvex aus Aufgabe 2.1).</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\nabla f = (2 x + 4 y + 2,\; 4 x + 10 y - 1) = 0$.</p>
+        <p>Aus erster: $x = -1 - 2 y$. Einsetzen in zweite: $-4 - 8 y + 10 y - 1 = 0 \Rightarrow 2 y = 5 \Rightarrow y = 5/2$. $x = -1 - 5 = -6$.</p>
+        <p>$f^* = 36 - 60 + 125/4 - 12 - 5/2 = -36 + 115/4 = -29/4 = -7.25$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.3 — KKT in 2D</summary>
+        <p>$\min (x - 2)^2 + (y - 3)^2$ u.d.N. $x + y \le 4,\; x \ge 0,\; y \ge 0$.</p>
+        <p><strong>Lösung:</strong> Unrestringiertes Minimum $(2, 3)$, aber dort $x + y = 5 > 4$. NB1 aktiv. KKT: $2(x-2) + \lambda = 0$, $2(y-3) + \lambda = 0$ → $x - 2 = y - 3$ → $y = x + 1$. NB: $x + (x+1) = 4 \Rightarrow x = 3/2, y = 5/2$. $\lambda = 1 > 0$ ✓. Optimum $(3/2, 5/2)$, $f^* = 1/4 + 1/4 = 1/2$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.4 — KKT mit Ungleichungs-NB</summary>
+        <p>$\min (x-2)^2 + (y-1)^2$ u.d.N. $x + y \le 2$, $x, y \ge 0$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Unrestringiertes Optimum $(2, 1)$ → erfüllt $2 + 1 = 3 > 2$, also NB1 verletzt → NB1 aktiv am Optimum.</p>
+        <p>$g_1 = x + y - 2 \le 0$, $g_2 = -x, g_3 = -y$. Vermute $x, y > 0$ ⟹ $\lambda_2 = \lambda_3 = 0$:</p>
+        <ul>
+          <li>$2(x-2) + \lambda_1 = 0$</li>
+          <li>$2(y-1) + \lambda_1 = 0$</li>
+        </ul>
+        <p>$\Rightarrow x - 2 = y - 1 \Rightarrow y = x - 1$. NB aktiv: $x + (x-1) = 2 \Rightarrow x = 3/2, y = 1/2$. $\lambda_1 = 1 > 0$ ✓. Check Zulässigkeit: $x, y > 0$ ✓.</p>
+        <p><strong>Optimum: $(3/2, 1/2)$, $f^* = 1/2$.</strong></p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.5 — Lagrange mit Gleichungs-NB</summary>
+        <p>$\min x^2 + y^2 + z^2$ u.d.N. $x + 2 y + 3 z = 6$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$L = x^2 + y^2 + z^2 - \lambda(x + 2 y + 3 z - 6)$.</p>
+        <p>$\partial_x: 2 x = \lambda \Rightarrow x = \lambda/2$. $\partial_y: 2y = 2\lambda \Rightarrow y = \lambda$. $\partial_z: 2z = 3\lambda \Rightarrow z = 3\lambda/2$.</p>
+        <p>NB: $\lambda/2 + 2 \lambda + 9 \lambda/2 = 6 \Rightarrow 7 \lambda = 6 \Rightarrow \lambda = 6/7$. Also $x = 3/7, y = 6/7, z = 9/7$.</p>
+        <p>$f^* = 9/49 + 36/49 + 81/49 = 126/49 = 18/7 \approx 2.571$.</p>
+        <p>Geometrisch: kürzester Abstand vom Ursprung zur Ebene; Abstand² $= 36/14 = 18/7$ ✓.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.6 — Newton vs. Gradientenabstieg</summary>
+        <p>$f(x, y) = x^2 + 100 y^2$. Starte bei $(1, 1)$. Ein Schritt Newton, ein Schritt GD mit $\alpha = 0.005$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\nabla f = (2x, 200 y)$. Bei $(1,1)$: $\nabla f = (2, 200)$. Hesse $H = \text{diag}(2, 200)$.</p>
+        <p><strong>Newton:</strong> $\Delta x = -H^{-1} \nabla f = -(1, 1) \Rightarrow x_1 = (0, 0)$ — exaktes Optimum in einem Schritt.</p>
+        <p><strong>GD ($\alpha = 0.005$):</strong> $x_1 = (0.99, 0)$. Typisches Zickzack bei schlechter Konditionierung. $\kappa(H) = 100$.</p>
+      </details>
+    </section>
+
+    <!-- =============== 3 META =============== -->
+    <section id="meta">
+      <h2>3 · Metaheuristiken</h2>
+      <p>→ Theorie: <a href="02-optimierungsverfahren.html#meta">Metaheuristiken (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 3.1 — Simulated Annealing Akzeptanz</summary>
+        <p>$f(x) = (x-3)^2 + 1$, Start $x_0 = 0$. SA mit $T = 5$. Schlage Nachbarn $x' = -1$ vor. Wahrscheinlichkeit der Annahme?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$f(0) = 10$, $f(-1) = 17$. $\Delta = 17 - 10 = 7 > 0$ (Verschlechterung).</p>
+        <p>$P(\text{accept}) = \exp(-\Delta / T) = \exp(-7/5) \approx 0.2466$.</p>
+        <p>Bei Würfelwurf $r < 0.2466$ wird $x' = -1$ trotzdem angenommen.</p>
+      </details>
+    </section>
+
+    <!-- =============== 4 MEHRZIEL =============== -->
+    <section id="mehrziel">
+      <h2>4 · Mehrziel &amp; Verfahrenswahl</h2>
+      <p>→ Theorie: <a href="02-optimierungsverfahren.html#mehrziel">Mehrziel (Theorie)</a> / <a href="02-optimierungsverfahren.html#wann">Wann nutze ich was? (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.1 — Pareto-Front bestimmen</summary>
+        <p>Bewerte 6 Lösungen mit Werten $(f_1, f_2)$: A=(1,5), B=(2,4), C=(3,3), D=(4,2), E=(5,1), F=(2,5). Welche sind Pareto-optimal?</p>
+        <p><strong>Lösung:</strong> F wird von B dominiert (B besser in $f_1$, gleich in $f_2$). A, B, C, D, E bilden die Pareto-Front — jeder hat einen Vorteil in einem Ziel und einen Nachteil im anderen.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.2 — Pareto-Dominanz Min/Max gemischt</summary>
+        <p>Vier Designs mit Kosten (min) und Reichweite (max): $D_1 = (100, 50)$, $D_2 = (120, 80)$, $D_3 = (150, 70)$, $D_4 = (110, 60)$. Welche sind Pareto-optimal?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Umformen zu reinem $\min$: $f = (c, -r)$. Werte: $D_1 = (100, -50)$, $D_2 = (120, -80)$, $D_3 = (150, -70)$, $D_4 = (110, -60)$.</p>
+        <p>$D_2$ vs $D_3$: $120 \le 150$ ✓, $-80 \le -70$ ✓ + strikt. $D_2$ dominiert $D_3$.</p>
+        <p>$D_1, D_2, D_4$ untereinander: kein Dominanz (jeder hat eigenen Vorteil).</p>
+        <p><strong>Pareto-optimal: $D_1, D_2, D_4$. Dominiert: $D_3$.</strong></p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.3 — Gewichtete Summe Limitation</summary>
+        <p>Pareto-Front liegt auf der Kurve $f_2 = (1 - \sqrt{f_1})^2$ für $f_1 \in [0, 1]$. Ist sie konvex? Welche Punkte sind via gewichteter Summe erreichbar?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Endpunkte $(0,1)$ und $(1,0)$. Mittelpunkt bei $f_1 = 0.25$: $(0.25, 0.25)$ statt $(0.5, 0.5)$ wie bei einer Geraden — also konkav (nicht-konvexe Front).</p>
+        <p>Da nicht-konvex: gewichtete Summe findet nur Endpunkte und keine inneren Punkte der Front. Komplette Front nur mit $\epsilon$-Constraint oder NSGA-II.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.4 — Verfahrenswahl-Klausurfrage</summary>
+        <p>Welches Verfahren wählst du für: (a) Lineares Transportproblem mit 20 Variablen, (b) Training eines neuronalen Netzes mit 10 Mio Parametern, (c) Reglerparameter mit 3 Variablen optimieren, $f$ kommt aus Simulation, (d) TSP mit 100 Städten?</p>
+        <p><strong>Lösung:</strong></p>
+        <ul>
+          <li><strong>(a)</strong> LP-Standardform → <em>Simplex</em>. Klein genug für Dense.</li>
+          <li><strong>(b)</strong> Nichtkonvex, riesige Skala, stochastische Mini-Batches → <em>SGD/Adam</em>. Newton zu teuer ($n^3$).</li>
+          <li><strong>(c)</strong> Blackbox-Simulation, klein → <em>Nelder-Mead</em> oder <em>Bayes-Optimierung</em> (wenn Simulation teuer).</li>
+          <li><strong>(d)</strong> Kombinatorisch, NP-schwer → <em>2-opt / 3-opt</em>, <em>Lin-Kernighan</em>, <em>ACO</em>, <em>SA</em>.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- =============== 5 KLAUSUR =============== -->
+    <section id="klausur">
+      <h2>5 · Klausur-Simulation mit Claude Code</h2>
+
+      <div class="prompt">Du simulierst eine OV-Klausur (60 Min, 5 Aufgaben, 60 Punkte gesamt).
+Punkteverteilung:
+  Aufgabe 1 — LP grafisch + Simplex (15)
+  Aufgabe 2 — Dualität + komplementärer Schlupf (10)
+  Aufgabe 3 — KKT in 2D-NLP mit Ungleichung (20)
+  Aufgabe 4 — Metaheuristik beschreiben (Pseudocode + Stop-Kriterium) (10)
+  Aufgabe 5 — Pareto-Dominanz + Skalarisierungs-Limitation (5)
+Ich rechne. Du korrigierst wie ein Prof, gibst Punkte, am Ende Note (1.0–5.0) + Top-3-Lücken.</div>
+
+      <div class="prompt">Verfahrenswahl-Drill: gib mir 6 Optimierungsprobleme — gemischt: LP, QP, NLP konvex, NLP nicht-konvex, Blackbox, Mehrziel. Ich identifiziere pro Aufgabe: (a) Problemtyp, (b) passendes Verfahren, (c) Begründung in 2-3 Sätzen. Du korrigierst und zeigst, wenn ich ein passendes Verfahren übersehen habe.</div>
+    </section>
+
+    <footer>
+      Übungen · Optimierungsverfahren · WDS125 OV (ZAM) ·
+      <a href="02-optimierungsverfahren.html">zurück zur Theorie</a>
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

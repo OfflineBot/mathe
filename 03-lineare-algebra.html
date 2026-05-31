@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lineare Algebra & Matrix-Zerlegungen · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="index.html">← Übersicht</a>
+    <h1>Lineare Algebra</h1>
+    <p class="sub">Fortg. LA & AG · LIJ</p>
+
+        <a class="back" href="03-lineare-algebra-uebungen.html" style="color: var(--accent-2); margin-bottom: 1rem; display: inline-block;">→ Übungen</a>
+    <ul class="toc">
+      <li><a href="#ueberblick">Überblick</a></li>
+      <li><a href="#repetitorium">0 · Repetitorium</a></li>
+      <li><a href="#lu">1 · LU-Zerlegung</a></li>
+      <li><a href="#cholesky">2 · Cholesky</a></li>
+      <li><a href="#qr">3 · QR-Zerlegung</a></li>
+      <li><a href="#evd">4 · Eigenwerte &amp; Diagonalisierung</a>
+        <ul class="sub-toc">
+          <li><a href="#evd-def">4.1 Definition</a></li>
+          <li><a href="#evd-rezept">4.2 Berechnungsrezept</a></li>
+          <li><a href="#evd-diag">4.3 Diagonalisierung</a></li>
+          <li><a href="#jordan">4.4 Jordan-Normalform</a></li>
+        </ul>
+      </li>
+      <li><a href="#svd">5 · Singulärwertzerlegung (SVD)</a>
+        <ul class="sub-toc">
+          <li><a href="#svd-aussage">5.1 Aussage</a></li>
+          <li><a href="#svd-rezept">5.2 Rezept</a></li>
+          <li><a href="#svd-anwendung">5.3 Anwendungen</a></li>
+        </ul>
+      </li>
+      <li><a href="#pd">6 · Positiv-Definitheit</a></li>
+      <li><a href="#geometrie">7 · Analytische Geometrie</a>
+        <ul class="sub-toc">
+          <li><a href="#skalar">7.1 Skalarprodukt</a></li>
+          <li><a href="#kreuz">7.2 Kreuzprodukt</a></li>
+          <li><a href="#geraden">7.3 Geraden &amp; Ebenen</a></li>
+          <li><a href="#projektion">7.4 Projektion</a></li>
+          <li><a href="#quadriken">7.5 Quadriken</a></li>
+        </ul>
+      </li>
+      <li><a href="#vr">8 · Vektorräume, lin. Abb.</a></li>
+      <li><a href="#cheatsheet">9 · Cheatsheet</a></li>
+      <li><a href="#drillplan">10 · Drillplan</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Fächer</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik.html">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren.html">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra.html" class="current">Lineare Algebra</a></li>
+        <li><a href="04-numerik.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2.html">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Lineare Algebra &amp; Matrix-Zerlegungen</h1>
+      <p class="tagline">LU · Cholesky · QR · EVD · SVD · Jordan · analytische Geometrie</p>
+      <p class="meta"><span>Moodle: Vorlesungen 1–5</span><span>Abschnitt 3/4/5 mit Übungen</span></p>
+    </header>
+
+    <div class="callout callout-info" style="margin-bottom: 2rem;">
+      <div class="callout-title">Übungen</div>
+      <p>Alle Klausur-Übungsaufgaben mit ausführlichen Lösungen findest du in der Begleitseite:
+      <a href="03-lineare-algebra-uebungen.html"><strong>Übungen — Lineare Algebra</strong></a>.</p>
+    </div>
+
+    <section id="ueberblick">
+      <h2>Überblick</h2>
+      <p>Matrix-Zerlegungen sind das Schweizer Taschenmesser der numerischen Mathematik. Jede Zerlegung dient einem spezifischen Zweck — kennt man die Stärken/Schwächen, wählt man das passende Werkzeug:</p>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Zerlegung</th><th>Voraussetzung</th><th>Hauptanwendung</th></tr></thead>
+        <tbody>
+          <tr><td>LU</td><td>quadratisch, $\det \ne 0$</td><td>$Ax = b$ effizient (Vorwärts/Rückwärts)</td></tr>
+          <tr><td>Cholesky $A = LL^\top$</td><td>symmetrisch, pos. definit</td><td>halber Aufwand der LU; PD-Test</td></tr>
+          <tr><td>QR</td><td>$m \times n$, $m \ge n$, Spalten lin. unabh.</td><td>Least Squares, stabile Orthogonalisierung</td></tr>
+          <tr><td>EVD $A = PDP^{-1}$</td><td>diagonalisierbar (geom = alg Vielfachheit)</td><td>$A^k$, lineare ODEs, Hauptkomponenten</td></tr>
+          <tr><td>Jordan</td><td>jede quadratische</td><td>nicht-diagonalisierbare Fälle</td></tr>
+          <tr><td>SVD $A = U\Sigma V^\top$</td><td>jede $m \times n$</td><td>Pseudoinverse, PCA, Niedrigrang-Approx., Kondition</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <!-- ===================== 0 REPETITORIUM ===================== -->
+    <section id="repetitorium">
+      <h2>0 · Repetitorium</h2>
+      <ul>
+        <li>$A \in \mathbb{R}^{m \times n}$. Rang = Dim. Bild = Dim. Zeilenraum = Dim. Spaltenraum.</li>
+        <li>Dimensionssatz: $\dim \ker(A) + \text{rg}(A) = n$ (für Spaltenanzahl $n$).</li>
+        <li>$A$ invertierbar ⟺ $\det A \ne 0$ ⟺ $\text{rg}(A) = n$ ⟺ Spalten linear unabhängig.</li>
+        <li>$\det(AB) = \det(A) \det(B)$, $\det(A^\top) = \det(A)$, $\det(A^{-1}) = 1/\det(A)$.</li>
+        <li>Spur $\text{tr}(A) = \sum_i A_{ii} = \sum_i \lambda_i$. $\det(A) = \prod_i \lambda_i$.</li>
+        <li>Charakteristisches Polynom: $\chi_A(\lambda) = \det(A - \lambda I)$. Grad $n$.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== 1 LU ===================== -->
+    <section id="lu">
+      <h2>1 · LU-Zerlegung</h2>
+      <div class="def">
+        <span class="def-label">Zerlegung</span>
+        $$ A = LU $$
+        <p>$L$ untere Dreiecksmatrix mit Einsen auf der Diagonale, $U$ obere Dreiecksmatrix. Entsteht aus dem Gauß-Algorithmus ohne Pivotsuche. Mit Pivotsuche: $PA = LU$ (Permutationsmatrix $P$).</p>
+      </div>
+
+      <h3>Rezept (ohne Pivot)</h3>
+      <ol>
+        <li>Spalte für Spalte eliminieren. Für Spalte $j$: für jede Zeile $i > j$ setze $\ell_{ij} = a_{ij} / a_{jj}$ und subtrahiere $\ell_{ij}$-faches der Zeile $j$.</li>
+        <li>Was nach Elimination übrig bleibt, ist $U$ (obere Dreiecksmatrix).</li>
+        <li>Die Multiplikatoren $\ell_{ij}$ bilden $L$ (untere Dreiecksmatrix, $L_{ii} = 1$).</li>
+      </ol>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">Wann pivotieren?</div>
+        <p>Ist ein Diagonalelement $a_{jj}$ klein oder null, bricht die Methode zusammen oder wird numerisch instabil. Lösung: <strong>Spaltenpivotsuche</strong> — vertausche Zeilen so, dass das betragsmäßig größte Element nach oben rückt. Speichere die Permutation in $P$.</p>
+      </div>
+
+      <div class="example">
+        <span class="example-label">Beispiel</span>
+        <p>$A = \begin{pmatrix} 2 & 1 & 1 \\ 6 & 4 & 5 \\ -2 & 0 & 2 \end{pmatrix}$.</p>
+        <p>Spalte 1: $\ell_{21} = 6/2 = 3$, $\ell_{31} = -2/2 = -1$.</p>
+        <p>Nach $Z_2 \leftarrow Z_2 - 3 Z_1$, $Z_3 \leftarrow Z_3 + Z_1$:</p>
+        $$ \begin{pmatrix} 2 & 1 & 1 \\ 0 & 1 & 2 \\ 0 & 1 & 3 \end{pmatrix} $$
+        <p>Spalte 2: $\ell_{32} = 1/1 = 1$. $Z_3 \leftarrow Z_3 - Z_2$:</p>
+        $$ U = \begin{pmatrix} 2 & 1 & 1 \\ 0 & 1 & 2 \\ 0 & 0 & 1 \end{pmatrix},\quad L = \begin{pmatrix} 1 & 0 & 0 \\ 3 & 1 & 0 \\ -1 & 1 & 1 \end{pmatrix} $$
+        <p>Probe: $LU = A$ ✓.</p>
+      </div>
+
+      <h3>Anwendung: $Ax = b$</h3>
+      <ol>
+        <li>Löse $L y = b$ via Vorwärtssubstitution ($O(n^2)$).</li>
+        <li>Löse $U x = y$ via Rückwärtssubstitution ($O(n^2)$).</li>
+      </ol>
+      <p>Aufwand: LU-Zerlegung $\approx \frac{2}{3} n^3$, Lösen pro RHS $O(n^2)$. Bei vielen rechten Seiten lohnt sich die einmalige Zerlegung.</p>
+    </section>
+
+    <!-- ===================== 2 CHOLESKY ===================== -->
+    <section id="cholesky">
+      <h2>2 · Cholesky-Zerlegung</h2>
+      <div class="def">
+        <span class="def-label">Zerlegung</span>
+        <p>Für <strong>symmetrische, positiv definite</strong> $A$:</p>
+        $$ A = L L^\top $$
+        <p>$L$ untere Dreiecksmatrix mit positiver Diagonale. Halber Aufwand der LU ($\approx \frac{1}{3} n^3$).</p>
+      </div>
+
+      <h3>Formeln</h3>
+      $$ \ell_{jj} = \sqrt{a_{jj} - \sum_{k=1}^{j-1} \ell_{jk}^2}, \quad \ell_{ij} = \frac{1}{\ell_{jj}}\left(a_{ij} - \sum_{k=1}^{j-1} \ell_{ik} \ell_{jk}\right),\; i > j. $$
+
+      <div class="example">
+        <span class="example-label">Beispiel</span>
+        <p>$A = \begin{pmatrix} 4 & 2 & 2 \\ 2 & 5 & 3 \\ 2 & 3 & 6 \end{pmatrix}$.</p>
+        <ul>
+          <li>$\ell_{11} = \sqrt 4 = 2$</li>
+          <li>$\ell_{21} = 2/2 = 1$; $\ell_{31} = 2/2 = 1$</li>
+          <li>$\ell_{22} = \sqrt{5 - 1^2} = 2$</li>
+          <li>$\ell_{32} = (3 - 1 \cdot 1)/2 = 1$</li>
+          <li>$\ell_{33} = \sqrt{6 - 1^2 - 1^2} = 2$</li>
+        </ul>
+        $$ L = \begin{pmatrix} 2 & 0 & 0 \\ 1 & 2 & 0 \\ 1 & 1 & 2 \end{pmatrix} $$
+      </div>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">PD-Test per Cholesky</div>
+        <p>Schlägt $\sqrt{\dots}$ einer negativen Zahl fehl, ist $A$ <em>nicht positiv definit</em>. Cholesky funktioniert genau dann, wenn $A$ symmetrisch und positiv definit ist.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 3 QR ===================== -->
+    <section id="qr">
+      <h2>3 · QR-Zerlegung</h2>
+      <div class="def">
+        <span class="def-label">Zerlegung</span>
+        $$ A = QR $$
+        <ul>
+          <li>$Q$ orthogonal: $Q^\top Q = I$.</li>
+          <li>$R$ obere Dreiecksmatrix.</li>
+        </ul>
+        <p>Funktioniert für jede $m \times n$ mit $m \ge n$. Bei linear unabhängigen Spalten ist die Zerlegung eindeutig (bis auf Vorzeichen).</p>
+      </div>
+
+      <h3>3.1 Gram-Schmidt-Verfahren (klassisch)</h3>
+      <p>Spalten $a_1, \dots, a_n$ orthonormalisieren:</p>
+      <ol>
+        <li>$u_1 = a_1$, $q_1 = u_1 / \|u_1\|$.</li>
+        <li>Für $k = 2, \dots, n$: $u_k = a_k - \sum_{j=1}^{k-1} \langle a_k, q_j \rangle q_j$, $q_k = u_k / \|u_k\|$.</li>
+        <li>$R_{jk} = \langle a_k, q_j \rangle$ für $j < k$, $R_{kk} = \|u_k\|$.</li>
+      </ol>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">Klassisches Gram-Schmidt ist numerisch instabil</div>
+        <p>Verwende stattdessen <strong>Modified Gram-Schmidt</strong> (in jedem Schritt sofort gegen alle bisherigen Vektoren orthogonalisieren) oder besser <strong>Householder-Reflexionen</strong>. LAPACK nimmt Householder.</p>
+      </div>
+
+      <div class="example">
+        <span class="example-label">Beispiel</span>
+        <p>$A = \begin{pmatrix} 1 & 1 \\ 0 & 1 \\ 1 & 0 \end{pmatrix}$.</p>
+        <p>$a_1 = (1, 0, 1)^\top$, $\|a_1\| = \sqrt 2$, $q_1 = \frac{1}{\sqrt 2}(1, 0, 1)^\top$.</p>
+        <p>$\langle a_2, q_1 \rangle = (1 + 0 + 0)/\sqrt 2 = 1/\sqrt 2$.</p>
+        <p>$u_2 = a_2 - (1/\sqrt 2) q_1 = (1, 1, 0)^\top - (1/2, 0, 1/2)^\top = (1/2, 1, -1/2)^\top$. $\|u_2\| = \sqrt{1/4 + 1 + 1/4} = \sqrt{3/2}$.</p>
+        <p>$q_2 = (1/\sqrt 6)(1, 2, -1)^\top$.</p>
+        <p>$R = \begin{pmatrix} \sqrt 2 & 1/\sqrt 2 \\ 0 & \sqrt{3/2} \end{pmatrix}$, $Q = [q_1\; q_2]$. Probe $QR = A$.</p>
+      </div>
+
+      <h3>3.2 Anwendung: Kleinste Quadrate</h3>
+      <p>Bei überbestimmtem $Ax = b$ ($m > n$, im Allgemeinen unlösbar) sucht man $\hat x = \arg\min \|Ax - b\|^2$.</p>
+      <p>Klassisch via Normalengleichung $A^\top A x = A^\top b$ — aber $\kappa(A^\top A) = \kappa(A)^2$, also numerisch problematisch.</p>
+      <p>Stabiler mit QR: $A = QR$ → $Rx = Q^\top b$, lösbar via Rückwärtssubstitution.</p>
+    </section>
+
+    <!-- ===================== 4 EVD ===================== -->
+    <section id="evd">
+      <h2>4 · Eigenwerte, Eigenvektoren, Diagonalisierung</h2>
+
+      <div id="evd-def">
+        <h3>4.1 Definition</h3>
+        <div class="def">
+          <span class="def-label">Eigenwert / Eigenvektor</span>
+          $$ A v = \lambda v, \quad v \ne 0 $$
+          <p>$\lambda \in \mathbb{C}$ ist <strong>Eigenwert</strong>, $v$ <strong>Eigenvektor</strong>.</p>
+          <p><strong>Charakteristisches Polynom:</strong> $\chi_A(\lambda) = \det(A - \lambda I)$. Nullstellen = Eigenwerte.</p>
+          <p><strong>Eigenraum</strong> zu $\lambda$: $E_\lambda = \ker(A - \lambda I)$.</p>
+        </div>
+
+        <ul>
+          <li><strong>Algebraische Vielfachheit</strong> von $\lambda$: Multiplizität als Nullstelle von $\chi_A$.</li>
+          <li><strong>Geometrische Vielfachheit</strong>: $\dim E_\lambda$.</li>
+          <li>Es gilt stets $1 \le \text{geom} \le \text{alg}$.</li>
+        </ul>
+      </div>
+
+      <div id="evd-rezept">
+        <h3>4.2 Rezept</h3>
+        <ol>
+          <li>$\chi_A(\lambda) = \det(A - \lambda I) = 0$ → Eigenwerte (ggf. mit Vielfachheit).</li>
+          <li>Für jeden EW $\lambda_i$: Lösungsraum von $(A - \lambda_i I) v = 0$ → Eigenvektoren.</li>
+          <li>Geometrische Vielfachheit = Anzahl linear unabhängiger Lösungen.</li>
+        </ol>
+      </div>
+
+      <div id="evd-diag">
+        <h3>4.3 Diagonalisierung</h3>
+        <div class="thm">
+          <span class="thm-label">Satz</span>
+          <p>$A \in \mathbb{R}^{n \times n}$ ist <strong>diagonalisierbar</strong> ⟺ Summe der geometrischen Vielfachheiten = $n$, also für jeden EW: $\text{geom} = \text{alg}$.</p>
+          <p>Dann gilt $A = P D P^{-1}$ mit $D = \text{diag}(\lambda_1, \dots, \lambda_n)$ und Spalten von $P$ = Eigenvektoren.</p>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Hinreichende Bedingungen</div>
+          <ul>
+            <li>$n$ <em>verschiedene</em> Eigenwerte ⇒ diagonalisierbar.</li>
+            <li>Symmetrische reelle Matrix ⇒ orthogonal diagonalisierbar: $A = Q \Lambda Q^\top$ mit $Q$ orthogonal.</li>
+            <li>Normale Matrix ($A A^\top = A^\top A$) ⇒ unitär diagonalisierbar (über $\mathbb{C}$).</li>
+          </ul>
+        </div>
+
+        <h4>Matrixpotenzen via EVD</h4>
+        <p>Ist $A = P D P^{-1}$, dann $A^k = P D^k P^{-1}$. Da $D$ diagonal, ist $D^k = \text{diag}(\lambda_i^k)$ trivial.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}$.</p>
+          <p>$\chi_A(\lambda) = (4-\lambda)(3-\lambda) - 2 = \lambda^2 - 7\lambda + 10 = (\lambda - 5)(\lambda - 2)$. EW: $5, 2$.</p>
+          <p>Eig(5): $(A - 5I) = \begin{pmatrix} -1 & 1 \\ 2 & -2 \end{pmatrix}$. Kern: $v = (1, 1)^\top$.</p>
+          <p>Eig(2): $(A - 2I) = \begin{pmatrix} 2 & 1 \\ 2 & 1 \end{pmatrix}$. Kern: $v = (1, -2)^\top$.</p>
+          <p>$P = \begin{pmatrix} 1 & 1 \\ 1 & -2 \end{pmatrix}$, $D = \text{diag}(5, 2)$. $P^{-1} = \frac{1}{-3}\begin{pmatrix} -2 & -1 \\ -1 & 1 \end{pmatrix} = \frac{1}{3}\begin{pmatrix} 2 & 1 \\ 1 & -1 \end{pmatrix}$.</p>
+        </div>
+      </div>
+
+      <div id="jordan">
+        <h3>4.4 Jordan-Normalform</h3>
+        <p>Für nicht-diagonalisierbare Matrizen existiert die <strong>Jordan-Normalform</strong>:</p>
+        $$ A = P J P^{-1},\quad J = \text{diag}(J_{k_1}(\lambda_1), J_{k_2}(\lambda_2), \dots) $$
+        <p>Jeder <em>Jordan-Block</em> $J_k(\lambda)$ ist eine $k \times k$-Matrix mit $\lambda$ auf der Diagonale, $1$ auf der Superdiagonale.</p>
+        $$ J_3(\lambda) = \begin{pmatrix} \lambda & 1 & 0 \\ 0 & \lambda & 1 \\ 0 & 0 & \lambda \end{pmatrix} $$
+        <p>Blockgrößen ermittelst du aus der Folge $\dim \ker(A - \lambda I)^k$ für $k = 1, 2, \dots$ — der Sprung in den Dimensionen verrät die Block-Struktur.</p>
+
+        <div class="callout callout-note">
+          <div class="callout-title">In der Klausur</div>
+          <p>Meist nur kleine Beispiele (2x2, 3x3) mit einem mehrfach auftretenden EW, dessen geom. Vielfachheit kleiner als die algebraische ist. Dann ist die Jordan-Form ein einziger größerer Block.</p>
+        </div>
+      </div>
+
+      <div class="prompt">Diagonalisiere $A = \begin{pmatrix} 4 & 2 \\ 1 & 3 \end{pmatrix}$. Ich rechne CharPol, EW, Eigenvektoren, $P$, prüfe $A = PDP^{-1}$. Du fängst typische Fehler ab: falsche Vorzeichen im CharPol, vergessene Normierung, $P^{-1}$ verrechnet.</div>
+
+      <div class="prompt">Gib mir eine 3x3-Matrix mit doppeltem Eigenwert. Ich bestimme algebraische und geometrische Vielfachheit, entscheide Diagonalisierbarkeit, und falls nicht diagonalisierbar: gebe Jordan-Form an. Du prüfst die Blockstruktur über die Kerne von $(A - \lambda I)^k$.</div>
+    </section>
+
+    <!-- ===================== 5 SVD ===================== -->
+    <section id="svd">
+      <h2>5 · Singulärwertzerlegung (SVD) ⭐</h2>
+
+      <div id="svd-aussage">
+        <h3>5.1 Aussage</h3>
+        <div class="thm">
+          <span class="thm-label">Satz</span>
+          <p>Jede Matrix $A \in \mathbb{R}^{m \times n}$ besitzt eine Zerlegung
+            $$ A = U \Sigma V^\top $$
+            mit:</p>
+          <ul>
+            <li>$U \in \mathbb{R}^{m \times m}$ orthogonal — Spalten = <em>Linkssingulärvektoren</em>.</li>
+            <li>$V \in \mathbb{R}^{n \times n}$ orthogonal — Spalten = <em>Rechtssingulärvektoren</em>.</li>
+            <li>$\Sigma \in \mathbb{R}^{m \times n}$ "diagonal" mit Singulärwerten $\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_r > 0$, restliche Diagonaleinträge $= 0$. $r = \text{rg}(A)$.</li>
+          </ul>
+        </div>
+
+        <h4>Zusammenhang mit EVD</h4>
+        $$ A^\top A = V \Sigma^\top \Sigma V^\top, \quad A A^\top = U \Sigma \Sigma^\top U^\top $$
+        <ul>
+          <li>$\sigma_i^2$ = Eigenwerte von $A^\top A$ (und $AA^\top$).</li>
+          <li>$V$ = Eigenvektoren von $A^\top A$.</li>
+          <li>$U$ = Eigenvektoren von $AA^\top$.</li>
+        </ul>
+      </div>
+
+      <div id="svd-rezept">
+        <h3>5.2 Berechnungsrezept (kleine Matrizen)</h3>
+        <ol>
+          <li>$A^\top A$ bilden — symmetrisch, positiv semidefinit, $n \times n$.</li>
+          <li>Eigenwerte $\lambda_i \ge 0$ → $\sigma_i = \sqrt{\lambda_i}$ (absteigend).</li>
+          <li>Orthonormale Eigenvektoren $v_i$ von $A^\top A$ → Spalten von $V$.</li>
+          <li>$u_i = A v_i / \sigma_i$ für $\sigma_i > 0$ → erste $r$ Spalten von $U$.</li>
+          <li>Restliche Spalten von $U$ aus Orthonormalbasis von $\ker(A^\top)$ ergänzen.</li>
+        </ol>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}$.</p>
+          <p>$A^\top A = A^2 = \begin{pmatrix} 10 & 6 \\ 6 & 10 \end{pmatrix}$. CharPol: $(10-\lambda)^2 - 36 = \lambda^2 - 20\lambda + 64 = (\lambda - 16)(\lambda - 4)$. EW: $16, 4$.</p>
+          <p>$\sigma_1 = 4, \sigma_2 = 2$.</p>
+          <p>Eig(16): $\begin{pmatrix} -6 & 6 \\ 6 & -6 \end{pmatrix} v = 0$ → $v_1 = (1, 1)^\top / \sqrt 2$.</p>
+          <p>Eig(4): $v_2 = (1, -1)^\top / \sqrt 2$.</p>
+          <p>$u_1 = A v_1 / 4 = (3/\sqrt 2 + 1/\sqrt 2, 1/\sqrt 2 + 3/\sqrt 2)/4 = (4/\sqrt 2, 4/\sqrt 2)/4 = (1, 1)^\top/\sqrt 2$.</p>
+          <p>$u_2 = A v_2 / 2 = (3/\sqrt 2 - 1/\sqrt 2, 1/\sqrt 2 - 3/\sqrt 2)/2 = (2/\sqrt 2, -2/\sqrt 2)/2 = (1, -1)^\top/\sqrt 2$.</p>
+          <p>Also $U = V = \frac{1}{\sqrt 2}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$, $\Sigma = \text{diag}(4, 2)$.</p>
+        </div>
+      </div>
+
+      <div id="svd-anwendung">
+        <h3>5.3 Anwendungen</h3>
+
+        <h4>Niedrigrang-Approximation (Eckart-Young)</h4>
+        <div class="thm">
+          <span class="thm-label">Satz</span>
+          <p>Die beste Rang-$k$-Approximation von $A$ in 2-Norm und Frobenius-Norm ist
+            $$ A_k = \sum_{i=1}^k \sigma_i u_i v_i^\top. $$
+            Fehler: $\|A - A_k\|_2 = \sigma_{k+1}$, $\|A - A_k\|_F = \sqrt{\sum_{i > k} \sigma_i^2}$.</p>
+        </div>
+
+        <h4>Pseudoinverse (Moore-Penrose)</h4>
+        $$ A^+ = V \Sigma^+ U^\top,\quad \Sigma^+_{ii} = \begin{cases} 1/\sigma_i & \sigma_i > 0 \\ 0 & \sigma_i = 0 \end{cases} $$
+        <p>Liefert für $Ax = b$ die kleinste-Quadrate-Lösung mit minimaler Norm: $\hat x = A^+ b$.</p>
+
+        <h4>Konditionszahl</h4>
+        $$ \kappa_2(A) = \sigma_1 / \sigma_n \quad \text{(quadratisch, regulär)}. $$
+        <p>Groß = schlecht konditioniert; kleine Störungen werden enorm verstärkt.</p>
+
+        <h4>PCA (Hauptkomponentenanalyse)</h4>
+        <p>Bei zentrierter Datenmatrix $X \in \mathbb{R}^{m \times n}$ ($m$ Samples, $n$ Features) sind die Rechtssingulärvektoren $V$ die Hauptachsen, $\sigma_i^2 / (m-1)$ die Varianz entlang dieser Achse.</p>
+      </div>
+
+      <div class="prompt">Berechne SVD von $A = \begin{pmatrix} 2 & 0 \\ 0 & -3 \\ 0 & 0 \end{pmatrix}$. Achtung: das negative Vorzeichen kommt in $\sigma$ NIE vor (immer $\ge 0$). Ich rechne, du prüfst Vorzeichen + Orthonormalität.</div>
+
+      <div class="prompt">Erkläre Eckart-Young an einer 4x4-Matrix mit SVD $\Sigma = \text{diag}(10, 4, 1, 0.1)$. Welcher Rang ist optimal für 99% der Frobenius-Energie? Welcher relative Fehler bei Rang 2?</div>
+    </section>
+
+    <!-- ===================== 6 PD ===================== -->
+    <section id="pd">
+      <h2>6 · Positiv (Semi-)Definitheit</h2>
+      <p>Sei $A \in \mathbb{R}^{n \times n}$ symmetrisch. Äquivalent sind:</p>
+      <ol>
+        <li>$x^\top A x > 0$ für alle $x \ne 0$ (positiv definit, PD).</li>
+        <li>Alle Eigenwerte $> 0$.</li>
+        <li>Alle führenden Hauptminoren $> 0$ (Sylvester-Kriterium).</li>
+        <li>Cholesky-Zerlegung $A = LL^\top$ existiert mit positiver Diagonale.</li>
+      </ol>
+      <p>Positiv semidefinit (PSD): $x^\top A x \ge 0$, EW $\ge 0$.</p>
+      <p>Negative/negativ-semidefinite Analoga: Vorzeichen umkehren oder $-A$ betrachten.</p>
+
+      <div class="callout callout-tip">
+        <div class="callout-title">Hauptminoren-Trick</div>
+        <p>Für $A = \begin{pmatrix} a & b \\ b & c \end{pmatrix}$: PD ⟺ $a > 0$ und $ac - b^2 > 0$. Bei 3x3 analog mit den drei führenden Determinanten.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 7 GEOMETRIE ===================== -->
+    <section id="geometrie">
+      <h2>7 · Analytische Geometrie</h2>
+
+      <div id="skalar">
+        <h3>7.1 Skalarprodukt, Norm, Winkel</h3>
+        <ul>
+          <li>$\langle u, v \rangle = u^\top v = \sum u_i v_i$.</li>
+          <li>$\|v\| = \sqrt{\langle v, v \rangle}$.</li>
+          <li>$\cos \theta = \dfrac{\langle u, v \rangle}{\|u\| \|v\|}$.</li>
+          <li>$u \perp v \Leftrightarrow \langle u, v \rangle = 0$.</li>
+          <li>Cauchy-Schwarz: $|\langle u, v \rangle| \le \|u\| \cdot \|v\|$.</li>
+        </ul>
+      </div>
+
+      <div id="kreuz">
+        <h3>7.2 Kreuzprodukt (nur $\mathbb{R}^3$)</h3>
+        $$ u \times v = \begin{pmatrix} u_2 v_3 - u_3 v_2 \\ u_3 v_1 - u_1 v_3 \\ u_1 v_2 - u_2 v_1 \end{pmatrix} $$
+        <ul>
+          <li>$u \times v \perp u$ und $u \times v \perp v$.</li>
+          <li>$\|u \times v\| = \|u\| \|v\| \sin \theta$ = Fläche des aufgespannten Parallelogramms.</li>
+          <li>Spatprodukt $[u, v, w] = \langle u, v \times w \rangle = \det[u\, v\, w]$ = Volumen.</li>
+          <li>$u \times v = -(v \times u)$ (antisymmetrisch).</li>
+        </ul>
+      </div>
+
+      <div id="geraden">
+        <h3>7.3 Geraden &amp; Ebenen</h3>
+        <h4>Gerade in $\mathbb{R}^n$</h4>
+        <p>Punktrichtungsform: $g: x = p + t r$, $r \ne 0$, $t \in \mathbb{R}$.</p>
+
+        <h4>Ebene in $\mathbb{R}^3$</h4>
+        <ul>
+          <li>Punktrichtungsform: $x = p + s u + t v$ mit $u, v$ linear unabhängig.</li>
+          <li>Normalenform: $\langle n, x - p \rangle = 0$, also $n^\top x = d$ mit $d = n^\top p$.</li>
+          <li>Koordinatenform: $a x_1 + b x_2 + c x_3 = d$ (mit $n = (a,b,c)^\top$).</li>
+        </ul>
+
+        <h4>Abstandsformeln</h4>
+        <ul>
+          <li>Punkt $q$ zu Ebene $n^\top x = d$: $\dfrac{|n^\top q - d|}{\|n\|}$.</li>
+          <li>Punkt $q$ zu Gerade $g: p + tr$: $\dfrac{\|(q - p) \times r\|}{\|r\|}$ (im $\mathbb{R}^3$).</li>
+          <li>Zwei windschiefe Geraden: $\dfrac{|\langle (p_2 - p_1), r_1 \times r_2 \rangle|}{\|r_1 \times r_2\|}$.</li>
+        </ul>
+      </div>
+
+      <div id="projektion">
+        <h3>7.4 Orthogonale Projektion</h3>
+        <p>Sei $A \in \mathbb{R}^{m \times n}$ mit linear unabhängigen Spalten. Die orthogonale Projektion von $b$ auf den Spaltenraum:</p>
+        $$ \hat b = A (A^\top A)^{-1} A^\top b = P b. $$
+        <p>$P = A(A^\top A)^{-1} A^\top$ ist die <strong>Projektionsmatrix</strong>: $P^2 = P$, $P^\top = P$.</p>
+        <p>Bei $A = Q$ orthonormal vereinfacht sich zu $P = Q Q^\top$.</p>
+        <p>Komplementärprojektion: $I - P$ projiziert auf das orthogonale Komplement.</p>
+      </div>
+
+      <div id="quadriken">
+        <h3>7.5 Quadriken &amp; Hauptachsentransformation</h3>
+        <p>Allgemeine Quadrik: $x^\top A x + b^\top x + c = 0$ mit symmetrischer $A$.</p>
+
+        <h4>Klassifikation über Eigenwerte von $A$</h4>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>EW-Signatur</th><th>2D-Quadrik</th><th>3D-Quadrik</th></tr></thead>
+          <tbody>
+            <tr><td>alle positiv</td><td>Ellipse</td><td>Ellipsoid</td></tr>
+            <tr><td>alle negativ</td><td>leere Menge (Ellipse mit "negativen Halbachsen")</td><td>(leer)</td></tr>
+            <tr><td>gemischt</td><td>Hyperbel</td><td>einschalig./zweischalig. Hyperboloid</td></tr>
+            <tr><td>genau ein EW = 0</td><td>Parabel</td><td>elliptisches / hyperbolisches Paraboloid</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>Hauptachsentransformation</h4>
+        <ol>
+          <li>Schreibe Quadrik als $x^\top A x = c$ (linearer Term durch Verschiebung eliminieren).</li>
+          <li>EVD: $A = Q \Lambda Q^\top$ mit $Q$ orthogonal.</li>
+          <li>Substitution $x = Q y$ ⇒ $y^\top \Lambda y = c$, also $\sum \lambda_i y_i^2 = c$ — Standardform.</li>
+        </ol>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$5x^2 + 4xy + 5y^2 = 9$.</p>
+          <p>$A = \begin{pmatrix} 5 & 2 \\ 2 & 5 \end{pmatrix}$. CharPol: $(5-\lambda)^2 - 4 = \lambda^2 - 10\lambda + 21 = (\lambda - 3)(\lambda - 7)$. EW: $3, 7$.</p>
+          <p>Hauptform $3 y_1^2 + 7 y_2^2 = 9 \Leftrightarrow \frac{y_1^2}{3} + \frac{y_2^2}{9/7} = 1$. Ellipse mit Halbachsen $\sqrt 3, \sqrt{9/7}$. Drehwinkel: Eigenvektor zu 3 ist $(1, -1)^\top / \sqrt 2$ → Drehung um $-45°$.</p>
+        </div>
+      </div>
+
+      <div class="prompt">Klassifiziere die Quadrik $2x^2 - 4xy + 5y^2 + 6x - 8y + 1 = 0$. Ich finde $A$, eliminiere den linearen Anteil per Verschiebung, transformiere auf Hauptachsen, identifiziere die Quadrik + Halbachsen. Du fängst Vorzeichen-Fehler beim CharPol und falsche Drehwinkel ab.</div>
+
+      <div class="prompt">Gib mir 4 Punkte in $\mathbb{R}^3$. Ich (a) prüfe, ob sie eine Ebene definieren, (b) bestimme Normalenform, (c) berechne Abstand eines 5. Punktes zur Ebene. Du fängst Fehler in der Normalen-Berechnung via Kreuzprodukt ab.</div>
+    </section>
+
+    <!-- ===================== 8 VEKTORRÄUME ===================== -->
+    <section id="vr">
+      <h2>8 · Vektorräume &amp; lineare Abbildungen</h2>
+
+      <h3>8.1 Untervektorräume</h3>
+      <p>$U \subseteq V$ ist UVR ⟺ (i) $0 \in U$, (ii) $u + v \in U$ für $u, v \in U$, (iii) $\alpha u \in U$ für $u \in U, \alpha \in \mathbb{K}$.</p>
+      <p>Typische UVRs: Lösungsraum $\ker(A)$, Bildraum $\text{im}(A)$, Spann einer Vektor-Menge.</p>
+
+      <h3>8.2 Basis und Dimension</h3>
+      <ul>
+        <li>Eine <strong>Basis</strong> ist linear unabhängig und ein Erzeugendensystem.</li>
+        <li>Alle Basen eines VR haben gleich viele Elemente — die <strong>Dimension</strong>.</li>
+        <li><strong>Steinitzscher Austauschsatz:</strong> ein linear unabhängiges System lässt sich zu einer Basis ergänzen; jedes Erzeugendensystem enthält eine Basis.</li>
+      </ul>
+
+      <h3>8.3 Lineare Abbildungen</h3>
+      <p>$f: V \to W$ linear ⟺ $f(\alpha u + \beta v) = \alpha f(u) + \beta f(v)$.</p>
+      <ul>
+        <li>Darstellungsmatrix $A$ bezüglich gewählter Basen: $f(v) = A v$.</li>
+        <li>$\ker f = \{v : f(v) = 0\}$ — Untervektorraum.</li>
+        <li>$\text{im}\, f = \{f(v) : v \in V\}$ — Untervektorraum.</li>
+        <li><strong>Dimensionssatz:</strong> $\dim V = \dim \ker f + \dim \text{im}\, f$.</li>
+        <li>$f$ injektiv ⟺ $\ker f = \{0\}$. $f$ surjektiv ⟺ $\text{im}\, f = W$.</li>
+      </ul>
+
+      <h3>8.4 Basiswechsel</h3>
+      <p>Sind $A, A'$ Darstellungen derselben Abbildung in zwei Basen mit Übergangsmatrix $T$, dann $A' = T^{-1} A T$ — Ähnlichkeitstransformation.</p>
+      <p><strong>Konsequenz:</strong> die EW bleiben unter Basiswechsel erhalten, die Eigenvektoren transformieren sich mit $T$.</p>
+
+      <h3>8.5 Orthogonale &amp; Unitäre Matrizen</h3>
+      <ul>
+        <li>Orthogonal: $Q^\top Q = I$. Erhält Winkel und Längen.</li>
+        <li>Eigenwerte auf Einheitskreis ($|\lambda| = 1$).</li>
+        <li>$\det Q \in \{+1, -1\}$. $\det = +1$: Drehung; $\det = -1$: Spiegelung.</li>
+        <li>2D: jede 2x2-Orthogonale ist $\begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$ (Drehung) oder eine Spiegelungsmatrix.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== 10 CHEATSHEET ===================== -->
+    <section id="cheatsheet" class="cheatsheet">
+      <h2>9 · Cheatsheet</h2>
+      <pre><code>LU       A = LU.   PA = LU mit Pivot.
+         Ax = b: Ly=b → Ux=y.   Aufwand 2n³/3
+Chol     A = LL^T  nur für SPD.   Test für PD.
+         Aufwand n³/3
+QR       A = QR.   Q orth., R obere Δ.   Least Squares: Rx = Q^T b
+         Gram-Schmidt (MGS oder Householder)
+
+EVD      Av = λv.   χ_A(λ) = det(A - λI) = 0
+         alg.Viel. = Multiplizität in χ_A
+         geom.Viel. = dim Eig(λ)
+         1 ≤ geom ≤ alg
+         diagonalisierbar ⇔ Σ geom = n
+         A = PDP⁻¹ ⇒ A^k = P D^k P⁻¹
+         symm. reell ⇒ orthog. diagonalisierbar A = QΛQ^T
+
+Jordan   nicht-diag. → A = PJP⁻¹.   J_k(λ): λ auf Diag, 1 auf Superdiag
+
+SVD      A = UΣV^T (jedes m×n)
+         σ_i² = EW(A^T A);  V = EV(A^T A);  U_i = Av_i/σ_i
+         Eckart-Young: best Rang-k = Σ_{i=1..k} σ_i u_i v_i^T
+                       Fehler 2-Norm = σ_{k+1},   Frob = √Σ σ_i² (i>k)
+         A⁺ = VΣ⁺U^T (Pseudoinverse)
+         κ₂(A) = σ_1 / σ_n
+         PCA: V = Hauptachsen, σ²/(m-1) = Varianzen
+
+PD       symm. + (x^T A x > 0  ∀ x ≠ 0)
+         ⇔ alle EW > 0
+         ⇔ alle führ. Hauptminoren > 0
+         ⇔ Cholesky existiert mit pos. Diagonale
+
+Geom     ⟨u,v⟩ = Σ u_i v_i.   ||v|| = √⟨v,v⟩
+         u×v ⊥ u, v;   ||u×v|| = ||u||||v|| sin θ
+         Spat = det[u v w] = Volumen
+         Punkt-Ebene: |n^T q - d| / ||n||
+         Projektion: P = A(A^T A)⁻¹ A^T,   P² = P, P^T = P
+         Quadrik: x^T A x = c, EVD-Hauptachsen, EW-Signatur → Klassifikation
+
+Lin Abb  dim ker f + dim im f = dim V   (Dimensionssatz)
+         inj ⇔ ker = {0};  surj ⇔ im = W
+         Basiswechsel: A' = T⁻¹ A T   (Ähnlichkeit)
+         Orthog. Q: Q^T Q = I, |λ| = 1, det Q = ±1</code></pre>
+    </section>
+
+    <!-- ===================== 11 DRILLPLAN ===================== -->
+    <section id="drillplan">
+      <h2>10 · Drillplan</h2>
+      <ol>
+        <li><strong>Tag 1 — EVD &amp; Diagonalisierung:</strong> 3 Matrizen (2x2, 3x3) — CharPol, EW, Eigenvektoren, $P, D$, Probe. Eine Matrix mit doppeltem EW: alg. vs. geom. Vielfachheit.</li>
+        <li><strong>Tag 2 — LU &amp; Cholesky &amp; QR:</strong> je 2 Aufgaben. Bei QR sowohl Gram-Schmidt als auch Modified GS rechnen.</li>
+        <li><strong>Tag 3 — SVD &amp; Anwendungen:</strong> 2 SVD von Hand (3x2 oder 2x2). Eckart-Young auf gegebenen Σ-Werten. PCA-Erklärung an einem 2D-Datenscatter.</li>
+        <li><strong>Tag 4 — Geometrie:</strong> 2 Quadriken-Klassifikationen mit Hauptachsentransformation. 3 Abstandsaufgaben (Punkt-Ebene, Punkt-Gerade, windschiefe Geraden).</li>
+      </ol>
+
+      <div class="prompt">Du bist mein LinAlg-Trainer für Matrix-Zerlegungen. Drill-Plan:
+Aufgabe 1 — LU (3x3 mit/ohne Pivot)
+Aufgabe 2 — Cholesky (3x3 SPD)  + Erklärung warum es bei nicht-SPD scheitert
+Aufgabe 3 — QR (3x2, klassisch GS) und Probe ||Q^TQ - I|| ≈ 0
+Aufgabe 4 — EVD (3x3 mit zwei verschiedenen EW + einem doppelten)
+Aufgabe 5 — SVD (2x2, beide Wege: über A^TA und über AA^T)
+Pro Aufgabe: ich rechne. Du korrigierst hart, fängst typische Fehler ab:
+- LU: vergessene Multiplikatoren in L
+- Cholesky: Wurzel aus Negativem ist PD-Verstoß, nicht "Rechenfehler"
+- QR: nicht-orthonormale Q (Norm nicht 1, oder nicht orth.)
+- EVD: falsche Vielfachheiten
+- SVD: σ als negative Zahl angegeben (immer ≥ 0!)</div>
+    </section>
+
+    <footer>
+      Lernzettel · Lineare Algebra &amp; Matrix-Zerlegungen · WDS125 LIJ
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

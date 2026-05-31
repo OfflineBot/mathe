@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Übungen — Analysis 2 · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="05-analysis-2.html">← Theorie</a>
+    <h1>Übungen Ana2</h1>
+    <p class="sub">Analysis 2 · BLD</p>
+
+    <ul class="toc">
+      <li><a href="#reihen">1 · Reihen &amp; Taylor</a></li>
+      <li><a href="#mehrdim">2 · Mehrdim. Differentiation</a></li>
+      <li><a href="#extrema">3 · Extrema &amp; Lagrange</a></li>
+      <li><a href="#mehrfach">4 · Mehrfachintegrale</a></li>
+      <li><a href="#ode">5 · Gewöhnliche DGL</a></li>
+      <li><a href="#klausur">6 · Klausur-Simulation</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Übungen</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik-uebungen.html">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren-uebungen.html">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra-uebungen.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik-uebungen.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2-uebungen.html" class="current">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Übungen — Analysis 2</h1>
+      <p class="tagline">16 Klausuraufgaben · Reihen · Extrema · Lagrange · Integrale · ODE</p>
+      <p class="meta">
+        <span>Theorie: <a href="05-analysis-2.html">05-analysis-2.html</a></span>
+      </p>
+    </header>
+
+    <section id="reihen">
+      <h2>1 · Reihen &amp; Taylor</h2>
+      <p>→ Theorie: <a href="05-analysis-2.html#reihen">Reihen (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.1 — Drei Reihen prüfen</summary>
+        <p>Untersuche: (a) $\sum \frac{n!}{n^n}$, (b) $\sum \frac{(-1)^n}{\sqrt n}$, (c) $\sum \frac{n^2}{2^n}$.</p>
+        <p><strong>Lösung:</strong></p>
+        <ol>
+          <li>(a) Quotient: $\frac{(n+1)!/(n+1)^{n+1}}{n!/n^n} = \frac{n^n}{(n+1)^n} = (n/(n+1))^n \to 1/e < 1$. ⇒ konv.</li>
+          <li>(b) Leibniz: $1/\sqrt n$ alternierend, fallend, $\to 0$. ⇒ konv. Nicht absolut (Zeta mit $s = 1/2$).</li>
+          <li>(c) Quotient: $\frac{(n+1)^2/2^{n+1}}{n^2/2^n} = \frac{(n+1)^2}{2 n^2} \to 1/2 < 1$. ⇒ konv.</li>
+        </ol>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.2 — Quotientenkriterium $3^n/n!$</summary>
+        <p>Untersuche $\displaystyle \sum_{n=1}^\infty \frac{3^n}{n!}$ auf Konvergenz.</p>
+        <p><strong>Lösung:</strong> $|a_{n+1}/a_n| = 3/(n+1) \to 0 < 1$. Reihe konvergiert (absolut). Tatsächlich $\sum 3^n/n! = e^3 - 1$ (ab $n=1$).</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.3 — Wurzelkriterium</summary>
+        <p>Untersuche $\displaystyle \sum_{n=1}^\infty \left(\frac{n}{2n+1}\right)^n$.</p>
+        <p><strong>Lösung:</strong> $\sqrt[n]{|a_n|} = n/(2n+1) \to 1/2 < 1$. Reihe konvergiert.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.4 — Leibniz vs. absolute Konvergenz</summary>
+        <p>Konvergiert $\displaystyle \sum_{n=1}^\infty \frac{(-1)^n}{n^2}$ absolut, bedingt oder divergiert?</p>
+        <p><strong>Lösung:</strong> $\sum 1/n^2 = \pi^2/6$ konvergiert (Zeta, $s = 2 > 1$). Also <strong>absolut konvergent</strong>.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.5 — Konvergenzradius</summary>
+        <p>Bestimme Konvergenzradius von $\displaystyle \sum_{n=1}^\infty \frac{(x-2)^n}{n \cdot 3^n}$.</p>
+        <p><strong>Lösung:</strong> $r = \lim |a_n/a_{n+1}| = \lim 3(n+1)/n = 3$. Konv. für $|x-2| < 3$, also $x \in (-1, 5)$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 1.6 — Taylor-Produkt</summary>
+        <p>Bestimme das Taylor-Polynom Grad 3 von $f(x) = e^x \cos x$ um $x_0 = 0$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$e^x = 1 + x + x^2/2 + x^3/6 + \dots$, $\cos x = 1 - x^2/2 + \dots$.</p>
+        <p>Sammle Terme bis Grad 3: $1 + x + 0 \cdot x^2 + (1/6 - 1/2)x^3 = 1 + x - x^3/3$.</p>
+      </details>
+    </section>
+
+    <section id="mehrdim">
+      <h2>2 · Mehrdim. Differentiation</h2>
+      <p>→ Theorie: <a href="05-analysis-2.html#mehrdim">Mehrdim. Diff. (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 2.1 — Gradient + Hesse</summary>
+        <p>$f(x, y) = x^3 y + x y^3$. Bestimme $\nabla f$ und $H_f$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\nabla f = (3 x^2 y + y^3,\; x^3 + 3 x y^2)$.</p>
+        <p>$H_f = \begin{pmatrix} 6 x y & 3 x^2 + 3 y^2 \\ 3 x^2 + 3 y^2 & 6 x y \end{pmatrix}$. Symmetrisch ✓ (Schwarz).</p>
+      </details>
+    </section>
+
+    <section id="extrema">
+      <h2>3 · Extrema &amp; Lagrange</h2>
+      <p>→ Theorie: <a href="05-analysis-2.html#extrema">Extrema (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 3.1 — Extrema in 2D</summary>
+        <p>Finde + klassifiziere alle Extrema von $f(x, y) = x^2 + xy + y^2 - 6 x + 2$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\nabla f = (2x + y - 6,\; x + 2y) = 0$. Aus zweiter: $x = -2y$. In erste: $-4y + y - 6 = 0 \Rightarrow y = -2$, $x = 4$.</p>
+        <p>$H = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$. $\det H = 3 > 0$, $A = 2 > 0$ → striktes lokales (und globales, da konvex) Minimum.</p>
+        <p>$f^* = 16 - 8 + 4 - 24 + 2 = -10$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 3.2 — Extrema in 3D</summary>
+        <p>$f(x, y, z) = x^2 + y^2 + z^2 - 2 x + 4 y - 6 z + 1$. Globales Minimum?</p>
+        <p><strong>Lösung:</strong></p>
+        <p>Hesse $= 2 I$ pos. def. ⟹ konvex. $\nabla f = (2x - 2, 2y + 4, 2z - 6) = 0 \Rightarrow (1, -2, 3)$.</p>
+        <p>$f^* = 1 + 4 + 9 - 2 - 8 - 18 + 1 = -13$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 3.3 — Lagrange mit Ellipse</summary>
+        <p>$\max\; x y$ u.d.N. $x^2 + 4 y^2 = 4$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$L = xy - \lambda(x^2 + 4y^2 - 4)$. $\partial_x: y = 2\lambda x$, $\partial_y: x = 8\lambda y$.</p>
+        <p>Aus beiden: $x = 16\lambda^2 x \Rightarrow \lambda^2 = 1/16, \lambda = \pm 1/4$.</p>
+        <p>NB: $x^2 + 4(2\lambda x)^2 = 2 x^2 = 4 \Rightarrow x = \pm \sqrt 2, y = \pm \sqrt 2/2$.</p>
+        <p>$f^* = xy = \pm 1$. <strong>Maximum $= 1$</strong>.</p>
+      </details>
+    </section>
+
+    <section id="mehrfach">
+      <h2>4 · Mehrfachintegrale</h2>
+      <p>→ Theorie: <a href="05-analysis-2.html#mehrfach">Mehrfachintegrale (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.1 — Reihenfolge tauschen (Dreieck)</summary>
+        <p>$\iint_D xy\, dA$ über Dreieck mit Ecken $(0,0), (1,0), (0,1)$.</p>
+        <p><strong>Lösung-A:</strong> $\int_0^1 \int_0^{1-x} xy\, dy\, dx = \int_0^1 x \cdot (1-x)^2/2\, dx = (1/2)(1/2 - 2/3 + 1/4) = 1/24$.</p>
+        <p><strong>Lösung-B:</strong> $\int_0^1 \int_0^{1-y} xy\, dx\, dy = 1/24$. ✓</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.2 — Doppelintegral kartesisch</summary>
+        <p>$\iint_D (x + y)\, dA$ über $D = \{(x, y): 0 \le x \le 2,\; 0 \le y \le x\}$.</p>
+        <p><strong>Lösung:</strong> $\int_0^2 \int_0^x (x + y)\, dy\, dx = \int_0^2 (3x^2/2)\, dx = 4$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.3 — Polarkoordinaten</summary>
+        <p>$\iint_D \sqrt{x^2 + y^2}\, dA$ über Vollkreis $D = \{x^2 + y^2 \le 4\}$.</p>
+        <p><strong>Lösung:</strong> $\int_0^{2\pi} \int_0^2 r \cdot r\, dr\, d\phi = 2\pi \cdot 8/3 = 16\pi/3$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 4.4 — Kugelkoordinaten (Kugel-Volumen)</summary>
+        <p>Volumen einer Kugel mit Radius $R$.</p>
+        <p><strong>Lösung:</strong> $V = \int_0^{2\pi} \int_0^\pi \int_0^R r^2 \sin\theta\, dr\, d\theta\, d\phi = (R^3/3) \cdot 2 \cdot 2\pi = 4 \pi R^3/3$. ✓</p>
+      </details>
+    </section>
+
+    <section id="ode">
+      <h2>5 · Gewöhnliche DGL</h2>
+      <p>→ Theorie: <a href="05-analysis-2.html#ode">ODE (Theorie)</a></p>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.1 — ODE trennbar</summary>
+        <p>Löse $y' = x y^2$, $y(0) = 1$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$dy/y^2 = x\, dx \Rightarrow -1/y = x^2/2 + C$. $y(0) = 1: C = -1$. Also $y = \dfrac{2}{2 - x^2}$.</p>
+        <p>Definiert auf $(-\sqrt 2, \sqrt 2)$.</p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.2 — ODE linear 1. Ordnung</summary>
+        <p>Löse $y' - 2 y = e^{3 x}$, $y(0) = 0$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\mu = e^{-2x}$. $(\mu y)' = e^x \Rightarrow \mu y = e^x + C$. $y = e^{3x} + C e^{2x}$. $y(0) = 0 \Rightarrow C = -1$. <strong>$y = e^{3x} - e^{2x}$.</strong></p>
+      </details>
+
+      <details class="exercise">
+        <summary>Aufgabe 5.3 — ODE 2. Ordnung mit doppelter Resonanz</summary>
+        <p>$y'' - 4 y' + 4 y = e^{2 x}$, $y(0) = 0$, $y'(0) = 0$.</p>
+        <p><strong>Lösung:</strong></p>
+        <p>$\lambda^2 - 4\lambda + 4 = (\lambda - 2)^2 = 0$. Doppelter EW $\lambda = 2$. $y_h = (C_1 + C_2 x) e^{2x}$.</p>
+        <p>Inhomogenität $e^{2x}$ ist in $y_h$ (sogar doppelt). Ansatz $y_p = A x^2 e^{2x}$.</p>
+        <p>Einsetzen: $y_p'' - 4y_p' + 4y_p = 2A e^{2x} = e^{2x} \Rightarrow A = 1/2$.</p>
+        <p>$y(x) = (C_1 + C_2 x + x^2/2) e^{2x}$. AWP: $C_1 = 0$, $C_2 = 0$.</p>
+        <p><strong>$y(x) = (x^2/2) e^{2x}$.</strong></p>
+      </details>
+    </section>
+
+    <section id="klausur">
+      <h2>6 · Klausur-Simulation</h2>
+
+      <div class="prompt">Du bist mein Analysis-2-Prüfer. Stelle 90-Min-Klausur (6 Aufgaben, 60 Punkte):
+1. Reihe Konvergenz mit 2 verschiedenen Kriterien (10)
+2. Taylor + Restglied (10)
+3. Extrema 3D + Hesse (15)
+4. Lagrange mit NB (10)
+5. Doppelintegral mit Polar (10)
+6. ODE 2. Ordnung mit Resonanz + AWP (5)
+Ich rechne. Du benotest und nennst meine drei Hauptlücken.</div>
+
+      <div class="prompt">Drill in 5 Sessions:
+Session 1 — Reihen (6 Aufgaben, alle Kriterien mischen)
+Session 2 — Gradient/Hesse/Taylor (4 Aufgaben, eine in 3 Variablen)
+Session 3 — Extrema (3 frei + 3 Lagrange, davon einer mit 2 NB)
+Session 4 — Mehrfachintegrale (kart. + Polar + Kugel + 1× Reihenfolge tauschen)
+Session 5 — ODE (mixed: 1× trennbar, 1× linear, 1× Bernoulli, 1× konst.Koeff. mit Resonanz, 1× System 2x2)
+Pro Session: ich rechne, du korrigierst hart, erklärst Denkfehler. Am Ende: meine Top-3-Schwachpunkte über alle Sessions.</div>
+    </section>
+
+    <footer>
+      Übungen · Analysis 2 · WDS125 (BLD) ·
+      <a href="05-analysis-2.html">zurück zur Theorie</a>
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

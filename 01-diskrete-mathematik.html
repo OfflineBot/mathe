@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diskrete Mathematik · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="index.html">← Übersicht</a>
+    <h1>Diskrete Mathematik</h1>
+    <p class="sub">RADM · ZAM</p>
+
+        <a class="back" href="01-diskrete-mathematik-uebungen.html" style="color: var(--accent-2); margin-bottom: 1rem; display: inline-block;">→ Übungen</a>
+    <ul class="toc">
+      <li><a href="#ueberblick">Überblick</a></li>
+      <li><a href="#logik">1 · Aussagenlogik</a>
+        <ul class="sub-toc">
+          <li><a href="#aussagen">1.1 Aussagen & Junktoren</a></li>
+          <li><a href="#aequivalenzen">1.2 Äquivalenzen</a></li>
+          <li><a href="#normalformen">1.3 Normalformen</a></li>
+          <li><a href="#praedikatenlogik">1.4 Prädikatenlogik</a></li>
+        </ul>
+      </li>
+      <li><a href="#mengen">2 · Mengen, Relationen, Abbildungen</a>
+        <ul class="sub-toc">
+          <li><a href="#mengenlehre">2.1 Mengen</a></li>
+          <li><a href="#relationen">2.2 Relationen</a></li>
+          <li><a href="#abbildungen">2.3 Abbildungen</a></li>
+        </ul>
+      </li>
+      <li><a href="#boolesche">3 · Boolesche Algebra</a>
+        <ul class="sub-toc">
+          <li><a href="#gesetze">3.1 Gesetze</a></li>
+          <li><a href="#schaltfunktionen">3.2 Schaltfunktionen</a></li>
+          <li><a href="#kv">3.3 KV-Diagramme</a></li>
+          <li><a href="#nand">3.4 NAND/NOR-Vollständigkeit</a></li>
+        </ul>
+      </li>
+      <li><a href="#graphen">4 · Graphentheorie</a>
+        <ul class="sub-toc">
+          <li><a href="#graph-basics">4.1 Grundbegriffe</a></li>
+          <li><a href="#graph-wege">4.2 Wege & Kreise</a></li>
+          <li><a href="#graph-spezial">4.3 Spezielle Graphen</a></li>
+          <li><a href="#graph-darstellung">4.4 Darstellung</a></li>
+          <li><a href="#graph-algos">4.5 Algorithmen</a></li>
+        </ul>
+      </li>
+      <li><a href="#kombinatorik">5 · Kombinatorik</a></li>
+      <li><a href="#cheatsheet">6 · Cheatsheet</a></li>
+      <li><a href="#drillplan">7 · Drillplan</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Fächer</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik.html" class="current">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren.html">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2.html">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Diskrete Mathematik</h1>
+      <p class="tagline">Logik · Mengen · Relationen · Boolesche Algebra · Graphen · Kombinatorik</p>
+      <p class="meta">
+        <span>Moodle: RADM-01 bis RADM-05</span>
+        <span>Übung: A* / Dijkstra</span>
+      </p>
+    </header>
+
+    <div class="callout callout-info" style="margin-bottom: 2rem;">
+      <div class="callout-title">Übungen</div>
+      <p>Alle Klausur-Übungsaufgaben mit ausführlichen Lösungen findest du in der Begleitseite:
+      <a href="01-diskrete-mathematik-uebungen.html"><strong>Übungen — Diskrete Mathematik</strong></a>.</p>
+    </div>
+
+    <section id="ueberblick">
+      <h2>Überblick</h2>
+      <p>Diskrete Mathematik ist die Grundlage für alles, was nicht stetig ist: Logik, Mengen, Strukturen wie Graphen, kombinatorisches Zählen. Du brauchst sie in Informatik, Datenbanken, Algorithmik, Kryptographie und für die formale Argumentation in jedem anderen Mathefach.</p>
+      <div class="callout callout-tip">
+        <div class="callout-title">Was bringt's für die Klausur</div>
+        <ul>
+          <li>Aussagenlogik &amp; Wahrheitstabellen — sicherer Routine-Punkt.</li>
+          <li>Relationen-Eigenschaften (refl/sym/antisym/trans) — taucht immer auf, sehr fehleranfällig.</li>
+          <li>KV-Diagramm — schnell üben, dann nahezu garantiert volle Punkte.</li>
+          <li>Dijkstra/A* per Hand auf einem 5–7-Knoten-Graphen — Standard-Aufgabe.</li>
+          <li>Kombinatorik-Modellierung (mit/ohne Wiederholung, geordnet/ungeordnet) — häufigster Fehler ist falsches Modell, nicht falsches Rechnen.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== 1 AUSSAGENLOGIK ===================== -->
+    <section id="logik">
+      <h2>1 · Aussagenlogik</h2>
+
+      <div id="aussagen">
+        <h3>1.1 Aussagen und Junktoren</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p><strong>Aussage</strong> = sprachliche Äußerung, der eindeutig der Wahrheitswert <em>wahr (w / 1)</em> oder <em>falsch (f / 0)</em> zugeordnet werden kann. Aussagen werden mit Buchstaben $A, B, C, \dots$ abgekürzt.</p>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Symbol</th><th>Lesart</th><th>Wahr genau wenn</th></tr></thead>
+          <tbody>
+            <tr><td>Negation</td><td>$\neg A$</td><td>nicht A</td><td>$A$ falsch</td></tr>
+            <tr><td>Konjunktion</td><td>$A \wedge B$</td><td>A und B</td><td>$A$ und $B$ beide wahr</td></tr>
+            <tr><td>Disjunktion</td><td>$A \vee B$</td><td>A oder B</td><td>mindestens eines wahr</td></tr>
+            <tr><td>Implikation</td><td>$A \Rightarrow B$</td><td>wenn A dann B</td><td>NICHT $(A$ wahr und $B$ falsch$)$</td></tr>
+            <tr><td>Bikondit. / Äquivalenz</td><td>$A \Leftrightarrow B$</td><td>A genau dann wenn B</td><td>$A$ und $B$ gleicher Wert</td></tr>
+            <tr><td>XOR / Antivalenz</td><td>$A \oplus B$</td><td>entweder oder</td><td>$A$ und $B$ verschieden</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Stolperfalle: Implikation</div>
+          <p>$f \Rightarrow w$ und $f \Rightarrow f$ sind <em>beide wahr</em>. Aus einer falschen Annahme folgt formal alles ("ex falso quodlibet"). Nur $w \Rightarrow f$ ist falsch.</p>
+          <p>Konsequenz: Wer einen mathematischen Beweis aus einer fehlerhaft umgeformten Gleichung führt, erhält trotzdem formal eine wahre Implikation — das Beweisen erfordert Äquivalenzumformungen.</p>
+        </div>
+
+        <h4>Wahrheitstabelle erstellen — Standardrezept</h4>
+        <ol>
+          <li>$n$ atomare Aussagen → $2^n$ Zeilen.</li>
+          <li>Spalten für jede Teilausdruck-Stufe (innerste Klammern zuerst).</li>
+          <li>Letzte Spalte = Gesamtausdruck.</li>
+        </ol>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>Tabelle für $(A \vee B) \wedge \neg A$:</p>
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th>$A$</th><th>$B$</th><th>$A \vee B$</th><th>$\neg A$</th><th>$(A \vee B) \wedge \neg A$</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+              <tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>Der Ausdruck ist äquivalent zu $\neg A \wedge B$ — was die Tabelle direkt zeigt.</p>
+        </div>
+      </div>
+
+      <div id="aequivalenzen">
+        <h3>1.2 Wichtige Äquivalenzen</h3>
+        <p>$\equiv$ bedeutet "logisch äquivalent" — gleiche Wahrheitstabelle.</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Gesetz</th><th>Form</th></tr></thead>
+          <tbody>
+            <tr><td>Doppelte Negation</td><td>$\neg \neg A \equiv A$</td></tr>
+            <tr><td>Kommutativ</td><td>$A \wedge B \equiv B \wedge A$, $A \vee B \equiv B \vee A$</td></tr>
+            <tr><td>Assoziativ</td><td>$(A \wedge B) \wedge C \equiv A \wedge (B \wedge C)$</td></tr>
+            <tr><td>Distributiv (∧ über ∨)</td><td>$A \wedge (B \vee C) \equiv (A \wedge B) \vee (A \wedge C)$</td></tr>
+            <tr><td>Distributiv (∨ über ∧)</td><td>$A \vee (B \wedge C) \equiv (A \vee B) \wedge (A \vee C)$</td></tr>
+            <tr><td>De Morgan</td><td>$\neg(A \wedge B) \equiv \neg A \vee \neg B$, $\neg(A \vee B) \equiv \neg A \wedge \neg B$</td></tr>
+            <tr><td>Absorption</td><td>$A \vee (A \wedge B) \equiv A$, $A \wedge (A \vee B) \equiv A$</td></tr>
+            <tr><td>Idempotenz</td><td>$A \wedge A \equiv A$, $A \vee A \equiv A$</td></tr>
+            <tr><td>Komplement</td><td>$A \vee \neg A \equiv 1$ (Tertium non datur), $A \wedge \neg A \equiv 0$</td></tr>
+            <tr><td>Identität / Dominanz</td><td>$A \vee 0 \equiv A$, $A \wedge 1 \equiv A$, $A \vee 1 \equiv 1$, $A \wedge 0 \equiv 0$</td></tr>
+            <tr><td>Implikation als Disjunktion</td><td>$A \Rightarrow B \equiv \neg A \vee B$</td></tr>
+            <tr><td>Kontraposition</td><td>$A \Rightarrow B \equiv \neg B \Rightarrow \neg A$</td></tr>
+            <tr><td>Negation der Implikation</td><td>$\neg(A \Rightarrow B) \equiv A \wedge \neg B$</td></tr>
+            <tr><td>Bikondition</td><td>$A \Leftrightarrow B \equiv (A \Rightarrow B) \wedge (B \Rightarrow A) \equiv (A \wedge B) \vee (\neg A \wedge \neg B)$</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Begriffe</div>
+          <ul>
+            <li><strong>Tautologie:</strong> immer wahr (z.B. $A \vee \neg A$).</li>
+            <li><strong>Kontradiktion:</strong> immer falsch (z.B. $A \wedge \neg A$).</li>
+            <li><strong>Erfüllbar:</strong> mindestens eine Belegung macht den Ausdruck wahr.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="normalformen">
+        <h3>1.3 Normalformen — DNF & KNF</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <ul>
+            <li><strong>Literal:</strong> Variable oder negierte Variable, z.B. $A$ oder $\neg A$.</li>
+            <li><strong>Minterm:</strong> Konjunktion von Literalen, wobei jede Variable einmal vorkommt.</li>
+            <li><strong>Maxterm:</strong> Disjunktion von Literalen, wobei jede Variable einmal vorkommt.</li>
+            <li><strong>DNF</strong> (disjunktiv): Disjunktion von Mintermen.</li>
+            <li><strong>KNF</strong> (konjunktiv): Konjunktion von Maxtermen.</li>
+          </ul>
+        </div>
+
+        <h4>Rezept: Wahrheitstabelle → DNF</h4>
+        <ol>
+          <li>Für jede Zeile mit Ergebnis $= 1$: bilde Minterm. Variable $X$ steht unnegiert, wenn $X = 1$ in der Zeile, sonst negiert.</li>
+          <li>Disjunktion aller Minterme.</li>
+        </ol>
+
+        <h4>Rezept: Wahrheitstabelle → KNF</h4>
+        <ol>
+          <li>Für jede Zeile mit Ergebnis $= 0$: bilde Maxterm. Variable $X$ steht <em>negiert</em>, wenn $X = 1$, sonst unnegiert.</li>
+          <li>Konjunktion aller Maxterme.</li>
+        </ol>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$f(A,B) = A \Rightarrow B$. Wahrheitstabelle:</p>
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th>$A$</th><th>$B$</th><th>$f$</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>1</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td><td>0</td></tr>
+              <tr><td>1</td><td>1</td><td>1</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p><strong>DNF:</strong> $f \equiv (\neg A \wedge \neg B) \vee (\neg A \wedge B) \vee (A \wedge B)$.</p>
+          <p><strong>KNF:</strong> nur Zeile $A=1, B=0$ liefert $0$ → $f \equiv (\neg A \vee B)$. Das ist exakt die bekannte Identität $A \Rightarrow B \equiv \neg A \vee B$.</p>
+        </div>
+      </div>
+
+      <div id="praedikatenlogik">
+        <h3>1.4 Prädikatenlogik (1. Stufe)</h3>
+        <p>Aussagenlogik kann nicht ausdrücken: "alle natürlichen Zahlen sind nichtnegativ". Wir brauchen <strong>Prädikate</strong> $P(x)$ (eine Eigenschaft, die von $x$ abhängt) und <strong>Quantoren</strong>.</p>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Quantor</th><th>Symbol</th><th>Lesart</th></tr></thead>
+          <tbody>
+            <tr><td>All</td><td>$\forall x : P(x)$</td><td>für alle $x$ gilt $P(x)$</td></tr>
+            <tr><td>Existenz</td><td>$\exists x : P(x)$</td><td>es gibt mindestens ein $x$ mit $P(x)$</td></tr>
+            <tr><td>Eindeutige Ex.</td><td>$\exists! x : P(x)$</td><td>genau ein $x$</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Quantor-Negation</div>
+          <p>$\neg \forall x : P(x) \equiv \exists x : \neg P(x)$ — "nicht alle" ist "es gibt eines, das nicht".</p>
+          <p>$\neg \exists x : P(x) \equiv \forall x : \neg P(x)$ — "es gibt keines" ist "alle nicht".</p>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Reihenfolge zählt</div>
+          <p>$\forall x \exists y : P(x, y)$ ≠ $\exists y \forall x : P(x, y)$.</p>
+          <p>Beispiel: <em>"Zu jedem $\epsilon > 0$ existiert $N$ mit ..."</em> (Konvergenz, $N$ darf von $\epsilon$ abhängen) — vs. <em>"Es existiert ein $N$, sodass für alle $\epsilon$ ..."</em> (das wäre etwas anderes, $N$ wäre universell).</p>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Beispiel — Übersetzung</span>
+          <p>"Jeder Mensch hat eine Mutter." → $\forall m : (\text{Mensch}(m) \Rightarrow \exists f : (\text{Frau}(f) \wedge \text{MutterVon}(f, m)))$.</p>
+          <p>Negation: $\exists m : (\text{Mensch}(m) \wedge \forall f : (\neg \text{Frau}(f) \vee \neg \text{MutterVon}(f, m)))$ — "es gibt einen Menschen, dessen Mutter niemand ist".</p>
+        </div>
+      </div>
+
+
+      <div class="prompt">Erkläre mir den Unterschied zwischen $\forall x \exists y \, P(x,y)$ und $\exists y \forall x \, P(x,y)$. Gib zwei alltagssprachliche Beispiele, in denen die Reihenfolge die Bedeutung dreht. Stelle mir dann 3 Übersetzungs-Aufgaben (Deutsch → Prädikatenlogik) und korrigiere meine Lösungen.</div>
+
+      <div class="prompt">Bilde die Wahrheitstabelle für $\bigl((A \Rightarrow B) \wedge (B \Rightarrow C)\bigr) \Rightarrow (A \Rightarrow C)$. Frag mich vorher, ob das eine Tautologie ist. Wenn ich richtig liege: zeig mir, woran man Tautologien systematisch erkennt. Wenn falsch: zeig die Zeile, wo es scheitert.</div>
+    </section>
+
+    <!-- ===================== 2 MENGEN ===================== -->
+    <section id="mengen">
+      <h2>2 · Mengen, Relationen, Abbildungen</h2>
+
+      <div id="mengenlehre">
+        <h3>2.1 Mengen</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>Eine <strong>Menge</strong> ist eine ungeordnete Zusammenfassung wohlunterscheidbarer Objekte (Cantor). Notation: $A = \{1, 2, 3\}$, $\emptyset$ leere Menge, $|A|$ Mächtigkeit.</p>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Operation</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>Vereinigung</td><td>$A \cup B = \{x : x \in A \vee x \in B\}$</td></tr>
+            <tr><td>Schnitt</td><td>$A \cap B = \{x : x \in A \wedge x \in B\}$</td></tr>
+            <tr><td>Differenz</td><td>$A \setminus B = \{x : x \in A \wedge x \notin B\}$</td></tr>
+            <tr><td>Symm. Differenz</td><td>$A \triangle B = (A \setminus B) \cup (B \setminus A)$</td></tr>
+            <tr><td>Komplement (in $\Omega$)</td><td>$A^c = \Omega \setminus A$</td></tr>
+            <tr><td>Kart. Produkt</td><td>$A \times B = \{(a,b) : a \in A, b \in B\}$</td></tr>
+            <tr><td>Potenzmenge</td><td>$\mathcal{P}(A) = \{X : X \subseteq A\}$, $|\mathcal{P}(A)| = 2^{|A|}$</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>Inklusion-Exklusion</h4>
+        <p>Für 2 Mengen: $|A \cup B| = |A| + |B| - |A \cap B|$.</p>
+        <p>Für 3 Mengen: $|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$.</p>
+        <p>Allgemein: $\left| \bigcup_{i=1}^n A_i \right| = \sum_{k=1}^n (-1)^{k+1} \sum_{i_1 < \dots < i_k} |A_{i_1} \cap \dots \cap A_{i_k}|$.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>In einer Gruppe von 30 Studierenden mögen 18 Mathe, 15 Informatik, 8 beides. Wer mag mindestens eines?</p>
+          <p>$|M \cup I| = 18 + 15 - 8 = 25$. Niemand-mag-was: $30 - 25 = 5$.</p>
+        </div>
+
+        <h4>De-Morgan für Mengen</h4>
+        <p>$(A \cup B)^c = A^c \cap B^c$ und $(A \cap B)^c = A^c \cup B^c$ — strukturgleich zur Logik (kein Zufall: Mengenlehre und Aussagenlogik tragen dieselbe Boolesche Algebra).</p>
+      </div>
+
+      <div id="relationen">
+        <h3>2.2 Relationen</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>Eine <strong>Relation</strong> von $A$ nach $B$ ist eine Teilmenge $R \subseteq A \times B$. Schreibweise $aRb$ für $(a,b) \in R$. Bei $A = B$ spricht man von einer Relation <em>auf</em> $A$.</p>
+        </div>
+
+        <h4>Eigenschaften (Relation $R$ auf $A$)</h4>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Eigenschaft</th><th>Bedingung</th><th>Anschauung</th></tr></thead>
+          <tbody>
+            <tr><td>reflexiv</td><td>$\forall a \in A: (a,a) \in R$</td><td>Schleife an jedem Knoten</td></tr>
+            <tr><td>irreflexiv</td><td>$\forall a: (a,a) \notin R$</td><td>keine Schleife</td></tr>
+            <tr><td>symmetrisch</td><td>$(a,b) \in R \Rightarrow (b,a) \in R$</td><td>jede Kante hat Gegenrichtung</td></tr>
+            <tr><td>antisymmetrisch</td><td>$(a,b),(b,a) \in R \Rightarrow a=b$</td><td>nie Doppelpfeil außer Schleife</td></tr>
+            <tr><td>transitiv</td><td>$(a,b),(b,c) \in R \Rightarrow (a,c) \in R$</td><td>Abkürzung existiert</td></tr>
+            <tr><td>asymmetrisch</td><td>$(a,b) \in R \Rightarrow (b,a) \notin R$</td><td>antisym + irreflexiv</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Stolperfalle Antisymmetrie</div>
+          <p>"Antisymmetrisch" ist NICHT "nicht symmetrisch". Eine Relation kann gleichzeitig symmetrisch <em>und</em> antisymmetrisch sein — z.B. die Gleichheits-Relation $\{(a,a) : a \in A\}$ oder die leere Relation $\emptyset$.</p>
+        </div>
+
+        <h4>Zwei wichtige Spezialtypen</h4>
+
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p><strong>Äquivalenzrelation</strong> = reflexiv + symmetrisch + transitiv. Erzeugt eine Partition von $A$ in <em>Äquivalenzklassen</em> $[a] = \{b \in A : a \sim b\}$.</p>
+        </div>
+
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p><strong>Halbordnung (Partialordnung)</strong> = reflexiv + antisymmetrisch + transitiv. Beispiel: $\subseteq$ auf $\mathcal{P}(A)$, oder $|$ (Teilbarkeit) auf $\mathbb{N}$.</p>
+          <p><strong>Totalordnung</strong> = Halbordnung + Vergleichbarkeit ($\forall a, b: aRb \vee bRa$). Beispiel: $\leq$ auf $\mathbb{R}$.</p>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Beispiel — Äquivalenzklassen</span>
+          <p>Auf $\mathbb{Z}$: $a \sim b :\Leftrightarrow 5 \mid (a-b)$ (Restklassen mod 5).</p>
+          <ul>
+            <li>Reflexiv: $5 \mid 0$. ✓</li>
+            <li>Symmetrisch: $5 \mid (a-b) \Rightarrow 5 \mid (b-a)$. ✓</li>
+            <li>Transitiv: $5 \mid (a-b), 5 \mid (b-c) \Rightarrow 5 \mid ((a-b)+(b-c)) = (a-c)$. ✓</li>
+          </ul>
+          <p>Klassen: $[0] = \{\dots, -5, 0, 5, 10, \dots\}$, $[1], [2], [3], [4]$. Die Quotientenmenge $\mathbb{Z}/5\mathbb{Z}$ hat 5 Elemente.</p>
+        </div>
+
+        <h4>Hasse-Diagramm</h4>
+        <p>Visualisierung einer Halbordnung: Knoten sind Elemente, Kanten gehen "nach oben" zwischen direkt vergleichbaren Paaren. Reflexive und transitive Kanten werden weggelassen.</p>
+        <p>Beispiel: Teilbarkeit auf $\{1,2,3,4,6,12\}$. $1 \to 2, 3$. $2 \to 4, 6$. $3 \to 6$. $4 \to 12$. $6 \to 12$.</p>
+      </div>
+
+      <div id="abbildungen">
+        <h3>2.3 Abbildungen (Funktionen)</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>$f: A \to B$ ist eine <strong>Abbildung</strong>, wenn jedem $a \in A$ <em>genau ein</em> $f(a) \in B$ zugeordnet wird. $A$ heißt Definitionsbereich, $B$ Zielmenge, $f(A) = \{f(a) : a \in A\}$ Bild.</p>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Eigenschaft</th><th>Bedingung</th><th>Veranschaulichung</th></tr></thead>
+          <tbody>
+            <tr><td>injektiv</td><td>$f(a) = f(a') \Rightarrow a = a'$</td><td>keine zwei treffen den gleichen Punkt</td></tr>
+            <tr><td>surjektiv</td><td>$\forall b \in B \,\exists a: f(a) = b$</td><td>jedes $b$ wird getroffen</td></tr>
+            <tr><td>bijektiv</td><td>inj + surj</td><td>perfekte 1-zu-1-Zuordnung, Umkehr existiert</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>Komposition</h4>
+        <p>$(g \circ f)(x) = g(f(x))$. Erst $f$, dann $g$ — die Notation läuft <em>rückwärts</em> zur Ausführung.</p>
+        <p>Eigenschaften: assoziativ ($h \circ (g \circ f) = (h \circ g) \circ f$), nicht kommutativ.</p>
+
+        <h4>Umkehrfunktion</h4>
+        <p>Bei bijektivem $f$ existiert $f^{-1}: B \to A$ mit $f^{-1}(f(a)) = a$ und $f(f^{-1}(b)) = b$.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$f: \mathbb{R} \to \mathbb{R}, f(x) = 2x + 3$.</p>
+          <ul>
+            <li>Injektiv: $2a+3 = 2a'+3 \Rightarrow a = a'$. ✓</li>
+            <li>Surjektiv: zu $b \in \mathbb{R}$ wähle $a = (b-3)/2$. ✓</li>
+            <li>Umkehrfunktion: $f^{-1}(y) = (y-3)/2$.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="prompt">Definiere auf $A = \{1,2,3,4,5,6\}$ die Relation $a R b :\Leftrightarrow a + b$ ist gerade. Begründe für jede der vier Eigenschaften (refl, sym, antisym, trans), ob sie gilt. Wenn ja: Klassen bestimmen. Wenn nein: Gegenbeispiel. Korrigiere meine Begründungen pingelig.</div>
+
+      <div class="prompt">Stelle mir 6 Funktionen vor (vier davon erfunden, zwei aus dem Skript). Ich klassifiziere bei jeder: injektiv ja/nein, surjektiv ja/nein. Erkläre meine Fehler über das Pigeon-Hole-Prinzip, wenn passend.</div>
+    </section>
+
+    <!-- ===================== 3 BOOLESCHE ALGEBRA ===================== -->
+    <section id="boolesche">
+      <h2>3 · Boolesche Algebra & Schaltalgebra</h2>
+
+      <div id="gesetze">
+        <h3>3.1 Algebraische Struktur $(\{0,1\}, \wedge, \vee, \neg)$</h3>
+        <p>Operationen wie in der Logik (∧ = AND, ∨ = OR, ¬ = NOT). Gilt für Schaltkreise (TTL, CMOS), für Bool-Variablen in Programmen, für Mengen (∪ = ∨, ∩ = ∧).</p>
+        <p>Alle Gesetze aus 1.2 gelten hier wörtlich. Zusätzlich:</p>
+        <ul>
+          <li>Es gibt $2^{2^n}$ verschiedene $n$-stellige Bool-Funktionen. (Wahrheitstafel hat $2^n$ Zeilen, jede mit 0 oder 1.)</li>
+          <li>$\{\wedge, \vee, \neg\}$ ist eine <em>vollständige</em> Operationsbasis — jede Bool-Funktion lässt sich damit darstellen.</li>
+        </ul>
+      </div>
+
+      <div id="schaltfunktionen">
+        <h3>3.2 Schaltfunktionen, Minterme, Maxterme</h3>
+        <p>Eine <strong>Schaltfunktion</strong> ist $f : \{0,1\}^n \to \{0,1\}$.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel — XOR per DNF</span>
+          <p>$f = a \oplus b$. Wahrheitstabelle hat 1 in den Zeilen $(0,1), (1,0)$. DNF: $f = (\neg a \wedge b) \vee (a \wedge \neg b)$.</p>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Beispiel — Mehrheitsfunktion (Majority)</span>
+          <p>$f(a,b,c) = 1$ wenn mindestens zwei der drei Eingänge $= 1$.</p>
+          <p>1-Zeilen: $(0,1,1), (1,0,1), (1,1,0), (1,1,1)$.</p>
+          <p>DNF: $(\neg a \wedge b \wedge c) \vee (a \wedge \neg b \wedge c) \vee (a \wedge b \wedge \neg c) \vee (a \wedge b \wedge c)$. Lässt sich vereinfachen zu $f = (a \wedge b) \vee (a \wedge c) \vee (b \wedge c)$.</p>
+        </div>
+      </div>
+
+      <div id="kv">
+        <h3>3.3 Karnaugh-Veitch-Diagramme</h3>
+        <p>Grafisches Werkzeug zur Minimierung boolescher Ausdrücke. Funktionen mit $\le 4$ Variablen lassen sich routinemäßig minimieren.</p>
+
+        <h4>Aufbau</h4>
+        <ul>
+          <li>Tafel mit $2^n$ Feldern, Achsen mit Gray-Code beschriftet (benachbarte Felder unterscheiden sich in <em>genau einem</em> Bit).</li>
+          <li>Felder, in denen $f = 1$, markieren.</li>
+          <li>Maximale rechteckige Blöcke von $2^k$ benachbarten 1-Feldern bilden — Blöcke dürfen die Ränder "umklappen" (das Diagramm ist ein Torus).</li>
+          <li>Jeder Block entspricht einer Konjunktion, in der die Variablen vorkommen, die im ganzen Block konstant sind.</li>
+          <li>Disjunktion aller Blöcke = minimierte DNF.</li>
+        </ul>
+
+        <div class="callout callout-tip">
+          <div class="callout-title">Strategie</div>
+          <ol>
+            <li>Erst nach <em>obligatorischen</em> Blöcken suchen (Felder, die nur in einem maximalen Block enthalten sein können — sogenannte Kern-Primimplikanten).</li>
+            <li>Dann die verbleibenden 1er mit so wenigen, so großen Blöcken wie möglich überdecken.</li>
+            <li>Don't-Care-Felder (×) dürfen frei als 0 oder 1 genommen werden — nimm sie, wenn sie Blöcke vergrößern.</li>
+          </ol>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Beispiel — KV mit 3 Variablen</span>
+          <p>$f(a,b,c)$ mit 1-Zeilen $(0,0,1), (0,1,1), (1,1,1), (1,1,0)$.</p>
+          <p>KV-Tafel (Zeile $a$, Spalten $bc$ in Gray-Code $00, 01, 11, 10$):</p>
+          <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>$bc = 00$</th><th>$01$</th><th>$11$</th><th>$10$</th></tr></thead>
+            <tbody>
+              <tr><th>$a = 0$</th><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+              <tr><th>$a = 1$</th><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>Block 1: $\{(0,01), (0,11)\}$ — Spalten $bc \in \{01, 11\}$ ⟹ $c = 1$ konstant, $b$ wechselt, $a = 0$ konstant. → $\neg a \wedge c$.</p>
+          <p>Block 2: $\{(1,11), (1,10)\}$ — $a = 1$, $b = 1$, $c$ wechselt. → $a \wedge b$.</p>
+          <p>Minimierte DNF: $f = (\neg a \wedge c) \vee (a \wedge b)$.</p>
+        </div>
+      </div>
+
+      <div id="nand">
+        <h3>3.4 NAND / NOR sind funktional vollständig</h3>
+        <p>$\{\text{NAND}\}$ allein reicht — man kann ¬, ∧, ∨ ausschließlich mit NAND ausdrücken:</p>
+        <ul>
+          <li>$\neg a = a \,\text{NAND}\, a$</li>
+          <li>$a \wedge b = \neg(a \,\text{NAND}\, b) = (a \,\text{NAND}\, b) \,\text{NAND}\, (a \,\text{NAND}\, b)$</li>
+          <li>$a \vee b = (\neg a) \,\text{NAND}\, (\neg b)$ — mit obigen ausdrückbar</li>
+        </ul>
+        <p>Praktisch: In CMOS ist NAND einfacher zu bauen als AND/OR. Daher werden Logikschaltungen oft nur in NAND realisiert.</p>
+      </div>
+
+      <div class="prompt">Gib mir eine $f(a,b,c,d)$ über eine Wahrheitstabelle. Ich rechne: (a) DNF, (b) KNF, (c) minimierte DNF via KV-Diagramm. Du prüfst alle drei. Wenn meine KV-Minimierung nicht optimal ist, zeige den fehlenden größeren Block.</div>
+
+      <div class="prompt">Realisiere $f = a \oplus b$ allein mit NAND-Gattern. Ich zeichne den Schaltkreis, zähle die Gatter und übersetze in einen booleschen Ausdruck. Du prüfst die Minimum-Anzahl Gatter.</div>
+    </section>
+
+    <!-- ===================== 4 GRAPHEN ===================== -->
+    <section id="graphen">
+      <h2>4 · Graphentheorie</h2>
+
+      <div id="graph-basics">
+        <h3>4.1 Grundbegriffe</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>Ein <strong>Graph</strong> ist ein Paar $G = (V, E)$ aus Knoten $V$ und Kanten $E$.</p>
+          <ul>
+            <li><strong>Ungerichtet:</strong> $E \subseteq \binom{V}{2}$ — Kanten sind 2-elementige Mengen.</li>
+            <li><strong>Gerichtet</strong> (Digraph): $E \subseteq V \times V$ — Kanten sind geordnete Paare.</li>
+            <li><strong>Gewichtet:</strong> Funktion $w: E \to \mathbb{R}$.</li>
+            <li><strong>Schlicht / einfach:</strong> keine Mehrfachkanten, keine Schleifen.</li>
+            <li><strong>Multigraph:</strong> Mehrfachkanten erlaubt.</li>
+          </ul>
+        </div>
+
+        <h4>Grad</h4>
+        <p>$\deg(v)$ = Zahl der zu $v$ inzidenten Kanten. In gerichteten Graphen: $\deg^-(v)$ (Eingangsgrad), $\deg^+(v)$ (Ausgangsgrad).</p>
+
+        <div class="thm">
+          <span class="thm-label">Satz — Handschlag-Lemma</span>
+          <p>$\displaystyle \sum_{v \in V} \deg(v) = 2 |E|$.</p>
+          <p>Folgerung: Die Anzahl der Knoten mit <em>ungeradem</em> Grad ist immer <strong>gerade</strong>.</p>
+        </div>
+      </div>
+
+      <div id="graph-wege">
+        <h3>4.2 Wege, Pfade, Kreise</h3>
+        <ul>
+          <li><strong>Weg (walk):</strong> alternierende Folge $v_0, e_1, v_1, e_2, \dots, v_k$ mit $e_i = \{v_{i-1}, v_i\}$.</li>
+          <li><strong>Pfad (path):</strong> Weg ohne Knotenwiederholung.</li>
+          <li><strong>Trail:</strong> Weg ohne Kantenwiederholung (Knoten dürfen sich wiederholen).</li>
+          <li><strong>Kreis (cycle):</strong> geschlossener Pfad ($v_0 = v_k$, sonst alle verschieden).</li>
+          <li><strong>Zusammenhängend:</strong> zwischen je 2 Knoten existiert ein Pfad.</li>
+          <li><strong>Zusammenhangskomponente:</strong> maximaler zusammenhängender Teilgraph.</li>
+        </ul>
+      </div>
+
+      <div id="graph-spezial">
+        <h3>4.3 Spezielle Graphen</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Typ</th><th>Beschreibung</th><th>Wichtige Eigenschaft</th></tr></thead>
+          <tbody>
+            <tr><td>$K_n$</td><td>Vollständig auf $n$ Knoten</td><td>$\binom{n}{2} = n(n-1)/2$ Kanten</td></tr>
+            <tr><td>$K_{m,n}$</td><td>Vollständig bipartit</td><td>$mn$ Kanten, keine Kreise ungerader Länge</td></tr>
+            <tr><td>$P_n$</td><td>Pfad mit $n$ Knoten</td><td>$n-1$ Kanten, kein Kreis</td></tr>
+            <tr><td>$C_n$</td><td>Kreis mit $n$ Knoten</td><td>$n$ Kanten</td></tr>
+            <tr><td>Baum</td><td>zusammenhängend, kreisfrei</td><td>$|E| = |V| - 1$</td></tr>
+            <tr><td>Wald</td><td>kreisfrei (nicht zwingend zh.)</td><td>$|E| = |V| - $ Anz.Komponenten</td></tr>
+            <tr><td>DAG</td><td>gerichtet, kreisfrei</td><td>topologische Sortierung existiert</td></tr>
+            <tr><td>Planar</td><td>ohne Kantenkreuzung in Ebene zeichenbar</td><td>Euler-Formel $V - E + F = 2$</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="thm">
+          <span class="thm-label">Satz von Euler</span>
+          <p>Ein zusammenhängender Graph hat einen <strong>Eulerkreis</strong> (geschlossener Trail durch jede Kante genau einmal) genau dann, wenn jeder Knoten geraden Grad hat.</p>
+          <p>Ein <strong>Eulerpfad</strong> (offen, von $u$ nach $v$, jede Kante genau einmal) existiert genau dann, wenn genau zwei Knoten ungeraden Grad haben (Start- und Endknoten).</p>
+        </div>
+
+        <p><strong>Hamiltonkreis</strong> — besucht jeden Knoten genau einmal. Charakterisierung ist NP-schwer (kein einfaches Kriterium wie bei Euler). Hinreichende Bedingung (Dirac): bei $n \ge 3$ ist $\deg(v) \ge n/2$ für alle $v$.</p>
+      </div>
+
+      <div id="graph-darstellung">
+        <h3>4.4 Darstellung im Rechner</h3>
+        <h4>Adjazenzmatrix</h4>
+        <p>$A \in \{0,1\}^{n \times n}$, $A_{ij} = 1 \Leftrightarrow (v_i, v_j) \in E$. Bei gewichtet: $A_{ij} = w$, sonst $\infty$ oder $0$.</p>
+        <p>Eigenschaften:</p>
+        <ul>
+          <li>Ungerichtet ⇒ symmetrisch.</li>
+          <li>$(A^k)_{ij}$ = Zahl der Wege der Länge exakt $k$ von $i$ nach $j$.</li>
+          <li>Platz: $O(n^2)$. Schlecht für dünne Graphen.</li>
+        </ul>
+
+        <h4>Adjazenzliste</h4>
+        <p>Pro Knoten Liste der Nachbarn. Platz $O(|V| + |E|)$. Standard für dünne Graphen.</p>
+      </div>
+
+      <div id="graph-algos">
+        <h3>4.5 Algorithmen</h3>
+
+        <h4>BFS — Breitensuche</h4>
+        <p>Findet kürzeste Pfade in <em>ungewichteten</em> Graphen. Queue (FIFO).</p>
+        <pre><code>BFS(G, s):
+  for each v in V: dist[v] = ∞
+  dist[s] = 0
+  Q = Queue mit {s}
+  while Q nicht leer:
+    u = Q.dequeue()
+    for each Nachbar v von u:
+      if dist[v] == ∞:
+        dist[v] = dist[u] + 1
+        Q.enqueue(v)</code></pre>
+        <p>Laufzeit: $O(|V| + |E|)$ mit Adjazenzliste.</p>
+
+        <h4>DFS — Tiefensuche</h4>
+        <p>Stack oder Rekursion. Liefert Zusammenhangskomponenten, Zyklenerkennung, topologische Sortierung in DAGs.</p>
+        <pre><code>DFS(G, u):
+  visited[u] = true
+  for each Nachbar v von u:
+    if not visited[v]:
+      DFS(G, v)</code></pre>
+
+        <h4>Dijkstra — kürzeste Pfade (nichtnegative Gewichte)</h4>
+        <pre><code>Dijkstra(G, s):
+  for each v: d[v] = ∞, prev[v] = ⊥
+  d[s] = 0
+  PQ = MinHeap aller Knoten nach d[·]
+  while PQ nicht leer:
+    u = PQ.extract_min()
+    for each Nachbar v von u mit Gewicht w(u,v):
+      if d[u] + w(u,v) < d[v]:
+        d[v] = d[u] + w(u,v)
+        prev[v] = u
+        PQ.decrease_key(v)</code></pre>
+        <p>Laufzeit mit binärem Heap: $O((|V| + |E|) \log |V|)$. Mit Fibonacci-Heap: $O(|E| + |V| \log |V|)$.</p>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Warum keine negativen Gewichte?</div>
+          <p>Dijkstra arbeitet greedy: wenn der Knoten $u$ mit minimalem $d[u]$ aus der Queue extrahiert wird, gilt diese Distanz als final. Eine später entdeckte negative Kante könnte sie aber nachträglich verringern — Algorithmus liefert dann falsche Ergebnisse.</p>
+          <p>Für negative Gewichte: <strong>Bellman-Ford</strong> ($O(|V| \cdot |E|)$), erkennt zusätzlich negative Zyklen.</p>
+        </div>
+
+        <h4>A* — informierte Suche</h4>
+        <p>Erweiterung von Dijkstra durch eine <em>Heuristik</em> $h(v)$ = geschätzte Restdistanz zum Ziel.</p>
+        <p>Priorität in der Queue: $f(v) = d[v] + h(v)$ statt $d[v]$.</p>
+        <ul>
+          <li><strong>Zulässig</strong> (admissible): $h(v) \le$ tatsächliche Restdistanz für alle $v$. → A* optimal.</li>
+          <li><strong>Monoton/konsistent:</strong> $h(u) \le c(u,v) + h(v)$ für alle Kanten. → A* effizient (kein erneutes Öffnen).</li>
+          <li>$h \equiv 0$: A* = Dijkstra.</li>
+          <li>$h$ = wahre Restdistanz: A* findet direkt den Pfad ohne Umwege.</li>
+        </ul>
+        <p>Typische Heuristiken im Gitter: Manhattan-Distanz (4-Nachbarschaft), Euklid (kontinuierlich), Tschebyscheff (8-Nachbarschaft).</p>
+
+        <h4>Minimum Spanning Tree (MST)</h4>
+        <p>Aufspannender Baum mit minimaler Kantensumme. Beide Algorithmen sind greedy + korrekt.</p>
+        <ul>
+          <li><strong>Kruskal:</strong> Kanten aufsteigend sortieren, jede Kante hinzunehmen, die keinen Kreis schließt (Union-Find für Komponenten). $O(|E| \log |E|)$.</li>
+          <li><strong>Prim:</strong> Bei einem Startknoten den Baum wachsen lassen, immer die billigste Anschlusskante. $O((|V| + |E|) \log |V|)$ mit Heap.</li>
+        </ul>
+      </div>
+
+      <h4>Komplettes Dijkstra-Beispiel</h4>
+      <p>Graph $G$ mit Knoten $\{A, B, C, D, E\}$ und gewichteten Kanten:</p>
+      <pre><code>A — B  (4)
+A — C  (2)
+B — C  (1)
+B — D  (5)
+C — D  (8)
+C — E  (10)
+D — E  (2)</code></pre>
+      <p>Dijkstra ab $A$:</p>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Iter</th><th>Besucht</th><th>$d[A]$</th><th>$d[B]$</th><th>$d[C]$</th><th>$d[D]$</th><th>$d[E]$</th><th>Aktion</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>{}</td><td>0</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td><td>Init</td></tr>
+          <tr><td>1</td><td>{A}</td><td>0</td><td>4</td><td>2</td><td>∞</td><td>∞</td><td>Wähle $A$, update $B,C$</td></tr>
+          <tr><td>2</td><td>{A,C}</td><td>0</td><td>3</td><td>2</td><td>10</td><td>12</td><td>Wähle $C$ (min). Update $B$ via $C$: $2+1=3$. Update $D$: $2+8=10$. Update $E$: $2+10=12$.</td></tr>
+          <tr><td>3</td><td>{A,C,B}</td><td>0</td><td>3</td><td>2</td><td>8</td><td>12</td><td>Wähle $B$. Update $D$ via $B$: $3+5=8 < 10$.</td></tr>
+          <tr><td>4</td><td>{A,C,B,D}</td><td>0</td><td>3</td><td>2</td><td>8</td><td>10</td><td>Wähle $D$. Update $E$ via $D$: $8+2=10 < 12$.</td></tr>
+          <tr><td>5</td><td>{A,C,B,D,E}</td><td>0</td><td>3</td><td>2</td><td>8</td><td>10</td><td>Wähle $E$. Fertig.</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Kürzeste Distanzen: $A \to B: 3$, $A \to C: 2$, $A \to D: 8$, $A \to E: 10$. Pfad nach $E$: $A \to C \to B \to D \to E$.</p>
+
+
+      <div class="prompt">Konstruiere einen ungerichteten gewichteten Graph mit 7 Knoten und 12 Kanten. Ich führe Dijkstra ab einem Startknoten Schritt für Schritt durch (Tabelle mit Spalten "iter", "aktueller Knoten", "$d[\cdot]$ für alle Knoten"). Du prüfst jeden Update und fängst falsche Reihenfolge der besuchten Knoten ab.</div>
+
+      <div class="prompt">Erkläre mir A* an einem 5x5-Gitter mit Hindernissen. Vergleiche drei Heuristiken: $h \equiv 0$, Manhattan, Euklid. Welche ist optimal? Welche expandiert weniger Knoten? Generiere ein konkretes kleines Beispiel und führe es mit mir durch.</div>
+
+      <div class="prompt">Gib mir 4 Graphen (gezeichnet als Adjazenzliste). Ich entscheide bei jedem, ob Eulerkreis/Eulerpfad/Hamiltonkreis existiert, und begründe formal. Korrigiere meine Begründungen — ich neige dazu, Hinreichende mit Notwendigen Bedingungen zu verwechseln.</div>
+    </section>
+
+    <!-- ===================== 5 KOMBINATORIK ===================== -->
+    <section id="kombinatorik">
+      <h2>5 · Kombinatorik</h2>
+
+      <h3>5.1 Die vier Grundmodelle</h3>
+      <p>$k$ Objekte aus $n$ — Modell hängt davon ab, ob die Reihenfolge zählt und ob Objekte wiederholt werden dürfen.</p>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Mit Wiederholung</th><th>Ohne Wiederholung</th></tr></thead>
+        <tbody>
+          <tr><th>Geordnet (Variation)</th><td>$n^k$</td><td>$\frac{n!}{(n-k)!} = n \cdot (n-1) \cdots (n-k+1)$</td></tr>
+          <tr><th>Ungeordnet (Kombination)</th><td>$\binom{n+k-1}{k}$</td><td>$\binom{n}{k} = \frac{n!}{k! (n-k)!}$</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>5.2 Permutationen</h3>
+      <p>$n$ unterscheidbare Objekte in einer Reihe: $n!$ Anordnungen.</p>
+      <p>$n$ Objekte mit Wiederholungsklassen der Größen $n_1, \dots, n_r$ (z.B. Buchstaben in "Mississippi"): $\dfrac{n!}{n_1! \cdots n_r!}$.</p>
+
+      <h3>5.3 Binomialkoeffizient</h3>
+      <ul>
+        <li>$\binom{n}{k} = \binom{n}{n-k}$</li>
+        <li>Pascal: $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$</li>
+        <li>$\sum_{k=0}^n \binom{n}{k} = 2^n$ (Anzahl Teilmengen einer $n$-Menge)</li>
+        <li><strong>Binomischer Lehrsatz:</strong> $(a + b)^n = \sum_{k=0}^n \binom{n}{k} a^{n-k} b^k$</li>
+      </ul>
+
+      <h3>5.4 Schubfachprinzip</h3>
+      <div class="thm">
+        <span class="thm-label">Satz</span>
+        <p>Werden $n+1$ Objekte in $n$ Schubfächer einsortiert, so liegt in mindestens einem Fach mehr als ein Objekt.</p>
+      </div>
+      <div class="example">
+        <span class="example-label">Beispiel</span>
+        <p>Unter 13 beliebigen Menschen haben mindestens zwei im selben Monat Geburtstag.</p>
+      </div>
+
+      <h3>5.5 Rekursionen & erzeugende Funktionen (kurz)</h3>
+      <p><strong>Fibonacci:</strong> $f_n = f_{n-1} + f_{n-2}$, $f_0 = 0, f_1 = 1$. Geschlossene Form (Binet): $f_n = \dfrac{\phi^n - \psi^n}{\sqrt 5}$ mit $\phi = (1+\sqrt 5)/2$, $\psi = (1-\sqrt 5)/2$.</p>
+      <p>Erzeugende Funktion zu $(a_n)$: $A(x) = \sum a_n x^n$. Algebra auf $A(x)$ ↔ Operationen auf der Folge.</p>
+
+
+
+      <div class="prompt">Stelle mir 5 kombinatorische Aufgaben — bei jeder muss ich zuerst das Modell wählen (4 Grundmodelle, oder Multinomial, oder Schubfach). Erst <em>nachdem</em> ich das Modell genannt habe, lass mich rechnen. Korrigiere brutal — falsches Modell ist die häufigste Fehlerquelle.</div>
+
+      <div class="prompt">Erkläre und beweise mit mir den binomischen Lehrsatz per kombinatorischem Argument (jeder $a^{n-k} b^k$-Term kommt $\binom{n}{k}$ mal vor — warum?). Stelle mir dann 3 Anwendungen.</div>
+    </section>
+
+    <!-- ===================== 7 CHEATSHEET ===================== -->
+    <section id="cheatsheet" class="cheatsheet">
+      <h2>6 · Cheatsheet</h2>
+      <pre><code>LOGIK
+  ¬(A∧B) = ¬A∨¬B           A⇒B ≡ ¬A∨B
+  ¬(A∨B) = ¬A∧¬B           Kontrapos: A⇒B ≡ ¬B⇒¬A
+  ¬(A⇒B) = A∧¬B            A⇔B ≡ (A∧B)∨(¬A∧¬B)
+  Quantor-Negation: ¬∀ → ∃¬,   ¬∃ → ∀¬
+
+DNF / KNF
+  DNF aus Zeilen mit f=1   (Minterm: Var unneg, wenn Var=1, sonst neg)
+  KNF aus Zeilen mit f=0   (Maxterm: Var NEG, wenn Var=1, sonst unneg)
+
+MENGEN
+  |A∪B|         = |A|+|B|-|A∩B|
+  |A∪B∪C|       = ΣA - Σ(A∩B) + |A∩B∩C|
+  |P(A)|        = 2^|A|
+  (A∪B)ᶜ        = Aᶜ ∩ Bᶜ
+
+RELATIONEN auf A
+  refl     ∀a: aRa
+  sym      aRb ⇒ bRa
+  antisym  aRb ∧ bRa ⇒ a=b
+  trans    aRb ∧ bRc ⇒ aRc
+  Äquivalenz   = refl + sym + trans       → Klassen (Partition)
+  Halbordn.    = refl + antisym + trans   → Hasse
+  Totalordnung = Halbordn. + Vergleichbar
+
+ABBILDUNG f:A→B
+  injektiv   f(a)=f(a') ⇒ a=a'
+  surjektiv  ∀b∈B ∃a: f(a)=b
+  bijektiv   inj + surj  → f⁻¹ existiert
+
+BOOL
+  2^(2ⁿ) versch. n-stellige Funkt.
+  NAND, NOR sind vollständig
+  KV: Blöcke = 2ᵏ, über Ränder, Variable im Block konstant
+
+GRAPHEN
+  Σ deg(v) = 2|E|             (Handshake)
+  Baum: zh + kreisfrei + |E|=|V|-1
+  Euler  ⇔ alle Grade gerade
+  Hamilton: NP-hard. Dirac: deg ≥ n/2 hinreichend
+  Dijkstra: + Gewichte, O((V+E) log V) mit Heap
+  Bellman-Ford: auch -, O(VE)
+  A*: f(v)=g(v)+h(v); h zulässig ⇒ optimal
+  MST: Kruskal (sort + Union-Find) / Prim (heap, wachsend)
+
+KOMBINATORIK (k aus n)
+                                                geordnet      ungeordnet
+  ohne Wiederholung:                            n!/(n-k)!     n!/(k!(n-k)!) = C(n,k)
+  mit Wiederholung:                             nᵏ            C(n+k-1, k)
+  Permutationen mit Klassen: n! / (n₁! ··· nᵣ!)
+  Pascal: C(n,k) = C(n-1,k-1) + C(n-1,k)
+  Binom: (a+b)ⁿ = Σ C(n,k) aⁿ⁻ᵏ bᵏ
+  Σ C(n,k) für k=0..n = 2ⁿ
+  Schubfach: n+1 in n Fächer ⇒ ≥2 in einem</code></pre>
+    </section>
+
+    <!-- ===================== 8 DRILLPLAN ===================== -->
+    <section id="drillplan">
+      <h2>7 · Drillplan (3 Tage vor Klausur)</h2>
+      <ol>
+        <li><strong>Tag 1 — Logik & Mengen:</strong>
+          <ul>
+            <li>Aussagenlogik: 10 Wahrheitstabellen, davon 3 mit Quantoren-Übersetzung.</li>
+            <li>Mengen: 5 Aufgaben Inklusion-Exklusion, 3 De-Morgan-Umformungen.</li>
+            <li>KV-Diagramm: 5 Aufgaben mit 3 und 4 Variablen.</li>
+          </ul>
+        </li>
+        <li><strong>Tag 2 — Relationen & Abbildungen:</strong>
+          <ul>
+            <li>10 Relationen klassifizieren (refl/sym/antisym/trans).</li>
+            <li>3 Äquivalenzklassen-Aufgaben.</li>
+            <li>5 Funktionen auf inj/surj/bij prüfen, davon 2 mit Umkehrfunktion.</li>
+          </ul>
+        </li>
+        <li><strong>Tag 3 — Graphen & Kombinatorik:</strong>
+          <ul>
+            <li>2 Dijkstra per Hand auf 6–7-Knoten-Graphen.</li>
+            <li>1 A*-Aufgabe auf einem Gitter.</li>
+            <li>1 Kruskal-MST.</li>
+            <li>Kombinatorik: 8 Modellwahl-Drills (mit/ohne, geo./ungeo., Schubfach).</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="prompt">Du bist mein Mathe-Coach für Diskrete Mathematik (DHBW WDS125, Modul RADM).
+Wir starten Tag 1: Logik + Mengen.
+Stelle mir nacheinander:
+  3 Aufwärmaufgaben (Wahrheitstabellen),
+  2 De-Morgan-Umformungen,
+  2 Mengen-Identitäten beweisen,
+  2 Inklusion-Exklusion mit Wörtern (Anzahl von Studierenden / Buchstaben).
+Ich rechne. Nach jeder Aufgabe: kurze, harte Korrektur — falsche Begründungen abstrafen.
+Am Ende: was waren meine drei häufigsten Fehlertypen?</div>
+    </section>
+
+    <footer>
+      Lernzettel · Diskrete Mathematik · WDS125 RADM (ZAM)
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>

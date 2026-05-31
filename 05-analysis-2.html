@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analysis 2 · Lernzettel</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <a class="back" href="index.html">← Übersicht</a>
+    <h1>Analysis 2</h1>
+    <p class="sub">BLD</p>
+
+        <a class="back" href="05-analysis-2-uebungen.html" style="color: var(--accent-2); margin-bottom: 1rem; display: inline-block;">→ Übungen</a>
+    <ul class="toc">
+      <li><a href="#ueberblick">Überblick</a></li>
+      <li><a href="#reihen">1 · Folgen &amp; Reihen</a>
+        <ul class="sub-toc">
+          <li><a href="#folgen">1.1 Folgen</a></li>
+          <li><a href="#reihen-grund">1.2 Reihen</a></li>
+          <li><a href="#konvergenzkrit">1.3 Konvergenzkriterien</a></li>
+          <li><a href="#standardreihen">1.4 Standardreihen</a></li>
+          <li><a href="#potenzreihen">1.5 Potenzreihen</a></li>
+          <li><a href="#taylor">1.6 Taylor-Reihen</a></li>
+        </ul>
+      </li>
+      <li><a href="#mehrdim">2 · Mehrdim. Differentiation</a>
+        <ul class="sub-toc">
+          <li><a href="#topologie">2.1 Topologie</a></li>
+          <li><a href="#partiell">2.2 Partielle Ableitungen</a></li>
+          <li><a href="#total">2.3 Total. Diff.barkeit</a></li>
+          <li><a href="#richtungsabl">2.4 Richtungsableitung</a></li>
+          <li><a href="#kettenregel">2.5 Kettenregel</a></li>
+          <li><a href="#hesse">2.6 Hesse &amp; Taylor</a></li>
+        </ul>
+      </li>
+      <li><a href="#extrema">3 · Extrema</a>
+        <ul class="sub-toc">
+          <li><a href="#frei">3.1 Frei</a></li>
+          <li><a href="#lagrange">3.2 Lagrange</a></li>
+        </ul>
+      </li>
+      <li><a href="#vektoranalysis">4 · Vektoranalysis</a></li>
+      <li><a href="#mehrfach">5 · Mehrfachintegrale</a></li>
+      <li><a href="#ode">6 · Gewöhnliche DGL</a>
+        <ul class="sub-toc">
+          <li><a href="#ode-1">6.1 1. Ordnung</a></li>
+          <li><a href="#ode-2">6.2 2. Ordnung (konst. Koeff.)</a></li>
+          <li><a href="#ode-sys">6.3 Systeme</a></li>
+        </ul>
+      </li>
+      <li><a href="#cheatsheet">7 · Cheatsheet</a></li>
+      <li><a href="#drillplan">8 · Drillplan</a></li>
+    </ul>
+
+    <div class="subjects">
+      <h2>Andere Fächer</h2>
+      <ul>
+        <li><a href="01-diskrete-mathematik.html">Diskrete Mathematik</a></li>
+        <li><a href="02-optimierungsverfahren.html">Optimierungsverfahren</a></li>
+        <li><a href="03-lineare-algebra.html">Lineare Algebra</a></li>
+        <li><a href="04-numerik.html">Numerische Methoden</a></li>
+        <li><a href="05-analysis-2.html" class="current">Analysis 2</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="hero">
+      <h1>Analysis 2</h1>
+      <p class="tagline">Reihen · mehrdim. Diff. · Extrema · Lagrange · Mehrfach∫ · DGLn</p>
+      <p class="meta"><span>Moodle: Foliensatz Analysis II</span><span>Tafelaufschriebe + Übungsklausur</span></p>
+    </header>
+
+    <div class="callout callout-info" style="margin-bottom: 2rem;">
+      <div class="callout-title">Übungen</div>
+      <p>Alle Klausur-Übungsaufgaben mit ausführlichen Lösungen findest du in der Begleitseite:
+      <a href="05-analysis-2-uebungen.html"><strong>Übungen — Analysis 2</strong></a>.</p>
+    </div>
+
+    <section id="ueberblick">
+      <h2>Überblick</h2>
+      <p>Analysis 2 erweitert eindim. Differential- und Integralrechnung in zwei Richtungen: <em>unendliche Summen</em> (Reihen, Potenzreihen, Taylor) und <em>höhere Dimension</em> (Gradient, Hesse, Mehrfachintegrale). Den Klausur-Kanon dazu rundet die Theorie der gewöhnlichen DGL ab.</p>
+      <div class="callout callout-tip">
+        <div class="callout-title">Drei Dinge, die jede Klausur prüft</div>
+        <ol>
+          <li>Konvergenzkriterium für eine Reihe wählen und sauber anwenden.</li>
+          <li>Mehrdim. Extrema: $\nabla f = 0$ + Hesse-Klassifikation.</li>
+          <li>ODE 1. oder 2. Ordnung mit Standardverfahren lösen (trennbar / linear / konst.Koeff./Variation).</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== 1 REIHEN ===================== -->
+    <section id="reihen">
+      <h2>1 · Folgen und Reihen</h2>
+
+      <div id="folgen">
+        <h3>1.1 Folgen</h3>
+        <div class="def">
+          <span class="def-label">Konvergenz</span>
+          <p>$(a_n) \to a$ ⟺ $\forall \epsilon > 0 \exists N \in \mathbb{N}: \forall n > N: |a_n - a| < \epsilon$.</p>
+        </div>
+        <p>Standardgrenzwerte:</p>
+        <ul>
+          <li>$\lim_{n \to \infty} 1/n^p = 0$ für $p > 0$.</li>
+          <li>$\lim_{n \to \infty} \sqrt[n]{n} = 1$. $\lim \sqrt[n]{a} = 1$ für $a > 0$.</li>
+          <li>$\lim (1 + 1/n)^n = e$.</li>
+          <li>$\lim q^n = 0$ für $|q| < 1$.</li>
+        </ul>
+        <p>Sandwich-Lemma: $a_n \le b_n \le c_n$ und $a_n, c_n \to L$ ⇒ $b_n \to L$.</p>
+        <p>Monotone Konvergenz: monoton + beschränkt ⇒ konvergent.</p>
+      </div>
+
+      <div id="reihen-grund">
+        <h3>1.2 Reihen</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>$\displaystyle \sum_{n=1}^\infty a_n$ konvergiert ⟺ Partialsummen $s_n = \sum_{k=1}^n a_k$ konvergieren. Wert $= \lim s_n$.</p>
+        </div>
+        <div class="callout callout-warn">
+          <div class="callout-title">Notwendiges Kriterium</div>
+          <p>$\sum a_n$ konvergiert ⇒ $a_n \to 0$.</p>
+          <p>Die <em>Umkehrung</em> gilt NICHT: harmonische Reihe $\sum 1/n$ divergiert, obwohl $1/n \to 0$.</p>
+        </div>
+      </div>
+
+      <div id="konvergenzkrit">
+        <h3>1.3 Konvergenzkriterien</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Kriterium</th><th>Voraussetzung</th><th>Aussage</th></tr></thead>
+          <tbody>
+            <tr><td>Geometrische Reihe</td><td>—</td><td>$\sum q^n$ konv. ⟺ $|q| < 1$, Wert $\dfrac{1}{1-q}$ (ab $n = 0$)</td></tr>
+            <tr><td>Majoranten</td><td>$0 \le |a_n| \le b_n$, $\sum b_n$ konv.</td><td>$\sum a_n$ absolut konv.</td></tr>
+            <tr><td>Minoranten</td><td>$a_n \ge b_n \ge 0$, $\sum b_n$ div.</td><td>$\sum a_n$ div.</td></tr>
+            <tr><td>Quotient</td><td>$\lim |a_{n+1}/a_n| = q$</td><td>$q < 1$ konv., $q > 1$ div., $q = 1$ unbestimmt</td></tr>
+            <tr><td>Wurzel</td><td>$\lim \sqrt[n]{|a_n|} = q$</td><td>analog</td></tr>
+            <tr><td>Leibniz</td><td>$(a_n)$ alternierend, $|a_n|$ monoton fallend, $a_n \to 0$</td><td>$\sum a_n$ konv.</td></tr>
+            <tr><td>Integralvergleich</td><td>$f$ positiv, monoton fallend</td><td>$\sum_{n=1}^\infty f(n)$ und $\int_1^\infty f(x) dx$ haben gleiches Konvergenzverhalten</td></tr>
+            <tr><td>Cauchy-Verdichtung</td><td>$a_n$ positiv, fallend</td><td>$\sum a_n$ ↔ $\sum 2^n a_{2^n}$</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>Absolute vs. bedingte Konvergenz</h4>
+        <p>$\sum a_n$ <strong>absolut</strong> konvergent ⟺ $\sum |a_n|$ konvergiert. Absolute Konvergenz erlaubt Umordnung ohne Wertänderung.</p>
+        <p><strong>Bedingt</strong> konvergent: konvergiert, aber nicht absolut. Klassisch $\sum (-1)^n / n = -\ln 2$. Umordnen kann Wert ändern (Riemannscher Umordnungssatz).</p>
+      </div>
+
+      <div id="standardreihen">
+        <h3>1.4 Standardreihen</h3>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Reihe</th><th>Verhalten</th><th>Wert (falls konv.)</th></tr></thead>
+          <tbody>
+            <tr><td>$\sum \dfrac{1}{n^s}$ (Zeta)</td><td>konv. ⟺ $s > 1$</td><td>$\zeta(s)$, $\zeta(2) = \pi^2/6$</td></tr>
+            <tr><td>$\sum \dfrac{(-1)^{n+1}}{n}$</td><td>konv. (Leibniz)</td><td>$\ln 2$</td></tr>
+            <tr><td>$\sum \dfrac{1}{n!}$</td><td>konv.</td><td>$e - 1$ (ab $n = 1$)</td></tr>
+            <tr><td>$\sum \dfrac{x^n}{n!}$</td><td>konv. $\forall x$</td><td>$e^x - 1$ (ab $n = 1$)</td></tr>
+            <tr><td>$\sum q^n$ (Geometrisch)</td><td>konv. ⟺ $|q| < 1$</td><td>$\dfrac{1}{1-q}$ (ab $n = 0$)</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div id="potenzreihen">
+        <h3>1.5 Potenzreihen</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          $$ \sum_{n=0}^\infty a_n (x - x_0)^n $$
+          <p>Eine Potenzreihe konvergiert auf einem Intervall $(x_0 - r, x_0 + r)$ mit dem <strong>Konvergenzradius</strong>:</p>
+          $$ r = \frac{1}{\limsup \sqrt[n]{|a_n|}} \quad \text{oder} \quad r = \lim \left|\frac{a_n}{a_{n+1}}\right| $$
+          <p>Am Rand ($|x - x_0| = r$) muss separat geprüft werden.</p>
+        </div>
+
+        <p>Innerhalb des Konvergenzradius ist die Funktion beliebig oft differenzierbar, und Differentiation/Integration darf gliedweise erfolgen.</p>
+      </div>
+
+      <div id="taylor">
+        <h3>1.6 Taylor-Entwicklung</h3>
+        <div class="def">
+          <span class="def-label">Taylor-Reihe</span>
+          $$ f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(x_0)}{n!} (x - x_0)^n $$
+          <p>Für analytische $f$ gilt Gleichheit auf dem Konvergenzradius.</p>
+        </div>
+
+        <h4>Wichtige Taylor-Reihen um $x_0 = 0$ (Maclaurin)</h4>
+        <ul>
+          <li>$e^x = \sum \dfrac{x^n}{n!}$ — $r = \infty$.</li>
+          <li>$\sin x = \sum \dfrac{(-1)^n x^{2n+1}}{(2n+1)!}$ — $r = \infty$.</li>
+          <li>$\cos x = \sum \dfrac{(-1)^n x^{2n}}{(2n)!}$ — $r = \infty$.</li>
+          <li>$\ln(1 + x) = \sum_{n=1}^\infty \dfrac{(-1)^{n+1} x^n}{n}$ — $r = 1$.</li>
+          <li>$(1+x)^\alpha = \sum \binom{\alpha}{n} x^n$ (Binomialreihe) — $r = 1$.</li>
+          <li>$\dfrac{1}{1-x} = \sum x^n$ — $r = 1$.</li>
+        </ul>
+
+        <h4>Taylor-Restglied</h4>
+        $$ f(x) = T_n(x) + R_n(x), \quad R_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!} (x - x_0)^{n+1} $$
+        <p>Lagrange-Form des Restglieds, $\xi$ zwischen $x_0$ und $x$.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>Taylor von $f(x) = \ln(1 + 2x)$ um $x_0 = 0$ bis Grad 3.</p>
+          <p>Mit $u = 2x$: $\ln(1+u) = u - u^2/2 + u^3/3 - \dots$. Einsetzen: $\ln(1+2x) = 2x - 2x^2 + \frac{8}{3} x^3 - \dots$.</p>
+          <p>Konvergenzradius: $|2x| < 1 \Rightarrow |x| < 1/2$.</p>
+        </div>
+      </div>
+
+      <div class="prompt">Stelle mir 6 Reihen unterschiedlichen Typs (geometrisch, harmonisch-varianten, alternierend, mit Fakultät). Ich wähle pro Reihe ein Konvergenzkriterium + begründe die Anwendung. Du korrigierst — typischer Fehler: Quotient bei alternierender Reihe statt Leibniz. Außerdem: weise mich darauf hin, wenn ich absolute mit bedingter Konvergenz verwechsele.</div>
+
+      <div class="prompt">Entwickle $f(x) = \arctan(x)$ als Taylor-Reihe um $0$ bis Grad 5. Tipp: $f'(x) = \frac{1}{1+x^2}$, geometrische Reihe darauf anwenden, dann gliedweise integrieren. Konvergenzradius angeben.</div>
+    </section>
+
+    <!-- ===================== 2 MEHRDIM ===================== -->
+    <section id="mehrdim">
+      <h2>2 · Mehrdimensionale Differentiation</h2>
+
+      <div id="topologie">
+        <h3>2.1 Topologie in $\mathbb{R}^n$ (kurz)</h3>
+        <ul>
+          <li>Euklidische Norm: $\|x\| = \sqrt{\sum x_i^2}$.</li>
+          <li>Offene Kugel: $B_r(a) = \{x : \|x - a\| < r\}$.</li>
+          <li>$M$ <em>offen</em> ⟺ jedes $a \in M$ besitzt $B_r(a) \subseteq M$.</li>
+          <li>$f$ stetig in $a$ ⟺ $\lim_{x \to a} f(x) = f(a)$ — entspricht $\epsilon$-$\delta$ wie 1D.</li>
+        </ul>
+      </div>
+
+      <div id="partiell">
+        <h3>2.2 Partielle Ableitungen &amp; Gradient</h3>
+        <div class="def">
+          <span class="def-label">Partielle Ableitung</span>
+          <p>$\dfrac{\partial f}{\partial x_i}(a) = \lim_{h \to 0} \dfrac{f(a + h e_i) - f(a)}{h}$. Andere Variablen fest.</p>
+        </div>
+
+        <p><strong>Gradient:</strong>
+          $$ \nabla f(a) = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)^\top $$
+        </p>
+        <ul>
+          <li>Zeigt in Richtung des steilsten Anstiegs.</li>
+          <li>$\|\nabla f\|$ = Steigung in dieser Richtung.</li>
+          <li>$\nabla f \perp$ Niveauline $\{x : f(x) = \text{const}\}$.</li>
+        </ul>
+      </div>
+
+      <div id="total">
+        <h3>2.3 Totale Differenzierbarkeit</h3>
+        <div class="def">
+          <span class="def-label">Definition</span>
+          <p>$f$ ist in $a$ <strong>total differenzierbar</strong>, wenn es eine lineare Abbildung $L = \nabla f(a)^\top$ gibt mit
+            $$ f(a + h) = f(a) + L h + o(\|h\|) \quad (h \to 0). $$
+          </p>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Existenz partieller Ableitungen ≠ Differenzierbarkeit</div>
+          <p>Es gibt Funktionen mit existenten partiellen Ableitungen, die <em>nicht</em> stetig (und schon gar nicht total diff.bar) sind. Klassisch:</p>
+          $$ f(x, y) = \begin{cases} \dfrac{xy}{x^2 + y^2} & (x,y) \ne (0,0) \\ 0 & (x,y) = (0,0) \end{cases} $$
+          <p>Hat $\partial_x f(0,0) = \partial_y f(0,0) = 0$, ist aber nicht stetig in $(0,0)$ (Pfad $y = x$ gibt Grenzwert $1/2$, Pfad $y = 0$ Grenzwert $0$).</p>
+        </div>
+
+        <div class="callout callout-tip">
+          <div class="callout-title">Hinreichende Bedingung</div>
+          <p>Wenn alle partiellen Ableitungen in einer Umgebung von $a$ existieren und in $a$ <em>stetig</em> sind, dann ist $f$ in $a$ total differenzierbar.</p>
+        </div>
+      </div>
+
+      <div id="richtungsabl">
+        <h3>2.4 Richtungsableitung</h3>
+        $$ D_v f(a) = \lim_{t \to 0} \frac{f(a + t v) - f(a)}{t} $$
+        <p>Bei total differenzierbarem $f$: $D_v f(a) = \nabla f(a)^\top v$. Maximum unter $\|v\| = 1$ wird in Richtung $\nabla f / \|\nabla f\|$ erreicht.</p>
+      </div>
+
+      <div id="kettenregel">
+        <h3>2.5 Kettenregel</h3>
+        <p>$f: \mathbb{R}^n \to \mathbb{R}^m, g: \mathbb{R}^m \to \mathbb{R}^k$. Mit Jacobi-Matrizen:</p>
+        $$ J_{g \circ f}(x) = J_g(f(x)) \cdot J_f(x) $$
+
+        <h4>Spezialfall — Kurve in $\mathbb{R}^n$</h4>
+        <p>$h(t) = f(\gamma(t))$ mit $\gamma: \mathbb{R} \to \mathbb{R}^n$:
+          $$ h'(t) = \nabla f(\gamma(t))^\top \gamma'(t) $$
+        </p>
+      </div>
+
+      <div id="hesse">
+        <h3>2.6 Hesse-Matrix &amp; mehrdim. Taylor</h3>
+        <div class="def">
+          <span class="def-label">Hesse-Matrix</span>
+          $$ H_f(x) = \begin{pmatrix} \partial^2_{x_1 x_1} f & \cdots & \partial^2_{x_1 x_n} f \\ \vdots & & \vdots \\ \partial^2_{x_n x_1} f & \cdots & \partial^2_{x_n x_n} f \end{pmatrix} $$
+        </div>
+
+        <div class="thm">
+          <span class="thm-label">Satz von Schwarz</span>
+          <p>Sind alle 2. partiellen Ableitungen in einer Umgebung von $a$ stetig, so gilt $\partial^2_{x_i x_j} f(a) = \partial^2_{x_j x_i} f(a)$ — Hesse ist symmetrisch.</p>
+        </div>
+
+        <h4>Mehrdim. Taylor</h4>
+        $$ f(a + h) = f(a) + \nabla f(a)^\top h + \frac{1}{2} h^\top H_f(a) h + R_2(h),\quad R_2 = o(\|h\|^2) $$
+      </div>
+
+      <div class="prompt">Bestimme Gradient und Hesse-Matrix von $f(x, y, z) = x^2 y + e^{xy} + \ln(1 + z^2)$. Ich rechne sorgfältig, du prüfst Symmetrie der Hesse und kontrollierst alle 9 Einträge.</div>
+    </section>
+
+    <!-- ===================== 3 EXTREMA ===================== -->
+    <section id="extrema">
+      <h2>3 · Extrema</h2>
+
+      <div id="frei">
+        <h3>3.1 Freie Extrema (ohne NB)</h3>
+        <p>Rezept:</p>
+        <ol>
+          <li>$\nabla f(x) = 0$ lösen → stationäre Punkte.</li>
+          <li>Hesse $H_f(x^*)$ bestimmen.</li>
+          <li>Klassifizieren via Definitheit / Eigenwert-Vorzeichen.</li>
+        </ol>
+
+        <h4>Klassifikation</h4>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Hesse $H_f(x^*)$</th><th>Typ</th></tr></thead>
+          <tbody>
+            <tr><td>positiv definit (alle EW $> 0$)</td><td>striktes lokales Minimum</td></tr>
+            <tr><td>negativ definit (alle EW $< 0$)</td><td>striktes lokales Maximum</td></tr>
+            <tr><td>indefinit (EW mit verschiedenen Vorzeichen)</td><td>Sattelpunkt</td></tr>
+            <tr><td>positiv/negativ semidefinit (mind. ein EW = 0)</td><td>unentschieden — höhere Ordnung nötig</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>2x2-Schnelltest</h4>
+        <p>$H = \begin{pmatrix} A & B \\ B & C \end{pmatrix}$, $\det H = AC - B^2$.</p>
+        <ul>
+          <li>$\det H > 0$ und $A > 0$ → Min.</li>
+          <li>$\det H > 0$ und $A < 0$ → Max.</li>
+          <li>$\det H < 0$ → Sattel.</li>
+          <li>$\det H = 0$ → unklar.</li>
+        </ul>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$f(x, y) = x^3 - 3 x y + y^3$. $\nabla f = (3x^2 - 3y, 3y^2 - 3x) = 0$ ⇒ $y = x^2$ und $x = y^2$. Einsetzen: $x = x^4 \Rightarrow x = 0$ oder $x = 1$. Stationäre Punkte: $(0, 0)$ und $(1, 1)$.</p>
+          <p>Hesse: $H = \begin{pmatrix} 6x & -3 \\ -3 & 6y \end{pmatrix}$.</p>
+          <ul>
+            <li>$(0, 0)$: $H = \begin{pmatrix} 0 & -3 \\ -3 & 0 \end{pmatrix}$, $\det = -9 < 0$ → Sattel.</li>
+            <li>$(1, 1)$: $H = \begin{pmatrix} 6 & -3 \\ -3 & 6 \end{pmatrix}$, $\det = 27 > 0$, $A = 6 > 0$ → Min. $f(1,1) = 1 - 3 + 1 = -1$.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="lagrange">
+        <h3>3.2 Extrema unter Nebenbedingungen — Lagrange-Multiplikatoren</h3>
+        <p>Problem: $\min f(x)$ u.d.N. $g_i(x) = 0$, $i = 1, \dots, m$.</p>
+
+        <div class="def">
+          <span class="def-label">Lagrange-Funktion</span>
+          $$ L(x, \lambda) = f(x) - \sum_{i=1}^m \lambda_i g_i(x) $$
+        </div>
+
+        <p>Notwendige Bedingung: $\nabla_x L = 0$ und $g_i(x) = 0$ ⇒
+          $$ \nabla f(x^*) = \sum_i \lambda_i \nabla g_i(x^*) $$
+        </p>
+        <p>Geometrisch: der Zielgradient liegt im Spann der NB-Gradienten — keine Richtung erlaubt eine zulässige Verbesserung.</p>
+
+        <p>Für Ungleichungs-NB siehe KKT in <a href="02-optimierungsverfahren.html#kkt">Optimierungsverfahren</a>.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$\min x^2 + y^2$ u.d.N. $x + y = 1$.</p>
+          <p>$L = x^2 + y^2 - \lambda(x + y - 1)$.</p>
+          <p>$\partial_x L = 2x - \lambda = 0,\; \partial_y L = 2y - \lambda = 0 \Rightarrow x = y = \lambda/2$. NB: $x + y = 1 \Rightarrow x = y = 1/2$. $f^* = 1/2$.</p>
+          <p>Geometrische Bestätigung: gesucht ist der nächste Punkt auf der Gerade $x + y = 1$ zum Ursprung — Lot fällt auf $(1/2, 1/2)$.</p>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Beispiel — 2 NB</span>
+          <p>$\max xyz$ u.d.N. $x + y + z = 9,\; xyz > 0$ (und implizit $x,y,z > 0$).</p>
+          <p>$L = xyz - \lambda(x + y + z - 9)$. $\partial_x: yz = \lambda$. $\partial_y: xz = \lambda$. $\partial_z: xy = \lambda$.</p>
+          <p>$yz = xz \Rightarrow x = y$ (für $z \ne 0$). $xz = xy \Rightarrow y = z$. Also $x = y = z = 3$.</p>
+          <p>$f^* = 27$. AM-GM-Bestätigung: $xyz \le ((x+y+z)/3)^3 = 27$.</p>
+        </div>
+      </div>
+
+      <div class="prompt">Finde und klassifiziere alle Extrema von $f(x, y) = x^4 + y^4 - 2(x - y)^2$. Ich identifiziere stationäre Punkte (Gleichungssystem), Hesse-Klassifikation, prüfe Globalverhalten. Du fängst typische Fehler ab — vor allem das Übersehen weiterer stationärer Punkte.</div>
+
+      <div class="prompt">Optimiere $f(x,y) = x^2 + y$ auf dem Kreis $x^2 + y^2 = 4$ mit Lagrange. Ich finde Multiplikator + alle Kandidaten + globales Max/Min. Bestätige geometrisch (zwei Schnittpunkte einer Parabel-Höhenlinie mit dem Kreis).</div>
+    </section>
+
+    <!-- ===================== 4 VEKTORANALYSIS ===================== -->
+    <section id="vektoranalysis">
+      <h2>4 · Vektoranalysis</h2>
+
+      <h3>4.1 Divergenz, Rotation</h3>
+      <p>Vektorfeld $F: \mathbb{R}^3 \to \mathbb{R}^3$, $F = (P, Q, R)$.</p>
+      <ul>
+        <li><strong>Divergenz:</strong> $\nabla \cdot F = \partial_x P + \partial_y Q + \partial_z R$. Quellendichte.</li>
+        <li><strong>Rotation:</strong> $\nabla \times F = (\partial_y R - \partial_z Q,\; \partial_z P - \partial_x R,\; \partial_x Q - \partial_y P)$. Wirbeldichte.</li>
+      </ul>
+
+      <h4>Identitäten</h4>
+      <ul>
+        <li>$\nabla \times (\nabla f) = 0$ — Gradient ist wirbelfrei.</li>
+        <li>$\nabla \cdot (\nabla \times F) = 0$ — Rotation ist quellenfrei.</li>
+        <li>$\nabla \times (\nabla \times F) = \nabla(\nabla \cdot F) - \Delta F$ mit Laplace $\Delta F$.</li>
+      </ul>
+
+      <h3>4.2 Kurvenintegrale</h3>
+      $$ \int_\gamma F \cdot dr = \int_a^b F(\gamma(t))^\top \gamma'(t)\, dt $$
+      <p>Anschaulich: tangentialer Anteil von $F$ entlang der Kurve, aufintegriert.</p>
+
+      <div class="thm">
+        <span class="thm-label">Konservatives Feld</span>
+        <p>Ein Vektorfeld $F$ heißt <em>konservativ</em>, wenn es ein Potential $\phi$ gibt mit $F = \nabla \phi$. Dann ist
+          $$ \int_\gamma F \cdot dr = \phi(\gamma(b)) - \phi(\gamma(a)), $$
+          insbesondere <strong>wegunabhängig</strong>. Auf einfach zusammenhängenden Gebieten gilt: $F$ konservativ ⟺ $\nabla \times F = 0$.</p>
+      </div>
+
+      <h3>4.3 Integralsätze (zur Kenntnis)</h3>
+      <ul>
+        <li><strong>Gauß:</strong> $\displaystyle \iiint_V \nabla \cdot F \, dV = \oiint_{\partial V} F \cdot dS$ — Quellen im Volumen = Fluss durch Rand.</li>
+        <li><strong>Stokes:</strong> $\displaystyle \iint_S (\nabla \times F) \cdot dS = \oint_{\partial S} F \cdot dr$ — Wirbel auf Fläche = Zirkulation am Rand.</li>
+        <li><strong>Green</strong> (2D): $\displaystyle \iint_D (Q_x - P_y)\, dA = \oint_{\partial D} P\, dx + Q\, dy$.</li>
+      </ul>
+    </section>
+
+    <!-- ===================== 5 MEHRFACH ===================== -->
+    <section id="mehrfach">
+      <h2>5 · Mehrfachintegrale</h2>
+
+      <h3>5.1 Doppelintegral über Normalbereich</h3>
+      $$ \iint_D f(x, y)\, dA = \int_a^b \int_{g_1(x)}^{g_2(x)} f(x, y)\, dy\, dx $$
+      <p>Reihenfolge tauschbar (Fubini) bei genügend Regularität — die Grenzen müssen entsprechend umgerechnet werden.</p>
+
+      <h3>5.2 Transformationssatz</h3>
+      $$ \iint_D f(x, y)\, dA = \iint_{D'} f(x(u,v), y(u,v)) \cdot |\det J|\, du\, dv $$
+      <p>mit Jacobi-Determinante $J = \begin{pmatrix} x_u & x_v \\ y_u & y_v \end{pmatrix}$.</p>
+
+      <h4>Wichtige Transformationen</h4>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>System</th><th>Substitution</th><th>$|\det J|$</th></tr></thead>
+        <tbody>
+          <tr><td>Polar (2D)</td><td>$x = r \cos\phi,\; y = r \sin\phi$</td><td>$r$</td></tr>
+          <tr><td>Zylinder (3D)</td><td>$x = r \cos\phi,\; y = r \sin\phi,\; z = z$</td><td>$r$</td></tr>
+          <tr><td>Kugel (3D)</td><td>$x = r \sin\theta \cos\phi,\; y = r \sin\theta \sin\phi,\; z = r \cos\theta$</td><td>$r^2 \sin\theta$</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="example">
+        <span class="example-label">Beispiel</span>
+        <p>$\iint_D e^{-(x^2 + y^2)}\, dA$ über $D = \{x^2 + y^2 \le R^2\}$.</p>
+        <p>Polar: $\int_0^{2\pi} \int_0^R e^{-r^2} r\, dr\, d\phi = 2\pi \cdot [-\tfrac{1}{2} e^{-r^2}]_0^R = \pi (1 - e^{-R^2})$.</p>
+        <p>Grenzfall $R \to \infty$: $\pi$. Damit $\int_{-\infty}^\infty e^{-x^2} dx = \sqrt \pi$ (Gauss).</p>
+      </div>
+
+      <h3>5.3 Dreifachintegral</h3>
+      <p>Analog zum Doppelintegral, drei verschachtelte Integrationen. Volumen eines Körpers $K$: $V = \iiint_K 1\, dV$.</p>
+
+      <div class="prompt">Berechne $\iiint_K (x^2 + y^2)\, dV$ über die Kugel $K = \{x^2 + y^2 + z^2 \le 1\}$. Ich wähle Kugelkoordinaten, schreibe Jakobi $r^2 \sin\theta$ + Grenzen sauber. Du fängst Reihenfolge- und Vorzeichenfehler ab.</div>
+    </section>
+
+    <!-- ===================== 6 ODE ===================== -->
+    <section id="ode">
+      <h2>6 · Gewöhnliche Differentialgleichungen</h2>
+
+      <h3>Klassifikation</h3>
+      <ul>
+        <li><strong>Ordnung:</strong> höchste auftretende Ableitung.</li>
+        <li><strong>Linear:</strong> Form $\sum_k a_k(x) y^{(k)} = b(x)$.</li>
+        <li><strong>Homogen:</strong> $b = 0$.</li>
+        <li><strong>Konstante Koeffizienten:</strong> $a_k$ unabhängig von $x$.</li>
+        <li><strong>Anfangswertproblem (AWP):</strong> ODE + Werte $y(x_0), y'(x_0), \dots$.</li>
+        <li><strong>Randwertproblem (RWP):</strong> Werte an beiden Endpunkten.</li>
+      </ul>
+
+      <div id="ode-1">
+        <h3>6.1 ODE 1. Ordnung — Lösungskatalog</h3>
+
+        <h4>Trennbar: $y' = f(x) g(y)$</h4>
+        $$ \int \frac{dy}{g(y)} = \int f(x)\, dx + C $$
+
+        <h4>Linear: $y' + p(x) y = q(x)$</h4>
+        <p>Integrierender Faktor $\mu(x) = e^{\int p(x)\, dx}$:</p>
+        $$ y = \frac{1}{\mu(x)} \left(\int \mu(x) q(x)\, dx + C\right) $$
+        <p>Probe: $(\mu y)' = \mu y' + \mu' y = \mu y' + \mu p y = \mu q$, also $\mu y = \int \mu q + C$.</p>
+
+        <h4>Bernoulli: $y' + p(x) y = q(x) y^n$, $n \ne 1$</h4>
+        <p>Substitution $u = y^{1-n}$ → lineare ODE in $u$.</p>
+
+        <h4>Exakt: $M(x, y)\, dx + N(x, y)\, dy = 0$ mit $M_y = N_x$</h4>
+        <p>Es gibt $\Phi$ mit $\Phi_x = M, \Phi_y = N$. Lösung implizit: $\Phi(x, y) = C$.</p>
+
+        <h4>Substitutionen</h4>
+        <ul>
+          <li>Homogen vom Grad 0: $y' = f(y/x)$ → Substitution $u = y/x$.</li>
+          <li>Riccati $y' = a(x) + b(x) y + c(x) y^2$: falls eine partikuläre Lösung $y_1$ bekannt, Sub $y = y_1 + 1/u$ → linear in $u$.</li>
+        </ul>
+
+        <div class="example">
+          <span class="example-label">Beispiel — Linear</span>
+          <p>$y' + 2y = e^{-x}$, $y(0) = 1$.</p>
+          <p>$\mu = e^{2x}$. $\mu y' + 2 e^{2x} y = e^{2x} \cdot e^{-x} = e^x$.</p>
+          <p>$(\mu y)' = e^x \Rightarrow \mu y = e^x + C \Rightarrow y = e^{-x} + C e^{-2x}$.</p>
+          <p>$y(0) = 1: 1 + C = 1 \Rightarrow C = 0$. Lösung: $y = e^{-x}$.</p>
+        </div>
+      </div>
+
+      <div id="ode-2">
+        <h3>6.2 ODE 2. Ordnung mit konstanten Koeffizienten</h3>
+        <p>$y'' + a y' + b y = f(x)$.</p>
+
+        <h4>Homogene Lösung</h4>
+        <p>Ansatz $y_h = e^{\lambda x}$ → charakteristische Gleichung $\lambda^2 + a \lambda + b = 0$.</p>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Diskriminante</th><th>Nullstellen</th><th>$y_h$</th></tr></thead>
+          <tbody>
+            <tr><td>$a^2 - 4b > 0$</td><td>$\lambda_1, \lambda_2$ reell, versch.</td><td>$C_1 e^{\lambda_1 x} + C_2 e^{\lambda_2 x}$</td></tr>
+            <tr><td>$a^2 - 4b = 0$</td><td>$\lambda$ doppelt</td><td>$(C_1 + C_2 x) e^{\lambda x}$</td></tr>
+            <tr><td>$a^2 - 4b < 0$</td><td>$\alpha \pm i\beta$</td><td>$e^{\alpha x}(C_1 \cos\beta x + C_2 \sin\beta x)$</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h4>Inhomogene Lösung — Ansatz nach Inhomogenität</h4>
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>Form von $f(x)$</th><th>Ansatz $y_p$</th></tr></thead>
+          <tbody>
+            <tr><td>Polynom Grad $n$</td><td>Polynom Grad $n$</td></tr>
+            <tr><td>$e^{k x}$</td><td>$A e^{k x}$</td></tr>
+            <tr><td>$\cos(\omega x)$ oder $\sin(\omega x)$</td><td>$A \cos(\omega x) + B \sin(\omega x)$</td></tr>
+            <tr><td>Produkt der Obigen</td><td>Produkt der Ansätze</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Resonanz</div>
+          <p>Wenn der Inhomogenitätsterm selbst eine Lösung der homogenen Gleichung ist, multipliziere den Ansatz mit $x$ (bei doppelter Resonanz mit $x^2$).</p>
+          <p>Bsp: $y'' + y = \sin x$. Homogene Lösung $\sin x, \cos x$ enthält $\sin x$ → Ansatz $y_p = x(A \cos x + B \sin x)$.</p>
+        </div>
+
+        <h4>Variation der Konstanten (allgemein)</h4>
+        <p>Wenn $y_1, y_2$ die fundamentale Lösungsbasis sind:</p>
+        $$ y_p = -y_1 \int \frac{y_2 f}{W} dx + y_2 \int \frac{y_1 f}{W} dx,\quad W = y_1 y_2' - y_2 y_1'\;\text{(Wronski)} $$
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$y'' - 3 y' + 2 y = e^{3x}$.</p>
+          <p>Char.Pol.: $\lambda^2 - 3\lambda + 2 = (\lambda - 1)(\lambda - 2)$. $y_h = C_1 e^x + C_2 e^{2x}$.</p>
+          <p>Ansatz $y_p = A e^{3x}$: $9A - 9A + 2A = 1 \Rightarrow A = 1/2$.</p>
+          <p>$y = C_1 e^x + C_2 e^{2x} + \tfrac{1}{2} e^{3x}$.</p>
+        </div>
+
+        <div class="example">
+          <span class="example-label">Beispiel — Resonanz</span>
+          <p>$y'' + 4 y = \sin(2x)$.</p>
+          <p>Char.Pol.: $\lambda^2 + 4 = 0 \Rightarrow \lambda = \pm 2i$. $y_h = C_1 \cos 2x + C_2 \sin 2x$.</p>
+          <p>$\sin 2x$ ist Teil von $y_h$ → Ansatz $y_p = x(A \cos 2x + B \sin 2x)$.</p>
+          <p>Einsetzen, Koeffizientenvergleich → $A = -1/4, B = 0$. $y_p = -\frac{x}{4} \cos 2x$.</p>
+        </div>
+      </div>
+
+      <div id="ode-sys">
+        <h3>6.3 Systeme linearer ODEs</h3>
+        $$ \mathbf{y}'(t) = A\, \mathbf{y}(t),\quad \mathbf{y}(0) = \mathbf{y}_0 $$
+        <p>Lösung über Matrix-Exponential:</p>
+        $$ \mathbf{y}(t) = e^{A t}\, \mathbf{y}_0,\quad e^{A t} = \sum_{k=0}^\infty \frac{(A t)^k}{k!} $$
+        <p>Bei diagonalisierbarem $A = P D P^{-1}$: $e^{A t} = P e^{D t} P^{-1}$ mit $e^{D t} = \text{diag}(e^{\lambda_i t})$.</p>
+
+        <div class="example">
+          <span class="example-label">Beispiel</span>
+          <p>$\mathbf{y}' = \begin{pmatrix} 1 & 2 \\ 0 & -1 \end{pmatrix} \mathbf{y}$. EW $1, -1$. Eigenvektoren $(1, 0)^\top$ und $(1, -1)^\top$.</p>
+          <p>$\mathbf{y}(t) = c_1 e^t (1, 0)^\top + c_2 e^{-t} (1, -1)^\top$.</p>
+        </div>
+      </div>
+
+      <div class="prompt">Löse $y' + 2y = e^{-x}, y(0) = 1$. Ich nutze integrierenden Faktor. Du prüfst, dass ich $\mu$ korrekt berechne und die Konstante via AWP fixiere.</div>
+
+      <div class="prompt">Löse $y'' + 4y = \sin(2x), y(0) = 0, y'(0) = 1$. Achtung Resonanz! Ich mache den Ansatz, du fängst es ab, falls ich vergesse, mit $x$ zu multiplizieren. Anschließend mit AWP die Konstanten bestimmen.</div>
+
+      <div class="prompt">Löse System $\mathbf{y}' = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix} \mathbf{y}, \mathbf{y}(0) = (1, 0)^\top$ via EVD. Ich berechne EW, Eigenvektoren, $e^{At}$, einsetzen. Du fängst Fehler bei Diagonalisierung ab — die Matrix ist symmetrisch, also orthogonal diagonalisierbar.</div>
+    </section>
+
+    <!-- ===================== 8 CHEATSHEET ===================== -->
+    <section id="cheatsheet" class="cheatsheet">
+      <h2>7 · Cheatsheet</h2>
+      <pre><code>REIHEN
+  notw.: a_n → 0  (nicht hinreichend)
+  Σ 1/n^s konv ⇔ s > 1.   Σ qⁿ konv ⇔ |q| &lt; 1
+  Quotient: lim |a_{n+1}/a_n| &lt; 1 ⇒ konv
+  Wurzel:   lim ⁿ√|a_n| &lt; 1 ⇒ konv
+  Leibniz:  altern., |a_n| ↓, →0  ⇒ konv
+  Majorante / Integralvergleich
+  Potenzreihe r = 1 / limsup ⁿ√|a_n|
+  Taylor um x₀:  f(x) = Σ f⁽ⁿ⁾(x₀)/n! (x-x₀)ⁿ
+
+MEHRDIM
+  ∇f  = (∂_x_1 f, ..., ∂_x_n f)^T
+  D_v f = ∇f · v  (für ||v||=1)
+  total diff.bar ⇒ stetig + part. Abl. existieren
+  hinreichend: part. Abl. stetig
+  Schwarz: 2.te Abl. stetig ⇒ H symm.
+  Taylor: f(a+h) ≈ f(a) + ∇f(a)·h + ½ h^T H h
+
+EXTREMA
+  ∇f = 0   (stationär)
+  H pos.def → striktes lok. Min
+  H neg.def → striktes lok. Max
+  H indef   → Sattel
+  2x2: detH&gt;0,A&gt;0→Min; detH&gt;0,A&lt;0→Max; detH&lt;0→Sattel
+  Lagrange: ∇f = Σ λᵢ ∇gᵢ
+
+MEHRFACHINT
+  Polar:  |J|=r
+  Zylin:  |J|=r
+  Kugel:  |J|=r² sin θ
+  Fubini: Reihenfolge tauschbar bei Regularität
+
+VEKTORANA
+  rot(∇f)=0,  div(rot F)=0
+  konservativ ⇔ ∃ φ: F=∇φ  ⇒ wegunabhängig
+  einfzh. Gebiet: rot F = 0 ⇔ konservativ
+
+ODE 1. ORD.
+  trennbar:  ∫dy/g(y) = ∫f(x)dx + C
+  linear y' + py = q:  μ = exp(∫p dx),  μy = ∫μq dx + C
+  Bernoulli y' + py = q yⁿ:  u = y^(1-n) → linear
+  exakt M dx + N dy = 0 mit M_y = N_x: Φ existiert, Φ=C
+
+ODE 2. ORD. KONST.
+  Char.Pol. λ² + aλ + b = 0
+  reell versch.    : C₁ exp(λ₁x) + C₂ exp(λ₂x)
+  doppelt          : (C₁ + C₂ x) exp(λx)
+  α±iβ             : exp(αx)(C₁ cos βx + C₂ sin βx)
+  Inhomogen-Ansatz: Polynom→Polyn., e^kx→A e^kx,
+                    cos/sin → A cos + B sin
+  Resonanz: Ansatz × x (oder x² doppelt)
+
+SYSTEM
+  y' = Ay ⇒ y(t) = e^{At} y₀
+  diag.: e^{At} = P e^{Dt} P⁻¹</code></pre>
+    </section>
+
+    <!-- ===================== 9 DRILLPLAN ===================== -->
+    <section id="drillplan">
+      <h2>8 · Drillplan</h2>
+      <ol>
+        <li><strong>Tag 1 — Reihen:</strong> 8 Konvergenz-Aufgaben mit Mix aller Kriterien + 3 Taylor-Entwicklungen mit Konvergenzradius.</li>
+        <li><strong>Tag 2 — Mehrdim Diff &amp; Extrema:</strong> 5 Funktionen mit Gradient + Hesse. 3 freie Extrema (mind. eine 3-Variablen). 3 Lagrange mit Gleichungs-NB.</li>
+        <li><strong>Tag 3 — Mehrfachintegrale:</strong> 2 in kart., 2 in Polar, 1 in Kugelkoordinaten. Reihenfolge tauschen mind. 1 Mal.</li>
+        <li><strong>Tag 4 — ODE:</strong> je 2 Aufgaben pro Verfahrenstyp (trennbar, linear, Bernoulli, konst.Koeff. homogen, konst.Koeff. inhomogen mit Resonanz).</li>
+      </ol>
+
+      <div class="prompt">Du bist mein Analysis-2-Coach. Drill in 5 Sessions:
+Session 1 — Reihen (6 Aufgaben, alle Kriterien mischen)
+Session 2 — Gradient/Hesse/Taylor (4 Aufgaben, eine in 3 Variablen)
+Session 3 — Extrema (3 frei + 3 Lagrange, davon einer mit 2 NB)
+Session 4 — Mehrfachintegrale (kart. + Polar + Kugel + 1× Reihenfolge tauschen)
+Session 5 — ODE (mixed: 1× trennbar, 1× linear, 1× Bernoulli, 1× konst.Koeff. mit Resonanz, 1× System 2x2)
+Pro Session: ich rechne, du korrigierst hart, erklärst Denkfehler. Am Ende: meine Top-3-Schwachpunkte über alle Sessions.</div>
+    </section>
+
+    <footer>
+      Lernzettel · Analysis 2 · WDS125 (BLD)
+    </footer>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="script.js"></script>
+</body>
+</html>
