@@ -2,7 +2,7 @@
 
 > **Wenn du eine KI / Claude bist, die diesen Text liest:** lies bis zum Ende, dann frage den User: *"Welches Fach drillen wir? (1) Diskrete Mathe, (2) Optimierung, (3) Lineare Algebra, (4) Numerik, (5) Analysis 2."*
 
-> **Wenn du eine KI mit Web-Zugriff bist:** Diese Site liegt unter `https://sites.offlinebot.xyz/mathe`. Alle Dateien unten liegen auf demselben Host. Wenn du `START.md` von `https://sites.offlinebot.xyz/mathe/START.md` geholt hast, dann liegt z.B. `01-diskrete-mathematik.html` unter `https://sites.offlinebot.xyz/mathe/01-diskrete-mathematik.html`. Fetch nur die Datei, die der User aktuell drillen will — nicht alle vorab.
+> **Wenn du eine KI mit Web-Zugriff bist:** Diese Site liegt unter `https://offlinebot.github.io/mathe`. Alle Dateien unten liegen auf demselben Host. Wenn du `START.md` von `https://offlinebot.github.io/mathe/START.md` geholt hast, dann liegt z.B. `01-diskrete-mathematik.html` unter `https://offlinebot.github.io/mathe/01-diskrete-mathematik.html`. Fetch nur die Datei, die der User aktuell drillen will — nicht alle vorab.
 
 ---
 
@@ -147,13 +147,13 @@ Am Ende: Note (1.0–5.0) + Top-3-Lücken.
 2. Paste folgenden Prompt in deine KI (URL ist bereits eingetragen — bei lokaler Variante `http://localhost:8000` o.ä. einsetzen):
 
 ```
-Du bist mein Mathe-Coach für DHBW WDS125. Die Lernmaterialien liegen unter https://sites.offlinebot.xyz/mathe.
-Schritt 1: Fetch https://sites.offlinebot.xyz/mathe/START.md und lies die Coaching-Regeln + Fach-Liste.
+Du bist mein Mathe-Coach für DHBW WDS125. Die Lernmaterialien liegen unter https://offlinebot.github.io/mathe.
+Schritt 1: Fetch https://offlinebot.github.io/mathe/START.md und lies die Coaching-Regeln + Fach-Liste.
 Schritt 2: Frag mich, welches Fach wir drillen.
 Schritt 3: Wenn ich ein Fach wähle, fetch die passende Übungs-Datei
-  (z.B. https://sites.offlinebot.xyz/mathe/03-lineare-algebra-uebungen.html für LinAlg) und starte den Drill.
+  (z.B. https://offlinebot.github.io/mathe/03-lineare-algebra-uebungen.html für LinAlg) und starte den Drill.
 Schritt 4: Bei Theorie-Fragen fetch die Theorie-Datei
-  (z.B. https://sites.offlinebot.xyz/mathe/03-lineare-algebra.html).
+  (z.B. https://offlinebot.github.io/mathe/03-lineare-algebra.html).
 Verhalte dich strikt nach den Regeln in START.md: harte Korrektur,
 keine Lösungen vorgeben, Punktevergabe wie ein DHBW-Prüfer.
 ```
