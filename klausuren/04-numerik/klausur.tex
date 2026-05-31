@@ -1,0 +1,208 @@
+\documentclass[8pt,a4paper]{extarticle}
+\input{../preamble.tex}
+\renewcommand{\sheettitle}{Numerische Methoden}
+
+\begin{document}
+\sheetheader{Numerische Methoden}{Open-Book Formelsammlung -- DHBW WDS125}
+
+\begin{multicols*}{3}
+
+% =================================================
+\section{Fehler \& Kondition}
+% =================================================
+\subsection{Maschinenzahlen (IEEE 754)}
+Double: $\pm 1.m\cdot 2^e$, 52 Mant.-, 11 Exp.-Bits.\\
+$\epsilon_{\text{mach}}=2^{-52}\!\approx\!2{,}22\cdot 10^{-16}$.\\
+Spez.: $\pm 0,\ \pm\infty$, NaN, Denormal.
+
+\subsection{Fehlerarten}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+Datenfehler & Eingabeungenauigk. \\
+Modellfehler & Physik vereinfacht \\
+Diskretisier.\ & Verfahren approx. \\
+Rundungsfehler & endliche Pr\"azision \\
+Abbruchfehler & Iteration zu fr\"uh \\
+\end{tabularx}
+Absolut $|\tilde x-x|$;\ relativ $|\tilde x-x|/|x|$.
+
+\subsection{Ausl\"oschung}
+$a-b$ bei $a\!\approx\!b$ vernichtet Stellen. Umformen:
+\begin{itemize}
+\item $1-\cos x = 2\sin^2(x/2)$
+\item $\sqrt{a+h}-\sqrt a = h/(\sqrt{a+h}+\sqrt a)$
+\item $e^x-1$: \texttt{expm1(x)} bzw.\ Taylor
+\end{itemize}
+
+\subsection{Konditionszahl}
+\begin{itemize}
+\item Skalar: $\kappa_{\text{rel}}(f,x)=|x f'(x)/f(x)|$
+\item Matrix: $\kappa(A)=\|A\|\cdot\|A^{-1}\|$,\ $\kappa_2=\sigma_1/\sigma_n$
+\item $\kappa\!\approx\!10^{16}$ in double $\Rightarrow$ keine signif.\ Stelle mehr
+\end{itemize}
+\fact{Problem hat \textbf{Kondition}, Verfahren hat \textbf{Stabilit\"at}. Bsp: Gauss ohne Pivot bei kleinem Diag.\ instabil.}
+
+% =================================================
+\section{Lineare Systeme}
+% =================================================
+\subsection{Direkt}
+Gauss mit Spaltenpivot: $PA=LU$, $\tfrac23 n^3$.\\
+Cholesky (SPD): $\tfrac13 n^3$.\\
+QR: Least Squares.
+
+\subsection{Iterativ stationaer}
+Splitting $A=M-N$: $x_{k+1}=M^{-1}(Nx_k+b)$.\\
+Konv.\ $\Leftrightarrow$ Spektralradius $\rho(M^{-1}N)<1$.\\[0.3ex]
+\textbf{Jacobi} ($M=D$):
+\fitline{x_i^{(k+1)}=\tfrac1{a_{ii}}\!\left(b_i-\!\!\sum_{j\ne i}\!a_{ij} x_j^{(k)}\right)}
+\textbf{Gauss-Seidel} (aktualisierte Komp.):
+\fitline{x_i^{(k+1)}=\tfrac1{a_{ii}}\!\left(b_i-\!\sum_{j<i}\!a_{ij} x_j^{(k+1)}-\!\sum_{j>i}\!a_{ij} x_j^{(k)}\right)}
+\textbf{SOR}: $x^{(k+1)}=(1{-}\omega)x^{(k)}+\omega\,x^{\text{GS},(k+1)}$, $\omega\!\in\!(0,2)$.\\
+\fact{Diagonaldominanz $|a_{ii}|>\sum_{j\ne i}|a_{ij}|$ ist hinreichend f\"ur Jacobi/GS-Konvergenz.}
+
+\subsection{CG (SPD) und Krylov}
+\begin{itemize}
+\item $r_0=b-Ax_0,\ p_0=r_0$
+\item $\alpha_k=\frac{r_k\trans r_k}{p_k\trans A p_k}$
+\item $x_{k+1}=x_k+\alpha_k p_k$
+\item $r_{k+1}=r_k-\alpha_k A p_k$
+\item $\beta_k=\frac{r_{k+1}\trans r_{k+1}}{r_k\trans r_k}$
+\item $p_{k+1}=r_{k+1}+\beta_k p_k$
+\end{itemize}
+$\le n$ Schritte exakt; \textbf{GMRES} f\"ur allg.\ $A$ (Restart $m$).\\
+\textbf{Stop}: $\|r^{(k)}\|/\|b\|<\tau$ (Residuum bevorzugt).
+
+% =================================================
+\section{Nichtlin.\ Gleichungen}
+% =================================================
+\subsection{Bisektion}
+$f$ stetig, $f(a)f(b)<0$. Linear (Ord.\ 1) -- ca.\ 3.3 Iter./Dezimalstelle. Garantiert konv.
+
+\subsection{Newton}
+\fitline{x_{k+1}=x_k-f(x_k)/f'(x_k)}
+Quadrat.\ lokal: $|e_{k+1}|\!\approx\!c|e_k|^2$.\\
+Mehrdim.: $x_{k+1}=x_k-J_F(x_k)^{-1}F(x_k)$.\\
+Heron $\sqrt 2$: $x_{k+1}=(x_k+2/x_k)/2$.
+
+\subsection{Sekante}
+\fitline{x_{k+1}=x_k-f(x_k)\cdot\tfrac{x_k-x_{k-1}}{f(x_k)-f(x_{k-1})}}
+Ordnung $p=(1{+}\sqrt 5)/2\approx 1{,}618$.
+
+\subsection{Fixpunkt}
+$x=g(x)$, $x_{k+1}=g(x_k)$.\\
+\textbf{Banach}: $g$ Kontraktion $|g(x){-}g(y)|\!\le\!L|x{-}y|$, $L\!<\!1$ ($\Leftrightarrow|g'|\!\le\!L\!<\!1$) $\Rightarrow$ eindeutiger Fixpunkt, Rate $L$.\ Quadrat.\ falls $g'(x^\star){=}0$.
+
+\subsection{Konvergenzordnungen}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+Bisektion & 1 (linear) \\
+Sekante & $\approx 1{,}618$ \\
+Newton & 2 (quadr.) \\
+Fixpunkt & linear / quadr. \\
+\end{tabularx}
+
+% =================================================
+\section{Interpolation}
+% =================================================
+Eindeutiges Polynom Grad $\le n$ zu $n{+}1$ St\"utzstellen.
+
+\subsection{Lagrange}
+\fitline{L_i(x)=\!\!\prod_{j\ne i}\!\tfrac{x-x_j}{x_i-x_j},\quad p(x)=\sum_i y_i L_i(x)}
+$L_i(x_j)=\delta_{ij}$.
+
+\subsection{Newton (div.\ Diff.)}
+\fitline{p(x)=f[x_0]+f[x_0,x_1](x{-}x_0)+\dots}
+\fitline{f[x_i,\dots,x_{i+k}]=\tfrac{f[x_{i+1}..]-f[x_i..]}{x_{i+k}-x_i}}
+
+\subsection{Runge-Ph\"anomen}
+Bei \"a\-qui\-di\-stan\-ten Knoten w\"achst der Fehler an den R\"andern.
+\fact{Abhilfe: Tschebyscheff-Knoten $x_k=\cos\!\bigl(\tfrac{(2k+1)\pi}{2n+2}\bigr)$ oder Splines.}
+
+\subsection{Splines}
+\begin{itemize}
+\item Linear $C^0$
+\item Kubisch $C^2$ (Standard): nat\"urlich ($s''$=0 am Rand), clamped ($s'$ vorgeg.), period.\ ($s,s',s''$ gleich)
+\end{itemize}
+
+% =================================================
+\section{Numerische Differentiation}
+% =================================================
+\begin{tabularx}{\linewidth}{@{}l@{\ }c@{}}
+Vorw.\ $(f(x{+}h){-}f(x))/h$ & $O(h)$ \\
+R\"uckw.\ $(f(x){-}f(x{-}h))/h$ & $O(h)$ \\
+Zentral $(f(x{+}h){-}f(x{-}h))/(2h)$ & $O(h^2)$ \\
+$f''$: $(f(x{+}h){-}2f(x){+}f(x{-}h))/h^2$ & $O(h^2)$ \\
+\end{tabularx}
+\textbf{Optimales $h$}: Vorw.\ $\sim\!\sqrt\epsilon\!\approx\!10^{-8}$; Zentral $\sim\!\sqrt[3]\epsilon\!\approx\!10^{-5}$.\\
+\textbf{Richardson} ($O(h^2)$): $D_{\text{verb}}=D(h/2)+(D(h/2)-D(h))/3$.
+
+% =================================================
+\section{Quadratur}
+% =================================================
+\subsection{Newton-Cotes}
+\textbf{Trapez}:
+\fitline{\textstyle\int_a^b f\approx \tfrac{b-a}{2}\bigl(f(a)+f(b)\bigr)}
+Fehler $-\tfrac{(b-a)^3}{12}f''(\xi)$, exakt Grad 1.\\[0.3ex]
+\textbf{Simpson}:
+\fitline{\textstyle\int_a^b f\approx \tfrac{b-a}{6}\bigl(f(a)+4 f(\tfrac{a+b}{2})+f(b)\bigr)}
+Fehler $-\tfrac{(b-a)^5}{2880}f^{(4)}(\xi)$, exakt Grad 3.
+
+\subsection{Zusammengesetzt ($h{=}(b{-}a)/n$)}
+\fitline{T_n=\tfrac{h}{2}\bigl(f(a)+2\textstyle\sum_{i=1}^{n-1}\!f(x_i)+f(b)\bigr)\ \ O(h^2)}
+\fitline{S_n=\tfrac{h}{3}\bigl(f(a)+4\textstyle\sum_{\text{u}}\!+\!2\textstyle\sum_{\text{g}}\!+f(b)\bigr)\ \ O(h^4)}
+``u'' = ungerade Indizes, ``g'' = gerade.
+
+\subsection{Gauss-Quadratur}
+$\int_{-1}^1 f\approx\sum_{i=1}^n w_i f(x_i)$ mit $x_i$ = Nullst.\ Legendre; exakt f\"ur Grad $\le 2n{-}1$.\\
+$[a,b]$: $x=\tfrac{b-a}{2}t+\tfrac{a+b}{2}$.\\
+Adaptiv: Simpson$(h)$ vs.\ Simpson$(h/2)$ sch\"atzt lokalen Fehler.
+
+% =================================================
+\section{Anfangswertprobleme (ODE)}
+% =================================================
+$y'=f(t,y),\ y(t_0)=y_0$
+\subsection{Euler explizit / implizit}
+\fitline{y_{n+1}=y_n+h f(t_n,y_n)\ \ (\text{Ord.\ 1, explizit})}
+Stabilit\"at $y'{=}\lambda y$: $|1+h\lambda|\le 1\Rightarrow h\le -2/\lambda$ ($\lambda<0$).\\
+\fitline{y_{n+1}=y_n+h f(t_{n+1},y_{n+1})\ \ (\text{implizit, A-stabil})}
+
+\subsection{Heun (Trapez)}
+\fitline{\tilde y=y_n+h f(t_n,y_n)}
+\fitline{y_{n+1}=y_n+\tfrac{h}{2}\bigl(f(t_n,y_n)+f(t_{n+1},\tilde y)\bigr)}
+Ordnung 2.
+
+\subsection{RK4}
+\fitline{k_1=f(t_n,y_n)}
+\fitline{k_2=f(t_n{+}h/2,\,y_n{+}\tfrac{h}{2}k_1)}
+\fitline{k_3=f(t_n{+}h/2,\,y_n{+}\tfrac{h}{2}k_2)}
+\fitline{k_4=f(t_n{+}h,\,y_n{+}h k_3)}
+\fitline{y_{n+1}=y_n+\tfrac{h}{6}(k_1+2k_2+2k_3+k_4)}
+Ordnung 4, 4 Auswertungen/Schritt.
+
+\subsection{Adaptiv \& Steif}
+\textbf{Adaptiv}: Dormand-Prince (eingebettetes 4(5)).\\
+\textbf{Steif}: gr.\ Spannweite $\max|\lambda|/\min|\lambda|$ $\to$ implizite Verf.\ (BDF, Trapez).
+
+% =================================================
+\section{Eigenwerte numerisch}
+% =================================================
+\textbf{Potenzmethode}: $x_{k+1}=Ax_k/\|Ax_k\|$,\ Rayleigh $\lambda_1\approx x_k\trans Ax_k/x_k\trans x_k$.\\
+Rate $|\lambda_2/\lambda_1|$.\\[0.3ex]
+\textbf{Inverse Iter.\ mit Shift}: $(A-\mu I)x_{k+1}=x_k$, normieren $\to$ EW nahe $\mu$.\\[0.3ex]
+\textbf{QR-Iteration}: $A_0{=}A$;\ $A_k=Q_kR_k,\ A_{k+1}=R_kQ_k$ $\to$ Schur-Form (EW auf Diag).\\
+\textbf{Krylov} (Lanczos / Arnoldi) f\"ur grosse d\"unne $A$.
+
+% =================================================
+\section{Klausur-Stolperfallen}
+% =================================================
+\begin{itemize}
+\item Ausl\"oschung umformen, nicht direkt.
+\item Gauss ohne Pivot bei kleinem $a_{jj}$ $\to$ Pivotsuche.
+\item Steifes Problem mit explizitem Euler $\to$ explodiert; impliziter Euler/BDF.
+\item Stop-Krit.: \emph{Residuum} besser als \emph{Inkrement}.
+\item Zentrale Differenzen schlagen Vorw\"arts (Ordnung und opt.\ $h$).
+\item Newton braucht $f'(x_k)\!\ne\!0$ und gute Startn\"ahe.
+\item Simpson nur f\"ur gerade Anzahl Teilintervalle.
+\item Runge bei \"aquidistanten Knoten $\to$ Tschebyscheff.
+\end{itemize}
+
+\end{multicols*}
+\end{document}

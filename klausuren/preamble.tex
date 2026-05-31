@@ -1,0 +1,149 @@
+% ============================================================
+% Gemeinsamer Preamble fuer alle 5 Open-Book-Spickzettel.
+% Wird aus jedem klausur.tex via \input{../preamble.tex} geladen.
+% Layout: A4 hochkant, 3 Spalten, 8pt, sehr kompakt.
+% ============================================================
+
+\usepackage[a4paper,margin=8mm,top=7mm,bottom=7mm,includefoot]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{array,tabularx,booktabs,makecell}
+\usepackage[dvipsnames,table]{xcolor}
+\usepackage[explicit]{titlesec}
+\usepackage{etoolbox}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% ---------- Farben ----------
+\definecolor{secblue}{HTML}{1f4e79}
+\definecolor{subblue}{HTML}{2e75b6}
+\definecolor{boxbg}{HTML}{f2f2f2}
+\definecolor{accent}{HTML}{c00000}
+\definecolor{rulegray}{HTML}{888888}
+
+% ---------- Spalten ----------
+\setlength{\columnsep}{3mm}
+\setlength{\columnseprule}{0.3pt}
+\def\columnseprulecolor{\color{rulegray}}
+
+% ---------- Listen kompakt ----------
+\setlist{nosep,leftmargin=1.1em,labelsep=0.35em,topsep=0.2ex,partopsep=0pt}
+\setlist[itemize]{label=\textbullet}
+
+% ---------- Abstaende ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.15ex}
+\setlength{\abovedisplayskip}{0.3ex}
+\setlength{\belowdisplayskip}{0.3ex}
+\setlength{\abovedisplayshortskip}{0.2ex}
+\setlength{\belowdisplayshortskip}{0.2ex}
+\setlength{\jot}{1pt}
+
+% ---------- Tabellen kompakt ----------
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{3pt}
+\setlength{\arrayrulewidth}{0.3pt}
+\arrayrulecolor{rulegray}
+
+% ---------- Section-Stil (kein Vollblock; dick + farbige Linie darunter) ----------
+\titleformat{\section}
+  {\large\bfseries\color{secblue}}
+  {}{0pt}{#1}
+  [\vspace{-0.4ex}{\color{secblue}\hrule height 0.8pt}\vspace{0.1ex}]
+\titlespacing*{\section}{0pt}{1.4ex plus 0.4ex}{0.5ex}
+
+\titleformat{\subsection}
+  {\small\bfseries\color{subblue}}
+  {}{0pt}{#1}
+\titlespacing*{\subsection}{0pt}{0.9ex plus 0.2ex}{0.2ex}
+
+\titleformat{\subsubsection}
+  {\small\bfseries}
+  {}{0pt}{#1}
+\titlespacing*{\subsubsection}{0pt}{0.5ex}{0.1ex}
+
+% ---------- Mini-Helfer ----------
+
+% \fact{...} Hervorgehobene Regel (gerahmt, hellgrau)
+\newcommand{\fact}[1]{%
+  \begingroup\setlength{\fboxsep}{2pt}%
+  \colorbox{boxbg}{\parbox{\dimexpr\linewidth-2\fboxsep}{\small #1\strut}}%
+  \endgroup\par\vspace{0.2ex}}
+
+% \warn{...} Stolperfalle (roter Strich links)
+\newcommand{\warn}[1]{%
+  \begingroup\setlength{\fboxsep}{2pt}%
+  \noindent{\color{accent}\rule{2pt}{\baselineskip}}\hspace{2pt}%
+  \begin{minipage}[t]{\dimexpr\linewidth-6pt}\small #1\end{minipage}%
+  \endgroup\par\vspace{0.2ex}}
+
+% Math-Shortcuts
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\DeclareMathOperator{\rg}{rg}
+\DeclareMathOperator{\spur}{tr}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sign}{sgn}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\trans}{^{\!\top}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\inner}[2]{\langle #1,\,#2\rangle}
+\newcommand{\dx}{\,\mathrm{d}x}
+\newcommand{\dy}{\,\mathrm{d}y}
+\newcommand{\dt}{\,\mathrm{d}t}
+
+% Zeigt eine Display-Formel zentriert; skaliert nur runter wenn zu breit.
+\newlength{\fitw}
+\newcommand{\fitline}[1]{%
+  \par\nointerlineskip
+  \settowidth{\fitw}{$\displaystyle #1$}%
+  \ifdim\fitw>\linewidth
+    \noindent\resizebox{\linewidth}{!}{$\displaystyle #1$}\par
+  \else
+    \[\displaystyle #1\]%
+  \fi}
+
+% Tabular fuer fixe Spaltenbreiten (Spickzettel-typisch)
+\newenvironment{tightt}[1]
+  {\par\noindent\begin{tabular}{#1}}
+  {\end{tabular}\par}
+% Fuer X-Spalten direkt \begin{tabularx}{\linewidth}{...} verwenden
+% (kann nicht in \newenvironment gewrappt werden -- TX@get@body Konflikt)
+
+% Globale Schutzschalter gegen Overflow
+\emergencystretch=2em
+\tolerance=2000
+\hbadness=10000
+\hfuzz=2pt
+\vfuzz=2pt
+
+% ---------- Kopf-/Fusszeile ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[L]{\scriptsize\color{rulegray}\textit{\sheettitle}}
+\fancyfoot[R]{\scriptsize\color{rulegray}Seite \thepage\,/\,\pageref{LastPage}}
+\setlength{\footskip}{8pt}
+
+% Titel-Header oben auf Seite 1
+\newcommand{\sheetheader}[2]{%
+  {\Large\bfseries\color{secblue} #1}\hfill
+  {\small\color{rulegray} #2}\par
+  \vspace{0.4ex}{\color{secblue}\hrule height 0.7pt}\vspace{1ex}}
+
+% Default-Titel (wird ueberschrieben)
+\newcommand{\sheettitle}{Open-Book Spickzettel}

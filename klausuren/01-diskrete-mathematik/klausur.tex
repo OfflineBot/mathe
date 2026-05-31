@@ -1,0 +1,203 @@
+\documentclass[8pt,a4paper]{extarticle}
+\input{../preamble.tex}
+\renewcommand{\sheettitle}{Diskrete Mathematik}
+
+\begin{document}
+\sheetheader{Diskrete Mathematik}{Open-Book Formelsammlung -- DHBW WDS125}
+
+\begin{multicols*}{3}
+
+% =================================================
+\section{Aussagenlogik}
+% =================================================
+\subsection{Junktoren \& Wahrheit}
+$n$ Variablen $\Rightarrow 2^n$ Zeilen.\\
+\begin{tightt}{@{}l@{\ \ }l@{}}
+$\neg A$ & wahr gdw.\ $A$ falsch \\
+$A\wedge B$ & wahr gdw.\ beide \\
+$A\vee B$ & wahr gdw.\ mind.\ eins \\
+$A\Rightarrow B$ & falsch nur bei $1{\to}0$ \\
+$A\Leftrightarrow B$ & wahr gdw.\ gleich \\
+$A\oplus B$ & wahr gdw.\ verschieden \\
+\end{tightt}
+\warn{$f\Rightarrow w$ und $f\Rightarrow f$ sind \textbf{beide wahr} (ex falso).}
+
+\subsection{Wichtige \"Aquivalenzen}
+\begin{itemize}
+\item Doppel-Neg.: $\neg\neg A\equiv A$
+\item Komm./Assoz./Idem.\ wie ueblich
+\item Distr.: $A\wedge(B\vee C)\equiv(A\wedge B)\vee(A\wedge C)$
+\item De~Morgan: $\neg(A\wedge B)\equiv\neg A\vee\neg B$,\quad $\neg(A\vee B)\equiv\neg A\wedge\neg B$
+\item Absorption: $A\vee(A\wedge B)\equiv A$
+\item Komplement: $A\vee\neg A\equiv 1$,\quad $A\wedge\neg A\equiv 0$
+\item Identit\"at: $A\vee 0\equiv A$,\ $A\wedge 1\equiv A$
+\item Dominanz: $A\vee 1\equiv 1$,\ $A\wedge 0\equiv 0$
+\item Implikation: $A\Rightarrow B\equiv \neg A\vee B$
+\item Kontraposition: $A\Rightarrow B\equiv \neg B\Rightarrow \neg A$
+\item Neg.\ Impl.: $\neg(A\Rightarrow B)\equiv A\wedge\neg B$
+\item Bikond.: $(A{\Rightarrow}B)\wedge(B{\Rightarrow}A)$
+\end{itemize}
+
+\subsection{DNF / KNF}
+\textbf{Minterm} = Konj.\ aller Lit.; \textbf{Maxterm} = Disj.\ aller Lit.
+\begin{itemize}
+\item \textbf{DNF}: pro Zeile mit $f{=}1$ Minterm (Variable unnegiert wenn $1$), dann $\bigvee$.
+\item \textbf{KNF}: pro Zeile mit $f{=}0$ Maxterm (Variable \textbf{negiert} wenn $1$), dann $\bigwedge$.
+\end{itemize}
+
+\subsection{Pr\"adikatenlogik}
+$\forall x{:}\,P(x)$,\ $\exists x{:}\,P(x)$,\ $\exists!\,x{:}\,P(x)$
+\fact{$\neg\forall x{:}P\equiv\exists x{:}\neg P$\quad $\neg\exists x{:}P\equiv\forall x{:}\neg P$}
+\warn{Reihenfolge: $\forall x\exists y\,P\;\ne\;\exists y\forall x\,P$.}
+
+% =================================================
+\section{Mengen \& Relationen}
+% =================================================
+\subsection{Mengenoperationen}
+$A\cup B,\ A\cap B,\ A\setminus B,\ A\triangle B=(A\setminus B)\cup(B\setminus A)$,\ $A^c=\Omega\setminus A$,\ $A\times B=\{(a,b)\}$,\ $\mathcal{P}(A)$,\ $|\mathcal{P}(A)|=2^{|A|}$.
+
+\subsection{Inklusion--Exklusion}
+$|A\cup B|=|A|+|B|-|A\cap B|$
+\fitline{\begin{aligned}|A\cup B\cup C|=\,&|A|+|B|+|C|\\
+&-|A\cap B|-|A\cap C|-|B\cap C|\\
+&+|A\cap B\cap C|\end{aligned}}
+\textbf{Allg.}:
+\fitline{\Bigl|\bigcup_{i=1}^n A_i\Bigr|=\sum_{k=1}^n(-1)^{k+1}\!\sum_{i_1<\dots<i_k}\!|A_{i_1}\!\cap\!\dots\!\cap\!A_{i_k}|}
+
+\subsection{Relationen $R\subseteq A\times A$}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+refl & $\forall a\!:(a,a)\!\in\!R$ \\
+irrefl & $\forall a\!:(a,a)\!\notin\!R$ \\
+sym & $(a,b)\!\Rightarrow\!(b,a)$ \\
+antisym & $(a,b),(b,a)\!\Rightarrow\!a{=}b$ \\
+asym & $(a,b)\!\Rightarrow\!(b,a)\!\notin\!R$ \\
+trans & $(a,b),(b,c)\!\Rightarrow\!(a,c)$ \\
+\end{tabularx}
+\textbf{\"Aquivalenzrel.}\ = refl + sym + trans $\Rightarrow$ Partition in Klassen $[a]$.\\
+\textbf{Halbordnung} = refl + antisym + trans $\Rightarrow$ Hasse-Diagr.\\
+\textbf{Total} = Halbord.\ + Vergleichbarkeit.
+\warn{antisymmetrisch $\ne$ ``nicht symmetrisch''. Gleichheit ist beides.}
+
+\subsection{Abbildungen}
+\textbf{inj}: $f(a){=}f(a'){\Rightarrow}a{=}a'$;\
+\textbf{surj}: $\forall b\,\exists a\!:f(a){=}b$;\
+\textbf{bij}: inj+surj $\Rightarrow$ $f^{-1}$ existiert.\\
+$(g\circ f)(x){=}g(f(x))$ -- assoziativ, nicht kommutativ.
+
+% =================================================
+\section{Boolesche Algebra}
+% =================================================
+$2^{2^n}$ verschiedene $n$-stellige Bool-Funktionen.\\
+$\{\wedge,\vee,\neg\}$ vollst.; \textbf{NAND} und \textbf{NOR} \emph{allein} vollst.
+\fact{NAND: $\neg a{=}a\,|\,a$;\ $a{\wedge}b{=}(a{|}b){|}(a{|}b)$;\ $a{\vee}b{=}(\neg a){|}(\neg b)$}
+
+\subsection{KV-Diagramm}
+$2^n$ Felder, Achsen in Gray-Code.
+\begin{enumerate}
+\item 1-Felder markieren.
+\item Maximale Bl\"ocke der Gr\"osse $2^k$ (Rand-Umklappen = Torus).
+\item Jeder Block = Konj.\ der \emph{konstanten} Variablen.
+\item Disj.\ aller Bl\"ocke = minimierte DNF.
+\item Don't-Care als $0$/$1$ w\"ahlen f\"ur gr\"ossere Bl\"ocke.
+\end{enumerate}
+
+% =================================================
+\section{Graphen}
+% =================================================
+\subsection{Grundbegriffe}
+Ungerichtet: $E\!\subseteq\!\binom{V}{2}$; Gerichtet: $E\!\subseteq\!V{\times}V$.\\
+Grad $\deg(v)$; gerichtet $\deg^-,\deg^+$.
+\fact{\textbf{Handshake}: $\sum_v\deg(v)=2|E|$ $\Rightarrow$ \#Knoten mit ungeradem Grad ist gerade.}
+
+\subsection{Spezielle Graphen}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+$K_n$ & $\binom{n}{2}$ Kanten \\
+$K_{m,n}$ & bipartit, $mn$ Kanten, keine ungeraden Kreise \\
+$P_n$ & Pfad, $n{-}1$ Kanten \\
+$C_n$ & Kreis, $n$ Kanten \\
+Baum & zhgd.\ + kreisfrei, $|E|{=}|V|{-}1$ \\
+Wald & $|E|{=}|V|{-}c$ ($c$ Kompon.) \\
+DAG & gerichtet kreisfrei, top.\ Sort. \\
+Planar & Euler: $V{-}E{+}F{=}2$ \\
+\end{tabularx}
+\fact{\textbf{Eulerkreis} $\Leftrightarrow$ alle Grade gerade (zhgd.).\\
+\textbf{Eulerpfad} $\Leftrightarrow$ genau 2 Knoten ungeraden Grad.\\
+\textbf{Hamilton}: NP-hart; \textbf{Dirac} hinreichend: $\deg(v)\ge n/2,\ n\ge3$.}
+
+\subsection{Darstellung}
+Adjazenzmatrix $A{\in}\{0,1\}^{n\times n}$, Platz $O(n^2)$; $(A^k)_{ij}$ = \#Wege L\"ange $k$.\ Adjazenzliste: $O(|V|{+}|E|)$.
+
+\subsection{BFS / DFS}
+\textbf{BFS} (FIFO, k\"urzeste Pfade ungewichtet, $O(|V|{+}|E|)$):
+\begin{enumerate}
+\item $d[v]{=}\infty$,\ $d[s]{=}0$,\ Queue${=}\{s\}$.
+\item dequeue $u$; f\"ur jeden Nachbarn $v$: falls $d[v]{=}\infty$, setze $d[v]{=}d[u]{+}1$, enqueue.
+\end{enumerate}
+\textbf{DFS} (Stack/Rekursion) $\to$ Komponenten, Zyklen, top.\ Sort.
+
+\subsection{Dijkstra (nicht-negative Gew.)}
+\begin{enumerate}
+\item $d[v]{=}\infty$,\ $d[s]{=}0$,\ $\mathrm{prev}[v]{=}\bot$,\ PQ${=}\min$-Heap.
+\item extract\_min $\to u$.
+\item Nachbar $v$ mit Gew.\ $w$: falls $d[u]{+}w<d[v]$, update $d[v]$, $\mathrm{prev}[v]{=}u$, decrease\_key.
+\end{enumerate}
+$O((|V|{+}|E|)\log|V|)$ mit Heap.
+\warn{Negative Gewichte $\Rightarrow$ Dijkstra falsch $\to$ Bellman-Ford $O(|V|\cdot|E|)$.}
+
+\subsection{A$^\star$}
+Priorit\"at $f(v){=}d[v]{+}h(v)$.
+\begin{itemize}
+\item Zul\"assig: $h(v)\le$ wahre Restdistanz $\Rightarrow$ optimal.
+\item Monoton: $h(u)\le c(u,v){+}h(v)$ $\Rightarrow$ effizient.
+\item $h\equiv 0\Rightarrow$ Dijkstra.
+\item Heuristiken: Manhattan (4-Nb), Euklid, Tschebyscheff (8-Nb).
+\end{itemize}
+
+\subsection{MST}
+\textbf{Kruskal}: Kanten aufsteig.\ sort.; nehmen wenn kein Kreis (Union-Find); $O(|E|\log|E|)$.\\
+\textbf{Prim}: vom Start wachsen, billigste Anschlusskante; $O((|V|{+}|E|)\log|V|)$.
+
+% =================================================
+\section{Kombinatorik}
+% =================================================
+\subsection{Vier Grundmodelle}
+\renewcommand{\arraystretch}{1.15}
+\begin{tightt}{@{}l@{\ }c@{\ }c@{}}
+& \textbf{mit Wdh.} & \textbf{ohne Wdh.} \\
+\midrule
+geord.\ (Var.) & $n^k$ & $\dfrac{n!}{(n-k)!}$ \\
+ungeord.\ (Komb.) & $\dbinom{n+k-1}{k}$ & $\dbinom{n}{k}$ \\
+\end{tightt}
+\renewcommand{\arraystretch}{1.05}
+
+\subsection{Klassische Formeln}
+\begin{itemize}
+\item Permutationen: $n!$
+\item Permut.\ mit Klassen $n_1,\dots,n_r$: $\dfrac{n!}{n_1!\cdots n_r!}$
+\item $\binom{n}{k}=\binom{n}{n-k}$
+\item Pascal: $\binom{n}{k}{=}\binom{n-1}{k-1}{+}\binom{n-1}{k}$
+\item $\sum_{k=0}^n\binom{n}{k}=2^n$
+\item Binom.\ Lehrsatz: $(a{+}b)^n=\sum_k\binom{n}{k}a^{n-k}b^k$
+\end{itemize}
+\fact{\textbf{Schubfach}: $n{+}1$ Objekte in $n$ F\"acher $\Rightarrow$ mind.\ 2 in einem.}
+
+\subsection{Fibonacci}
+$f_n=f_{n-1}{+}f_{n-2}$,\ $f_0{=}0,\ f_1{=}1$.\\
+\textbf{Binet}: $f_n=\dfrac{\phi^n-\psi^n}{\sqrt 5}$,\ $\phi{=}\tfrac{1+\sqrt5}{2}$,\ $\psi{=}\tfrac{1-\sqrt5}{2}$.
+
+% =================================================
+\section{Klausur-Stolperfallen}
+% =================================================
+\begin{itemize}
+\item Implikation: falsche Vorauss.\ $\Rightarrow$ Aussage wahr.
+\item Antisymmetrie $\ne$ ``nicht symmetrisch''.
+\item Quantor-Reihenfolge zaehlt.
+\item Kombinatorik: falsches Modell = h\"aufigster Fehler.
+\item Hamilton hat \emph{kein} einfaches Kriterium.
+\item Dijkstra bricht bei neg.\ Gew.; Bellman-Ford nutzen.
+\item DNF aus Einsen, KNF aus Nullen mit \emph{negierten} Lit.\ wo $1$.
+\item Bei $K_{m,n}$ gibt es keine ungeraden Kreise (immer bipartit-Test).
+\end{itemize}
+
+\end{multicols*}
+\end{document}

@@ -479,6 +479,16 @@ details.exercise[open] > summary::before { transform: rotate(90deg); }
   border-color: var(--accent-2);
   color: var(--accent-2);
 }
+.fach-list .links a:nth-child(3) {
+  background: var(--bg-soft);
+  color: var(--green);
+  border-color: var(--green);
+}
+.fach-list .links a:nth-child(3):hover {
+  background: var(--green);
+  color: var(--bg);
+  border-color: var(--green);
+}
 @media (max-width: 540px) {
   .fach-list li {
     flex-wrap: wrap;

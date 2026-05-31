@@ -1,0 +1,200 @@
+\documentclass[8pt,a4paper]{extarticle}
+\input{../preamble.tex}
+\renewcommand{\sheettitle}{Optimierungsverfahren}
+
+\begin{document}
+\sheetheader{Optimierungsverfahren}{Open-Book Formelsammlung -- DHBW WDS125}
+
+\begin{multicols*}{3}
+
+% =================================================
+\section{Grundlagen}
+% =================================================
+\subsection{Standardform}
+\fitline{\min_{x\in X} f(x)\ \text{u.d.N.}\ g_i(x)\le 0,\ h_j(x)=0}
+$\max f \equiv \min(-f)$ (Vorzeichen am Wert beachten).\\
+Zul\"assige Menge $\mathcal{F}=\{x:g_i\le 0,\,h_j=0\}$.
+
+\subsection{Klassifikation}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+\textbf{LP} & $f,g,h$ linear -- Simplex, IPM \\
+\textbf{QP} & $f$ quadr., $g/h$ linear -- Aktive-M. \\
+\textbf{NLP} & mind.\ eines nichtlin.\ -- SQP, Newton \\
+\textbf{Konvex} & lokal $=$ global \\
+\textbf{Glatt} & $f\!\in\!C^1$ -- Gradientenverfahren \\
+\textbf{Nichtglatt} & Subgrad./Proximal \\
+\textbf{MIP/diskret} & $X\!\subseteq\!\Z^n$ -- B\&B \\
+\textbf{Stochastisch} & SAA, Stoch.\ Gradient \\
+\end{tabularx}
+
+\subsection{Konvexit\"at}
+\begin{itemize}
+\item Menge: $\forall x,y\!\in\!C,\,\lambda\!\in\![0,1]\!:\,\lambda x{+}(1{-}\lambda)y\!\in\!C$
+\item Funktion: $f(\lambda x{+}(1{-}\lambda)y)\le \lambda f(x){+}(1{-}\lambda)f(y)$
+\item Strikt: $<$ f\"ur $x\ne y,\ \lambda\!\in\!(0,1)$
+\item $f\in C^2$: konvex $\Leftrightarrow \nabla^2 f\succeq 0$ (PSD); strikt bei $\succ 0$
+\item Summe konv., max endlich vieler konv., $f\!\circ\!\text{affin}$ konv.
+\end{itemize}
+\fact{\textbf{Hauptsatz}: konvex $\Rightarrow$ jedes lok.\ Min = glob.\ Min; strikt konvex $\Rightarrow$ eindeutig.}
+
+\subsection{Optimalit\"at (unbeschr\"ankt)}
+Notw.\ 1.\,Ord.: $\nabla f(x^\star)=0$ (station\"ar).\\
+Hinr.\ 2.\,Ord.: $\nabla f(x^\star){=}0\,\wedge\,\nabla^2 f(x^\star)\succ 0\,\Rightarrow$ striktes lok.\ Min.\\
+Konvex: $\nabla f(x^\star){=}0\,\Rightarrow$ glob.\ Min.
+
+% =================================================
+\section{Lineare Optimierung}
+% =================================================
+\subsection{Standardform LP}
+\fitline{\min c\trans x\ \text{u.d.N.}\ Ax=b,\ x\ge 0}
+\begin{itemize}
+\item $\max c\trans x \to \min (-c\trans x)$
+\item $a\trans x\le \beta \to a\trans x+s=\beta,\,s\ge 0$ (Schlupf)
+\item $a\trans x\ge \beta \to a\trans x-s=\beta,\,s\ge 0$ (\"Uberschuss)
+\item Freie Var.: $x=x^+-x^-$, $x^\pm\ge 0$
+\end{itemize}
+\fact{\textbf{Fundamentalsatz}: endliches Optimum $\Rightarrow$ optimale Ecke (Basisl\"osung) existiert.}
+
+\subsection{Simplex}
+\begin{enumerate}
+\item \textbf{Opt.-Test}: alle red.\ Kosten $\bar c_j\!\ge\!0$? $\to$ fertig.
+\item \textbf{Pivot-Spalte}: w\"ahle $j$ mit $\bar c_j\!<\!0$ (negativster = Dantzig).
+\item \textbf{Pivot-Zeile} (min-ratio): minim.\ $b_i/a_{ij}$ unter $a_{ij}>0$; sonst LP unbeschr\"ankt.
+\item \textbf{Pivot-Operation} um $a_{ij}$ (Zeile teilen, andere reduzieren).
+\end{enumerate}
+\warn{Bland-Regel (Tie $\to$ kleinster Index) verhindert Zyklen bei Degeneration. Worst case exponentiell (Klee-Minty), IPM polynomial.}
+
+\subsection{Dualit\"at}
+\textbf{Primal}: $\min c\trans x$, $Ax\ge b$, $x\ge 0$\\
+\textbf{Dual}:\ $\max b\trans y$, $A\trans y\le c$, $y\ge 0$
+\begin{tabularx}{\linewidth}{@{}l@{\ \,}X@{}}
+$n$ Var (P) & $n$ NB (D) \\
+$m$ NB (P) & $m$ Var (D) \\
+$x_j\!\ge\!0$ & D-NB $j$ als $\le$ \\
+$x_j$ frei & D-NB $j$ als $=$ \\
+NB $i$ als $\ge$ & $y_i\!\ge\!0$ \\
+NB $i$ als $=$ & $y_i$ frei \\
+$c_j$ (Zielk.) & D-RHS \\
+$b_i$ (RHS) & D-Zielk. \\
+\end{tabularx}
+\fact{\textbf{Schwach}: $b\trans y\le c\trans x$. \textbf{Stark}: endl.\ Opt.\ $\Rightarrow$ beide gleich.\\ \textbf{Kompl.\ Schlupf}: $x_j^\star(c_j{-}A_{\cdot j}\trans y^\star){=}0$,\ $y_i^\star(A_{i\cdot}x^\star{-}b_i){=}0$.}
+
+% =================================================
+\section{Nichtlineare Optimierung}
+% =================================================
+\subsection{1D-Verfahren}
+\textbf{Bisektion auf $f'$}: $f'(a)f'(b)<0$, halbieren -- linear.\\
+\textbf{Newton auf $f'$}: $x_{k+1}=x_k-f'(x_k)/f''(x_k)$ -- quadratisch.\\
+\textbf{Goldener Schnitt}: $\rho{=}(\sqrt5{-}1)/2\!\approx\!0{,}618$;\ $x_1{=}a{+}(1{-}\rho)(b{-}a)$,\ $x_2{=}a{+}\rho(b{-}a)$;\ kleineres $f$ behalten.
+
+\subsection{Gradientenabstieg}
+\fitline{x_{k+1}=x_k-\alpha_k\,\nabla f(x_k)}
+\textbf{Armijo}: $f(x_k{-}\alpha\nabla f)\le f(x_k){-}c_1\alpha\|\nabla f\|^2$, $c_1\!\in\!(0,\tfrac12)$.\\
+\textbf{Wolfe}: Armijo + Kr\"ummungsbed.\ \\
+Konvergenzrate (Kondition $\kappa$): $((\kappa{-}1)/(\kappa{+}1))^2$ -- langsam bei $\kappa\!\gg\!1$.
+
+\subsection{Newton \& Quasi-Newton}
+\fitline{x_{k+1}=x_k-\bigl[\nabla^2 f(x_k)\bigr]^{-1}\nabla f(x_k)}
+\begin{itemize}
+\item Quadratisch lokal; Hesse muss PD f\"ur Abstieg.
+\item Aufwand $O(n^3)$/Schritt; ged\"ampft mit Linesearch.
+\item \textbf{Levenberg-Marquardt}: $(\nabla^2 f+\lambda I)^{-1}$.
+\item \textbf{BFGS}: approx.\ $H^{-1}$ aus Gradientendiff., superlinear.
+\end{itemize}
+
+\subsection{Lagrange \& KKT}
+\fitline{L(x,\lambda,\mu)=f(x)+\sum_i \lambda_i g_i(x)+\sum_j \mu_j h_j(x)}
+$\lambda_i\ge 0$ (Ungl.), $\mu_j$ frei (Gl.).\\[0.3ex]
+\textbf{KKT} (notwendig bei reg.\ Punkt; bei konvex auch hinreichend):
+\begin{enumerate}
+\item Station.: $\nabla f+\sum_i\lambda_i\nabla g_i+\sum_j\mu_j\nabla h_j=0$
+\item Primal-Zul.: $g_i\le 0,\ h_j=0$
+\item Dual-Zul.: $\lambda_i\ge 0$
+\item Kompl.\ Schlupf: $\lambda_i\cdot g_i=0$
+\end{enumerate}
+
+\subsection{Strafverfahren}
+\textbf{Quadr.\ Penalty}: $f+\rho\sum h_j^2+\rho\sum\max(0,g_i)^2$, $\rho\!\to\!\infty$.\\
+\textbf{Barriere/IPM}: $f-\mu\sum\log(-g_i)$, $\mu\!\to\!0$.
+
+% =================================================
+\section{Gradientenfreie / Metaheuristiken}
+% =================================================
+\subsection{Direktsuche}
+\textbf{Nelder-Mead}: Simplex aus $n{+}1$ Punkten; Schritte: Spiegelung $\to$ Expansion (wenn besser als alle) / Kontraktion / Schrumpfung.\\
+\textbf{Koordinatenabstieg}: zyklisch eine Variable opt.\\
+\textbf{Hooke-Jeeves}: Achsen-Schritte + Pattern Move.
+
+\subsection{Simulated Annealing}
+\begin{enumerate}
+\item Initial $x_0,\ T_0$; best$=x_0$.
+\item Wiederhole bis $T<T_{\min}$:
+  \begin{itemize}
+  \item Nachbar $x'$; $\Delta=f(x'){-}f(x)$.
+  \item Akzeptiere wenn $\Delta<0$ oder $\text{rand}()<\exp(-\Delta/T)$.
+  \item Best updaten.
+  \end{itemize}
+\item Cooling $T_{k+1}=\alpha T_k$, $\alpha\!\in\![0{,}9;\,0{,}99]$.
+\end{enumerate}
+\fact{Metropolis: $P_{\text{accept}}=\exp(-\Delta/T)$. Log.\ Cooling $T_k=c/\log(k{+}1)$ konv.\ zum Glob.\ (theor.).}
+
+\subsection{Genetische Algorithmen}
+Selektion (Roulette/Turnier/Rang) -- Crossover (One-Point/Uniform/BLX-$\alpha$) -- Mutation (Gauss/Bit-Flip) -- Ersetzung $(\mu,\lambda)$ vs.\ $(\mu{+}\lambda)$; \textbf{Elitismus} bewahrt Beste.\\
+\textbf{CMA-ES}: adaptive Kovarianzmatrix.
+
+\subsection{PSO}
+\fitline{v_i \leftarrow w\,v_i+c_1 r_1(p_i-x_i)+c_2 r_2(g-x_i)}
+\fitline{x_i \leftarrow x_i+v_i}
+$w\!\in\![0{,}4;\,0{,}9]$ (linear fallend), $c_1{=}c_2\!\approx\!2$, $r_{1,2}\!\sim\!U[0,1]$.\ $p_i$ pers., $g$ glob.\ Best.
+
+\subsection{ACO}
+$p_{ij}\propto \tau_{ij}^\alpha\cdot\eta_{ij}^\beta$, $\eta_{ij}{=}1/d_{ij}$, $\tau$ verstaerkt/verdunstet.
+
+% =================================================
+\section{Mehrzieloptimierung}
+% =================================================
+\subsection{Pareto}
+\textbf{Dominanz} $x\prec y$: $\forall i\!:f_i(x)\!\le\!f_i(y)\,\wedge\,\exists j\!:f_j(x)\!<\!f_j(y)$.\\
+Pareto-optimal $=$ nicht dominiert; Pareto-Front $=$ Bild der Pareto-Menge.
+
+\subsection{Verfahren}
+\textbf{Gewichtete Summe}: $\min\sum w_i f_i$, $w_i\!\ge\!0$, $\sum w_i{=}1$ -- bei nicht-konvexer Front nicht alle Punkte erreichbar.\\
+\textbf{$\epsilon$-Constraint}: $\min f_1$ u.d.N.\ $f_j\!\le\!\epsilon_j$ ($j\ne 1$) -- auch nicht-konvex.\\
+\textbf{NSGA-II / SPEA2 / MOEA/D}.
+
+\subsection{Qualit\"atsindikatoren}
+\textbf{Hypervolumen} (h\"oher besser, Pareto-konform); \textbf{IGD} (niedriger besser); \textbf{Spread}.
+
+% =================================================
+\section{Verfahrenswahl-Matrix}
+% =================================================
+\begin{tabularx}{\linewidth}{@{}l@{\ \,}X@{}}
+LP & Simplex / IPM \\
+QP & Aktive-M., IPM \\
+NLP glatt & SQP, Newton, BFGS \\
+Konvex & Newton/BFGS \\
+Nicht-glatt & Subgrad., Proximal \\
+MIP/diskret & B\&B, Heuristik \\
+Blackbox/verrauscht & Nelder-Mead, CMA-ES, Bayes \\
+Nicht-konvex & Multi-Start, SA, GA, PSO \\
+Mehrzielig & Gew.\ Sum., $\epsilon$-C, NSGA-II \\
+$n\!<\!100$ & Dense Newton, SLSQP/IPOPT \\
+$n\!<\!10^4$ & BFGS, sparse Newton, CG \\
+$n\!>\!10^5$ (DL) & L-BFGS, SGD/Adam \\
+\end{tabularx}
+
+% =================================================
+\section{Klausur-Stolperfallen}
+% =================================================
+\begin{itemize}
+\item $\lambda_i\ge 0$ nur bei Ungl.-NB; $\mu_j$ frei bei Gleichungs-NB.
+\item Komplement.\ Schlupf bei KKT \emph{immer} mitschreiben.
+\item Min-Ratio nur \"uber $a_{ij}>0$ (sonst LP unbeschr\"ankt).
+\item Bland-Regel bei Degeneration aktivieren.
+\item Bei $\max$ Vorzeichenwechsel: Optimum $-(-c)\trans x^\star$.
+\item Gewichtete Summe verfehlt nicht-konvexe Pareto-Fronten.
+\item Vor SA/GA: Problem konvex? dann Newton/BFGS.
+\end{itemize}
+
+\end{multicols*}
+\end{document}

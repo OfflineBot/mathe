@@ -1,0 +1,208 @@
+\documentclass[8pt,a4paper]{extarticle}
+\input{../preamble.tex}
+\renewcommand{\sheettitle}{Lineare Algebra}
+
+\begin{document}
+\sheetheader{Lineare Algebra \& Matrix-Zerlegungen}{Open-Book Formelsammlung -- DHBW WDS125}
+
+\begin{multicols*}{3}
+
+% =================================================
+\section{Grundlagen}
+% =================================================
+\subsection{Wichtige Identit\"aten}
+\begin{itemize}
+\item $\rg(A){=}\dim\im(A){=}\dim$ Zeilen-/Spaltenraum
+\item Dimensionssatz: $\dim\ker(A)+\rg(A)=n$
+\item $A^{-1}$ existiert $\Leftrightarrow \det A\!\ne\!0\Leftrightarrow \rg(A){=}n\Leftrightarrow$ Spalten lin.\ unabh.
+\item $\det(AB){=}\det A\cdot\det B$,\ $\det(A\trans){=}\det A$,\ $\det(A^{-1}){=}1/\det A$
+\item $\spur(A){=}\sum_i A_{ii}{=}\sum_i \lambda_i$
+\item $\det A=\prod_i\lambda_i$
+\item Char.\ Pol.: $\chi_A(\lambda){=}\det(A-\lambda I)$, Grad $n$
+\end{itemize}
+
+\subsection{Zerlegungs\"ubersicht}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+\textbf{LU} & quadr., $\det\!\ne\!0$ -- $Ax{=}b$ \\
+\textbf{Cholesky} $LL\trans$ & symm.\ \& PD -- halber LU \\
+\textbf{QR} & $m\!\times\!n$, $m\!\ge\!n$ -- Least Sq.\ \\
+\textbf{EVD} $PDP^{-1}$ & diagonalisierbar -- $A^k$, ODE \\
+\textbf{Jordan} & jede quadr. \\
+\textbf{SVD} $U\Sigma V\trans$ & jede $m\!\times\!n$ -- Pseudoinv., PCA, $\kappa$ \\
+\end{tabularx}
+
+% =================================================
+\section{LU-Zerlegung}
+% =================================================
+$A=LU$ ($L$ unt.\ $\triangle$, Diag $1$; $U$ ob.\ $\triangle$). Mit Pivot: $PA=LU$. Aufwand $\tfrac23 n^3$.\\
+\textbf{Algorithmus} (ohne Pivot):
+\begin{enumerate}
+\item F\"ur Spalte $j$: f\"ur jede Zeile $i>j$: $\ell_{ij}=a_{ij}/a_{jj}$.
+\item $Z_i\leftarrow Z_i-\ell_{ij}Z_j$.
+\item \"Ubrig: $U$; Multiplikatoren bilden $L$.
+\end{enumerate}
+\textbf{$Ax=b$ via LU}: (1) $Ly=b$ vorw\"arts; (2) $Ux=y$ r\"uckw\"arts. Beides $O(n^2)$.
+\warn{Spaltenpivotsuche, wenn $a_{jj}$ klein/null.}
+
+% =================================================
+\section{Cholesky}
+% =================================================
+$A=LL\trans$ f\"ur symm.\ \& PD; Aufwand $\tfrac13 n^3$.
+\fitline{\ell_{jj}=\sqrt{a_{jj}-\textstyle\sum_{k=1}^{j-1}\ell_{jk}^2}}
+\fitline{\ell_{ij}=\tfrac{1}{\ell_{jj}}\Bigl(a_{ij}-\textstyle\sum_{k=1}^{j-1}\ell_{ik}\ell_{jk}\Bigr),\ i>j}
+\warn{$\sqrt{\text{negativ}}\Rightarrow A$ nicht PD.}
+
+% =================================================
+\section{QR-Zerlegung}
+% =================================================
+$A=QR$, $Q\trans Q=I$, $R$ ob.\ $\triangle$.\\
+\textbf{Klassisches Gram-Schmidt}:
+\begin{enumerate}
+\item $u_1=a_1$, $q_1=u_1/\|u_1\|$.
+\item $u_k=a_k-\sum_{j<k}\inner{a_k}{q_j}q_j$, $q_k=u_k/\|u_k\|$.
+\item $R_{jk}=\inner{a_k}{q_j}$ f\"ur $j<k$, $R_{kk}=\|u_k\|$.
+\end{enumerate}
+\warn{Klass.\ GS instabil $\to$ MGS oder Householder.}
+\fact{\textbf{Least Squares}: $Rx=Q\trans b$ statt $A\trans A x=A\trans b$ ($\kappa(A\trans A){=}\kappa(A)^2$).}
+
+% =================================================
+\section{Eigenwerte / EVD}
+% =================================================
+\subsection{Definitionen}
+$Av=\lambda v$, $v\ne 0$. Char.\ Pol.\ $\chi_A(\lambda){=}0$, Eigenraum $E_\lambda{=}\ker(A-\lambda I)$.\\
+Alg.\ Vielfachheit (in $\chi_A$); geom.\ Vielfachheit $=\dim E_\lambda$;\ $1\!\le\!\text{geom}\!\le\!\text{alg}$.
+
+\subsection{Rezept}
+\begin{enumerate}
+\item $\det(A-\lambda I){=}0 \Rightarrow \lambda_i$.
+\item $(A-\lambda_i I)v=0 \Rightarrow$ Eigenvektoren.
+\item Geom.\ Vielf.\ $=$ \#lin.\ unabh.\ L\"osungen.
+\end{enumerate}
+
+\subsection{Diagonalisierung}
+$A$ diag.\ $\Leftrightarrow$ $\sum$ geom.\ $=n$ (geom\,=\,alg f\"ur jeden EW).\\
+$A=PDP^{-1}$, $D=\diag(\lambda_i)$, Spalten von $P$ = EV.\\
+$n$ versch.\ EW $\Rightarrow$ diag.\ \\
+Symm.\ reell $\Rightarrow$ orthogonal diag.: $A=Q\Lambda Q\trans$.\\
+Normal ($AA\trans{=}A\trans A$) $\Rightarrow$ unit\"ar diag.\\
+\fact{Anwendung: $A^k=PD^kP^{-1}$.}
+
+\subsection{Jordan-Normalform}
+$A=PJP^{-1}$, $J=\diag(J_{k_i}(\lambda_i))$ mit
+\[ J_3(\lambda)=\begin{pmatrix}\lambda&1&0\\0&\lambda&1\\0&0&\lambda\end{pmatrix} \]
+Blockgr\"ossen aus $\dim\ker(A-\lambda I)^k$-Folge.
+
+% =================================================
+\section{SVD}
+% =================================================
+$A=U\Sigma V\trans$, $A\in\R^{m\times n}$.
+\begin{itemize}
+\item $U$ ($m{\times}m$) orth.\ -- Links-Sing.-V.
+\item $V$ ($n{\times}n$) orth.\ -- Rechts-Sing.-V.
+\item $\Sigma$ ``diag.'' mit $\sigma_1\!\ge\!\dots\!\ge\!\sigma_r>0$, $r{=}\rg(A)$.
+\end{itemize}
+\fact{$A\trans A{=}V\Sigma\trans\Sigma V\trans$,\ $AA\trans{=}U\Sigma\Sigma\trans U\trans$. $\sigma_i^2$=EW von $A\trans A$.}
+
+\subsection{Rezept}
+\begin{enumerate}
+\item $A\trans A$ bilden.
+\item EW $\lambda_i\Rightarrow\sigma_i=\sqrt{\lambda_i}$, absteigend.
+\item Orthon.\ EV $v_i$ $\Rightarrow$ Spalten von $V$.
+\item $u_i=Av_i/\sigma_i$ f\"ur $\sigma_i>0$.
+\item Rest von $U$ aus $\ker(A\trans)$ erg\"anzen (orthonorm.).
+\end{enumerate}
+
+\subsection{Anwendungen}
+\textbf{Eckart-Young} (beste Rang-$k$-Approx.): $A_k=\sum_{i=1}^k\sigma_i u_i v_i\trans$
+\fitline{\|A-A_k\|_2=\sigma_{k+1},\ \|A-A_k\|_F=\sqrt{\textstyle\sum_{i>k}\sigma_i^2}}
+\textbf{Pseudoinverse}: $A^+=V\Sigma^+U\trans$, $\Sigma^+_{ii}=1/\sigma_i$ wenn $\sigma_i\!>\!0$, sonst $0$; $\hat x=A^+ b$.\\
+\textbf{Konditionszahl}: $\kappa_2(A)=\sigma_1/\sigma_n$.\\
+\textbf{PCA}: zentrierte Datenmatrix; $V$ = Hauptachsen, $\sigma_i^2/(m{-}1)$ = Varianz.
+
+% =================================================
+\section{Positiv-Definitheit}
+% =================================================
+F\"ur symm.\ $A$ \"aquivalent:
+\begin{enumerate}
+\item $x\trans Ax>0\ \forall x\ne 0$
+\item alle EW $>0$
+\item alle f\"uhrenden Hauptminoren $>0$ (\textbf{Sylvester})
+\item Cholesky mit pos.\ Diag.\ existiert
+\end{enumerate}
+PSD: $\ge 0$ in allen vier.\\
+2$\times$2 PD: $a>0$ \emph{und} $ac-b^2>0$.
+
+% =================================================
+\section{Geometrie}
+% =================================================
+\subsection{Skalarprod.\ \& Norm}
+$\inner{u}{v}=u\trans v=\sum u_iv_i$;\ $\|v\|=\sqrt{\inner{v}{v}}$.\\
+$\cos\theta=\inner{u}{v}/(\|u\|\|v\|)$;\ $u\perp v\Leftrightarrow\inner{u}{v}=0$.\\
+\textbf{Cauchy-Schwarz}: $|\inner{u}{v}|\le\|u\|\|v\|$.
+
+\subsection{Kreuzprodukt ($\R^3$)}
+\fitline{u\times v=\bigl(u_2v_3{-}u_3v_2,\,u_3v_1{-}u_1v_3,\,u_1v_2{-}u_2v_1\bigr)\trans}
+$u\times v\perp u,v$;\ $\|u\times v\|=\|u\|\|v\|\sin\theta$ (Fl\"ache).\\
+\textbf{Spat}: $[u,v,w]=\inner{u}{v\times w}=\det[u\,v\,w]$ (Vol.).\\
+$u\times v=-(v\times u)$.
+
+\subsection{Geraden / Ebenen}
+\textbf{Gerade}: $g:\,x=p+tr$.\\
+\textbf{Ebene} (Pkt-Richt.): $x=p+su+tv$.\\
+\textbf{Normalenform}: $\inner{n}{x-p}=0\Leftrightarrow n\trans x=d$.\\
+\textbf{Koord.-Form}: $ax_1+bx_2+cx_3=d$.
+
+\subsection{Abst\"ande}
+\begin{itemize}
+\item Pkt\,$q$--Ebene: $|n\trans q-d|/\|n\|$
+\item Pkt\,$q$--Ger.\ ($\R^3$): $\|(q-p)\times r\|/\|r\|$
+\item Windschief: $|\inner{p_2-p_1}{r_1\times r_2}|/\|r_1\times r_2\|$
+\end{itemize}
+
+\subsection{Projektion}
+Spalten von $A$ lin.\ unabh.:
+\fitline{\hat b=A(A\trans A)^{-1}A\trans b=Pb}
+$P^2=P$,\ $P\trans=P$. Mit $Q$ orthonorm.: $P=QQ\trans$.\ $I-P$ projiziert auf Komplement.
+
+\subsection{Quadriken}
+$x\trans Ax+b\trans x+c=0$, $A$ symm.\\
+\textbf{Klassifikation via EW-Signatur}:
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+alle $+$ & Ellipse / Ellipsoid \\
+alle $-$ & leer \\
+gemischt & Hyperbel / ein-\ \& zweischal.\ Hyp. \\
+ein EW $=0$ & Parabel / Paraboloid \\
+\end{tabularx}
+\textbf{Hauptachsentrf.}: (1) lin.\ Term durch Verschiebung weg, (2) EVD $A=Q\Lambda Q\trans$, (3) $x=Qy\Rightarrow\sum\lambda_i y_i^2=c$.
+
+% =================================================
+\section{Vektorr\"aume}
+% =================================================
+\begin{itemize}
+\item UVR: $0\!\in\!U$ \& abgeschl.\ unter $+$ und $\alpha\cdot$.
+\item Basis = lin.\ unabh.\ + erzeugend; $\dim V$ = $|$Basis$|$ (eindeutig).
+\item Steinitzscher Austauschsatz.
+\item $f$ linear: $f(\alpha u+\beta v)=\alpha f(u)+\beta f(v)$.
+\item Dimensionssatz: $\dim V=\dim\ker f+\dim\im f$.
+\item $f$ inj.\ $\Leftrightarrow\ker f=\{0\}$;\ surj.\ $\Leftrightarrow\im f=W$.
+\item Basiswechsel: $A'=T^{-1}AT$ ($\sim$ \"Ahnlichkeit).
+\item Orthogonal: $Q\trans Q=I$, $|\lambda|=1$, $\det Q=\pm 1$.
+\item 2D-Rotation: $\bigl(\begin{smallmatrix}\cos\theta&-\sin\theta\\ \sin\theta&\cos\theta\end{smallmatrix}\bigr)$.
+\end{itemize}
+
+% =================================================
+\section{Klausur-Stolperfallen}
+% =================================================
+\begin{itemize}
+\item LU: Multiplikatoren in $L$ nicht vergessen.
+\item Cholesky: $\sqrt{\text{negativ}}\Rightarrow$ PD-Verstoss.
+\item QR: vergewissern dass $Q$ orthonormal ($Q\trans Q=I$).
+\item EVD: falsche alg.\ vs.\ geom.\ Vielfachheiten.
+\item SVD: $\sigma_i$ niemals negativ; absteigend sortieren.
+\item Char.\ Pol.\ Vorzeichen: $\det(A-\lambda I)$, nicht $(\lambda I-A)$.
+\item $P^{-1}$ bei Diagonalisierung selbst berechnen, nicht raten.
+\item Quadrik-Typ aus EW-Signatur, nicht aus $\det A$ allein.
+\end{itemize}
+
+\end{multicols*}
+\end{document}

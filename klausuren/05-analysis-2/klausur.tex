@@ -1,0 +1,219 @@
+\documentclass[8pt,a4paper]{extarticle}
+\input{../preamble.tex}
+\renewcommand{\sheettitle}{Analysis 2}
+
+\begin{document}
+\sheetheader{Analysis 2}{Open-Book Formelsammlung -- DHBW WDS125}
+
+\begin{multicols*}{3}
+
+% =================================================
+\section{Folgen \& Reihen}
+% =================================================
+\subsection{Folgen}
+Konv.: $\forall\epsilon\!>\!0\,\exists N\!:\,\forall n\!>\!N\!:\,|a_n-a|<\epsilon$.\\
+\textbf{Standardgrenzwerte}:
+\begin{itemize}
+\item $\lim 1/n^p=0$ ($p>0$)
+\item $\lim\sqrt[n]{n}=1$,\ $\lim\sqrt[n]{a}=1$ ($a>0$)
+\item $\lim(1+1/n)^n=e$
+\item $\lim q^n=0$ ($|q|<1$)
+\end{itemize}
+\textbf{Sandwich}: $a_n\!\le\!b_n\!\le\!c_n$, $a_n,c_n\!\to\!L$ $\Rightarrow$ $b_n\!\to\!L$.\\
+\textbf{Monoton + beschr\"ankt} $\Rightarrow$ konvergent.
+
+\subsection{Reihen}
+$\sum a_n$ konv.\ $\Leftrightarrow$ Partialsummen $s_n$ konv.
+\fact{\textbf{Notwendig}: $\sum a_n$ konv.\ $\Rightarrow a_n\!\to\!0$ (\emph{nicht} hinreichend, vgl.\ harmonische).}
+
+\subsection{Konvergenzkriterien}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+Geom.\ $\sum q^n$ & konv.\ $\Leftrightarrow$ $|q|<1$, Wert $1/(1{-}q)$ \\
+Majorante & $0\!\le\!|a_n|\!\le\!b_n,\,\sum b_n$ konv.\ $\Rightarrow$ abs.\ konv. \\
+Minorante & $a_n\!\ge\!b_n\!\ge\!0,\,\sum b_n$ div.\ $\Rightarrow$ div. \\
+Quotient & $\lim|a_{n+1}/a_n|{=}q$: $q\!<\!1$ konv., $q\!>\!1$ div. \\
+Wurzel & $\lim\sqrt[n]{|a_n|}{=}q$ analog \\
+Leibniz & altern., $|a_n|\!\downarrow,\!\to\!0$ $\Rightarrow$ konv. \\
+Integralvgl. & $f$ pos.\ \& fallend: $\sum f(n)\sim\!\int f$ \\
+Verdichtung & $a_n\!\downarrow\!>0$: $\sum a_n\sim\sum 2^n a_{2^n}$ \\
+\end{tabularx}
+\textbf{Absolut konv.} ($\sum|a_n|$ konv.) erlaubt Umordnung. \textbf{Bedingt}: konv.\ aber nicht absolut (Riemannscher Umordnungssatz).
+
+\subsection{Standardreihen}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+$\sum 1/n^s$ & konv.\ $\Leftrightarrow s>1$;\ $\zeta(2){=}\pi^2/6$ \\
+$\sum(-1)^{n+1}/n$ & $=\ln 2$ (Leibniz) \\
+$\sum 1/n!$ & $=e-1$ (ab $n{=}1$) \\
+$\sum q^n$ & $=1/(1-q)$, $|q|<1$ \\
+\end{tabularx}
+
+\subsection{Potenzreihen}
+$\sum_{n=0}^\infty a_n(x-x_0)^n$,\ Radius $r=1/\limsup\sqrt[n]{|a_n|}=\lim|a_n/a_{n+1}|$.\\
+Innerhalb gliedweise diff./integr.
+
+\subsection{Taylor}
+\fitline{f(x)=\sum_{n=0}^\infty \tfrac{f^{(n)}(x_0)}{n!}(x-x_0)^n}
+\textbf{Maclaurin}:
+\begin{itemize}
+\item $e^x=\sum x^n/n!$,\ $r=\infty$
+\item $\sin x=\sum (-1)^n x^{2n+1}/(2n{+}1)!$,\ $r=\infty$
+\item $\cos x=\sum (-1)^n x^{2n}/(2n)!$,\ $r=\infty$
+\item $\ln(1{+}x)=\sum_{n\ge 1}(-1)^{n+1}x^n/n$,\ $r=1$
+\item $(1{+}x)^\alpha=\sum\binom{\alpha}{n}x^n$,\ $r=1$
+\item $1/(1{-}x)=\sum x^n$,\ $r=1$
+\end{itemize}
+\textbf{Restglied (Lagrange)}: $R_n(x)=\tfrac{f^{(n+1)}(\xi)}{(n+1)!}(x{-}x_0)^{n+1}$.
+
+% =================================================
+\section{Mehrdim.\ Differentialrechnung}
+% =================================================
+\subsection{Topologie \& Stetigkeit}
+$\|x\|=\sqrt{\sum x_i^2}$;\ $B_r(a)=\{x:\|x-a\|<r\}$.\\
+$M$ offen $\Leftrightarrow$ jedes $a\!\in\!M$ hat $B_r(a)\!\subseteq\!M$.\\
+$f$ stetig: $\lim_{x\to a}f(x)=f(a)$.
+
+\subsection{Gradient}
+\fitline{\nabla f(a)=(\partial_{x_1}f,\dots,\partial_{x_n}f)\trans}
+Steilster Anstieg;\ $\|\nabla f\|$ = max.\ Steigung;\ $\nabla f\perp$ Niveaulinie.
+
+\subsection{Totale Differenzierbarkeit}
+$f$ total diff.\ in $a$: $\exists L$ lin.\ mit $f(a{+}h)=f(a)+Lh+o(\|h\|)$.
+\warn{Partielle Ableitungen existent $\ne$ differenzierbar. Hinreichend: alle partiellen Ableitungen in Umgebung stetig.}
+
+\subsection{Richtungsableitung}
+$D_v f(a)=\lim_{t\to 0}(f(a{+}tv){-}f(a))/t$.\\
+Bei total diff.: $D_v f(a)=\nabla f(a)\trans v$.\\
+Maximal bei $v=\nabla f/\|\nabla f\|$.
+
+\subsection{Kettenregel}
+\fitline{J_{g\circ f}(x)=J_g(f(x))\cdot J_f(x)}
+Kurve: $h(t)=f(\gamma(t))$, $h'(t)=\nabla f(\gamma(t))\trans \gamma'(t)$.
+
+\subsection{Hesse \& Taylor}
+$H_f(x)=(\partial^2_{x_i x_j}f)_{ij}$.
+\fact{\textbf{Schwarz}: stetige 2.\ Ableitungen $\Rightarrow$ $H$ symmetrisch.}
+\fitline{f(a{+}h)=f(a)+\nabla f(a)\trans h+\tfrac12 h\trans H_f(a) h+R_2}
+
+% =================================================
+\section{Extrema \& Lagrange}
+% =================================================
+\subsection{Freie Extrema}
+\begin{enumerate}
+\item $\nabla f(x){=}0$ $\Rightarrow$ station\"are Punkte
+\item $H_f(x^\star)$ bestimmen
+\item Klassifizieren via EW:
+\end{enumerate}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+PD (alle EW $>0$) & striktes lok.\ Min \\
+ND (alle EW $<0$) & striktes lok.\ Max \\
+indefinit & Sattel \\
+semidef.\ (EW $=0$) & unentschieden \\
+\end{tabularx}
+\textbf{2$\times$2-Schnelltest} $H=\bigl(\begin{smallmatrix}A&B\\B&C\end{smallmatrix}\bigr)$, $\det H{=}AC{-}B^2$:
+\begin{itemize}
+\item $\det H>0,\ A>0$ $\Rightarrow$ Min
+\item $\det H>0,\ A<0$ $\Rightarrow$ Max
+\item $\det H<0$ $\Rightarrow$ Sattel
+\item $\det H=0$ $\Rightarrow$ unklar
+\end{itemize}
+
+\subsection{Lagrange-Multiplikatoren (Gleichungs-NB)}
+$\min f(x)$ u.d.N.\ $g_i(x){=}0$:
+\fitline{L(x,\lambda)=f(x)-\sum_i \lambda_i g_i(x)}
+Notw.: $\nabla f(x^\star)=\sum_i \lambda_i \nabla g_i(x^\star)$.
+
+% =================================================
+\section{Vektoranalysis}
+% =================================================
+F\"ur $F=(P,Q,R)$:
+\fitline{\nabla\cdot F=\partial_x P+\partial_y Q+\partial_z R\ \text{(Quellendichte)}}
+\fitline{\nabla\times F=\bigl(\partial_y R{-}\partial_z Q,\,\partial_z P{-}\partial_x R,\,\partial_x Q{-}\partial_y P\bigr)}
+\textbf{Identit\"aten}:
+\begin{itemize}
+\item $\nabla\times(\nabla f)=0$
+\item $\nabla\cdot(\nabla\times F)=0$
+\item $\nabla\times(\nabla\times F)=\nabla(\nabla\cdot F)-\Delta F$
+\end{itemize}
+
+\subsection{Kurvenintegrale}
+\fitline{\textstyle\int_\gamma F\cdot dr=\!\int_a^b\! F(\gamma(t))\trans\gamma'(t)\,dt}
+\textbf{Konservativ}: $F=\nabla\phi\Rightarrow$ wegunabh.; $\int_\gamma F\cdot dr=\phi(\gamma(b))-\phi(\gamma(a))$.\\
+Einfach zsh.\ Gebiet: konservativ $\Leftrightarrow \nabla\times F=0$.
+
+\subsection{Integrals\"atze}
+\textbf{Gauss}: $\iiint_V\!\nabla\!\cdot\!F\,dV=\oiint_{\partial V}\!F\!\cdot\!dS$\\
+\textbf{Stokes}: $\iint_S\!(\nabla\!\times\!F)\!\cdot\!dS=\oint_{\partial S}\!F\!\cdot\!dr$\\
+\textbf{Green} (2D): $\iint_D(Q_x{-}P_y)\,dA=\oint_{\partial D}\!P\,dx+Q\,dy$
+
+% =================================================
+\section{Mehrfachintegrale}
+% =================================================
+\subsection{Normalbereich}
+\fitline{\iint_D f\,dA=\!\int_a^b\!\int_{g_1(x)}^{g_2(x)}\!f\,dy\,dx}
+\textbf{Fubini}: Reihenfolge tauschbar bei genuegend Regularit\"at.
+
+\subsection{Transformationssatz}
+\fitline{\iint_D f(x,y)\,dA=\iint_{D'}\!f(x(u,v),y(u,v))\,|\det J|\,du\,dv}
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+Polar (2D) & $x{=}r\cos\phi,\ y{=}r\sin\phi$;\ $|J|{=}r$ \\
+Zylinder & wie Polar, $z{=}z$;\ $|J|{=}r$ \\
+Kugel & $x{=}r\sin\theta\cos\phi,\ y{=}r\sin\theta\sin\phi,\ z{=}r\cos\theta$;\ $|J|{=}r^2\sin\theta$ \\
+\end{tabularx}
+\fact{$\int_{-\infty}^\infty e^{-x^2}\,dx=\sqrt\pi$;\ Kugelvol.\ $V{=}\tfrac43\pi R^3$.}
+
+% =================================================
+\section{ODE -- Klassifikation \& Loesungen}
+% =================================================
+Ordnung = h\"ochste Ableitung;\ linear: $\sum a_k(x)y^{(k)}=b(x)$;\ homogen: $b{=}0$;\ konst.\ Koeff.: $a_k$ konst.\\
+AWP = ODE + Werte $y(x_0),y'(x_0)$;\ RWP = Werte an beiden Endpunkten.
+
+\subsection{ODE 1.\ Ordnung}
+\textbf{Trennbar} $y'=f(x)g(y)$:
+\fitline{\textstyle\int\!\tfrac{dy}{g(y)}=\!\int\!f(x)\,dx+C}
+\textbf{Linear} $y'+p(x)y=q(x)$, $\mu(x)=e^{\int p\,dx}$:
+\fitline{y=\tfrac{1}{\mu}\!\left(\!\textstyle\int\!\mu(x)q(x)\,dx+C\right)}
+\textbf{Bernoulli} $y'+py=qy^n,\ n\!\ne\!1$: Subst.\ $u=y^{1-n}\Rightarrow$ linear in $u$.\\
+\textbf{Exakt} $M\,dx+N\,dy=0,\ M_y=N_x$: $\Phi$ mit $\Phi_x{=}M,\Phi_y{=}N$;\ L\"osung $\Phi(x,y)=C$.\\
+\textbf{Homogen Grad 0}: $y'=f(y/x)\Rightarrow u{=}y/x$.\\
+\textbf{Riccati} $y'=a+by+cy^2$ mit bekanntem $y_1$: $y=y_1+1/u\Rightarrow$ linear.
+
+\subsection{ODE 2.\ Ord., konst.\ Koeff.}
+$y''+ay'+by=f(x)$. Char.\ Gl.\ $\lambda^2+a\lambda+b=0$:
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+$a^2{-}4b>0$ & $\lambda_1\!\ne\!\lambda_2$: $C_1 e^{\lambda_1 x}{+}C_2 e^{\lambda_2 x}$ \\
+$=0$ & $\lambda$ doppelt: $(C_1{+}C_2 x)e^{\lambda x}$ \\
+$<0$ & $\alpha{\pm}i\beta$: $e^{\alpha x}(C_1\!\cos\!\beta x{+}C_2\!\sin\!\beta x)$ \\
+\end{tabularx}
+\textbf{Inhomogen -- Ansatz nach $f$}:
+\begin{tabularx}{\linewidth}{@{}l@{\ }X@{}}
+Polynom Grad $n$ & Polynom Grad $n$ \\
+$e^{kx}$ & $A e^{kx}$ \\
+$\cos\omega x,\sin\omega x$ & $A\cos\omega x+B\sin\omega x$ \\
+Produkt & Produkt der Ans\"atze \\
+\end{tabularx}
+\fact{\textbf{Resonanz}: $f$ ist L\"osung der homogenen $\Rightarrow$ Ansatz $\cdot x$ (doppelt: $\cdot x^2$).}
+\textbf{Variation der Konst.}:
+\fitline{y_p=-y_1\!\int\!\tfrac{y_2 f}{W}\,dx+y_2\!\int\!\tfrac{y_1 f}{W}\,dx,\ W{=}y_1 y_2'{-}y_2 y_1'}
+
+\subsection{Systeme linearer ODE}
+$\mathbf y'=A\mathbf y,\ \mathbf y(0)=\mathbf y_0$:
+\fitline{\mathbf y(t)=e^{At}\mathbf y_0,\ e^{At}=\sum_{k\ge 0}\tfrac{(At)^k}{k!}}
+Diag.\ $A=PDP^{-1}$: $e^{At}=Pe^{Dt}P^{-1}$, $e^{Dt}=\diag(e^{\lambda_i t})$.
+
+% =================================================
+\section{Klausur-Stolperfallen}
+% =================================================
+\begin{itemize}
+\item Notw.\ Krit.\ ($a_n\!\to\!0$) ist \emph{nicht} hinreichend; harmonisch divergiert.
+\item Bei altern.\ Reihen \textbf{Leibniz}, nicht Quotient.
+\item Absolut vs.\ bedingt unterscheiden.
+\item Partielle Abl.\ vorhanden $\ne$ stetig/diff.bar.
+\item \textbf{Resonanz} im Ansatz $\cdot x$ pr\"ufen, sonst falsch.
+\item Quadrik/Hesse aus EW-\textbf{Signatur}, nicht aus $\det$ allein.
+\item Schwarz nur bei stetigen 2.\ Ableitungen anwenden.
+\item Transformationssatz: $|\det J|$ nicht vergessen (z.B.\ $r$ in Polar).
+\item Lagrange-Multiplikator: Vorzeichen in $L=f-\lambda g$ (Konvention beachten).
+\end{itemize}
+
+\end{multicols*}
+\end{document}
