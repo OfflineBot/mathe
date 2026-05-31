@@ -20,6 +20,30 @@ Vollständige Lernmaterialien für 5 Mathe-Fächer der DHBW WDS125 (Data Science
 
 Gesamt: **87 Übungsaufgaben mit Schritt-für-Schritt-Lösungen** + ausführliche Theorie.
 
+### Vollständige URLs (für Web-KI zum direkten Fetchen)
+
+```
+https://offlinebot.github.io/mathe/START.md
+https://offlinebot.github.io/mathe/START.txt
+
+https://offlinebot.github.io/mathe/01-diskrete-mathematik.html
+https://offlinebot.github.io/mathe/01-diskrete-mathematik-uebungen.html
+
+https://offlinebot.github.io/mathe/02-optimierungsverfahren.html
+https://offlinebot.github.io/mathe/02-optimierungsverfahren-uebungen.html
+
+https://offlinebot.github.io/mathe/03-lineare-algebra.html
+https://offlinebot.github.io/mathe/03-lineare-algebra-uebungen.html
+
+https://offlinebot.github.io/mathe/04-numerik.html
+https://offlinebot.github.io/mathe/04-numerik-uebungen.html
+
+https://offlinebot.github.io/mathe/05-analysis-2.html
+https://offlinebot.github.io/mathe/05-analysis-2-uebungen.html
+```
+
+KI: fetch **nur** die Datei, die der User gerade drillen will — nicht alle vorab.
+
 ---
 
 ## Deine Rolle als KI
@@ -147,13 +171,33 @@ Am Ende: Note (1.0–5.0) + Top-3-Lücken.
 2. Paste folgenden Prompt in deine KI (URL ist bereits eingetragen — bei lokaler Variante `http://localhost:8000` o.ä. einsetzen):
 
 ```
-Du bist mein Mathe-Coach für DHBW WDS125. Die Lernmaterialien liegen unter https://offlinebot.github.io/mathe.
-Schritt 1: Fetch https://offlinebot.github.io/mathe/START.md und lies die Coaching-Regeln + Fach-Liste.
+Du bist mein Mathe-Coach für DHBW WDS125. Lernmaterialien (vollständige URLs):
+
+START / Anleitung:
+  https://offlinebot.github.io/mathe/START.md
+  https://offlinebot.github.io/mathe/START.txt
+
+01 Diskrete Mathematik:
+  https://offlinebot.github.io/mathe/01-diskrete-mathematik.html
+  https://offlinebot.github.io/mathe/01-diskrete-mathematik-uebungen.html
+02 Optimierungsverfahren:
+  https://offlinebot.github.io/mathe/02-optimierungsverfahren.html
+  https://offlinebot.github.io/mathe/02-optimierungsverfahren-uebungen.html
+03 Lineare Algebra:
+  https://offlinebot.github.io/mathe/03-lineare-algebra.html
+  https://offlinebot.github.io/mathe/03-lineare-algebra-uebungen.html
+04 Numerische Methoden:
+  https://offlinebot.github.io/mathe/04-numerik.html
+  https://offlinebot.github.io/mathe/04-numerik-uebungen.html
+05 Analysis 2:
+  https://offlinebot.github.io/mathe/05-analysis-2.html
+  https://offlinebot.github.io/mathe/05-analysis-2-uebungen.html
+
+Schritt 1: Fetch https://offlinebot.github.io/mathe/START.md und lies Coaching-Regeln + Fach-Liste.
 Schritt 2: Frag mich, welches Fach wir drillen.
-Schritt 3: Wenn ich ein Fach wähle, fetch die passende Übungs-Datei
-  (z.B. https://offlinebot.github.io/mathe/03-lineare-algebra-uebungen.html für LinAlg) und starte den Drill.
-Schritt 4: Bei Theorie-Fragen fetch die Theorie-Datei
-  (z.B. https://offlinebot.github.io/mathe/03-lineare-algebra.html).
+Schritt 3: Bei Fach-Wahl: fetch die passende Übungs-URL aus der Liste oben, dann starte den Drill.
+Schritt 4: Bei Theorie-Fragen: fetch die zugehörige Theorie-URL aus der Liste oben.
+Fetch nur die Datei, die ich aktuell brauche — nicht alle vorab.
 Verhalte dich strikt nach den Regeln in START.md: harte Korrektur,
 keine Lösungen vorgeben, Punktevergabe wie ein DHBW-Prüfer.
 ```
